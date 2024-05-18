@@ -54,6 +54,7 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**").permitAll()
+                        .requestMatchers("/api/messages/**").hasAnyAuthority(String.valueOf(INTERVIEW_SPECIALIST), String.valueOf(HR))
                         .requestMatchers("/interview-specialist/**").hasAnyAuthority(String.valueOf(INTERVIEW_SPECIALIST), String.valueOf(HR))
                         .requestMatchers("/hr/**").hasAnyAuthority(String.valueOf(HR))
                         .anyRequest().authenticated())

@@ -1,21 +1,22 @@
 package com.java.recruitment.service.model.hiring;
 
+import com.java.recruitment.service.model.candidate.Candidate;
 import com.java.recruitment.service.model.user.User;
-import com.java.recruitment.service.model.attachment.Attachment;
+import com.java.recruitment.service.model.attachment.AttachedFile;
 import jakarta.persistence.*;
 import lombok.*;
 
 import java.util.List;
 
 @Entity
-@Table(name = "hiring_requests")
+@Table(name = "job_requests")
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Builder
-public class HiringRequest {
+public class JobRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,12 +30,16 @@ public class HiringRequest {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private HiringRequestStatus status;
+    private JobRequestStatus status;
 
     @ManyToOne
-    @JoinColumn(name = "user_id")
-    private User user;
+    @JoinColumn(name = "hr_id", nullable = false)
+    private User hr;
+
+    @OneToOne
+    @JoinColumn(name = "candidate_id")
+    private Candidate candidate;
 
     @OneToMany(mappedBy = "hiringRequest", cascade = CascadeType.ALL)
-    private List<Attachment> attachments;
+    private List<AttachedFile> files;
 }

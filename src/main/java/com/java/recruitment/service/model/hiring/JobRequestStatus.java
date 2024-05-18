@@ -2,7 +2,7 @@ package com.java.recruitment.service.model.hiring;
 
 import java.io.Serializable;
 
-public enum HiringRequestStatus implements Serializable {
+public enum JobRequestStatus implements Serializable {
 
     NEW("NEW"),
     CANDIDATE_FOUND("CANDIDATE_FOUND"),
@@ -12,12 +12,12 @@ public enum HiringRequestStatus implements Serializable {
 
     private final String value;
 
-    HiringRequestStatus(String value) {
+    JobRequestStatus(String value) {
         this.value = value;
     }
 
-    public static HiringRequestStatus fromValue(String value) {
-        for (HiringRequestStatus status : values()) {
+    public static JobRequestStatus fromValue(String value) {
+        for (JobRequestStatus status : values()) {
             if (status.value.equalsIgnoreCase(value)) {
                 return status;
             }

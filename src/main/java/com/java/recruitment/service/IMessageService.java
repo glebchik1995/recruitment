@@ -1,4 +1,4 @@
 package com.java.recruitment.service;
 
-public interface IHiringService {
+public interface IMessageService {
 }

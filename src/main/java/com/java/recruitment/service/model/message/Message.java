@@ -3,6 +3,8 @@ import com.java.recruitment.service.model.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @Entity
 @Table(name = "messages")
 @Getter
@@ -17,14 +19,22 @@ public class Message {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
+    @Column(name = "text", nullable = false)
     private String text;
 
     @ManyToOne
-    @JoinColumn(name = "sender_id")
+    @JoinColumn(name = "sender_id", nullable = false)
     private User sender;
 
     @ManyToOne
-    @JoinColumn(name = "receiver_id")
+    @JoinColumn(name = "recipient_id", nullable = false)
     private User receiver;
+
+    @Column(name = "created_at", nullable = false)
+    private LocalDateTime createdAt;
+
+    @PrePersist
+    public void prePersist() {
+        createdAt = LocalDateTime.now();
+    }
 }
