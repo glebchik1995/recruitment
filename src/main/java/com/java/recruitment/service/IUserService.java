@@ -1,6 +1,6 @@
 package com.java.recruitment.service;
 
-import com.java.recruitment.service.model.User;
+import com.java.recruitment.service.model.user.User;
 
 public interface IUserService {
 

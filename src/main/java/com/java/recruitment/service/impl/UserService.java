@@ -4,8 +4,8 @@ import com.java.recruitment.repositoty.UserDAO;
 import com.java.recruitment.repositoty.exception.DataAlreadyExistException;
 import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.IUserService;
-import com.java.recruitment.service.model.Role;
-import com.java.recruitment.service.model.User;
+import com.java.recruitment.service.model.user.Role;
+import com.java.recruitment.service.model.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -92,7 +92,7 @@ public class UserService implements IUserService {
     @Override
     public void getAdmin() {
         User user = getCurrentUser();
-        user.setRole(Role.ADMIN);
+        user.setRole(Role.HR);
         save(user);
     }
 }

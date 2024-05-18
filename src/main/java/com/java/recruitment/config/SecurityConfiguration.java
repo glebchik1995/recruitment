@@ -23,8 +23,7 @@ import org.springframework.web.cors.CorsConfiguration;
 
 import java.util.List;
 
-import static com.java.recruitment.service.model.Role.ADMIN;
-import static com.java.recruitment.service.model.Role.USER;
+import static com.java.recruitment.service.model.user.Role.*;
 import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
@@ -55,8 +54,8 @@ public class SecurityConfiguration {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/user/**").hasAnyAuthority(String.valueOf(USER), String.valueOf(ADMIN))
-                        .requestMatchers("/admin/**").hasAnyAuthority(String.valueOf(ADMIN))
+                        .requestMatchers("/interview-specialist/**").hasAnyAuthority(String.valueOf(INTERVIEW_SPECIALIST), String.valueOf(HR))
+                        .requestMatchers("/hr/**").hasAnyAuthority(String.valueOf(HR))
                         .anyRequest().authenticated())
                 .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
                 .authenticationProvider(authenticationProvider())

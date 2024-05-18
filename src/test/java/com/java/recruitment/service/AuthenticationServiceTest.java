@@ -8,8 +8,8 @@ import com.java.recruitment.service.dto.SignUpRequest;
 import com.java.recruitment.service.impl.AuthenticationService;
 import com.java.recruitment.service.impl.JwtService;
 import com.java.recruitment.service.impl.UserService;
-import com.java.recruitment.service.model.Role;
-import com.java.recruitment.service.model.User;
+import com.java.recruitment.service.model.user.Role;
+import com.java.recruitment.service.model.user.User;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -47,7 +47,7 @@ public class AuthenticationServiceTest {
     @Test
     public void testSignUp() {
         SignUpRequest request = new SignUpRequest("username", "email", "password");
-        User user = new User("username", "email", "password", Role.USER);
+        User user = new User("username", "email", "password", Role.INTERVIEW_SPECIALIST);
         when(passwordEncoder.encode(request.getPassword())).thenReturn("encodedPassword");
         when(userService.create(any(User.class))).thenReturn(user);
         when(jwtService.generateAccessToken(any(User.class))).thenReturn("accessToken");
@@ -61,7 +61,7 @@ public class AuthenticationServiceTest {
     @Test
     public void testSignIn() {
         SignInRequest request = new SignInRequest("username", "password");
-        User user = new User("username", "email", "password", Role.USER);
+        User user = new User("username", "email", "password", Role.INTERVIEW_SPECIALIST);
         when(userDAO.findByUsername("username")).thenReturn(java.util.Optional.of(user));
         when(jwtService.generateAccessToken(user)).thenReturn("accessToken");
         when(jwtService.generateRefreshToken(user)).thenReturn("refreshToken");
@@ -76,7 +76,7 @@ public class AuthenticationServiceTest {
     @Test
     public void testRefresh() {
         RefreshTokenRequest refreshTokenRequest = new RefreshTokenRequest("refreshToken");
-        User user = new User("username", "email", "password", Role.USER);
+        User user = new User("username", "email", "password", Role.INTERVIEW_SPECIALIST);
         when(jwtService.extractUserName("refreshToken")).thenReturn("username");
         when(userDAO.findByUsername("username")).thenReturn(java.util.Optional.of(user));
         when(jwtService.isTokenValid("refreshToken", user)).thenReturn(true);

@@ -1,7 +1,7 @@
 package com.java.recruitment.service.impl;
 
 import com.java.recruitment.service.IJwtService;
-import com.java.recruitment.service.model.User;
+import com.java.recruitment.service.model.user.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;

@@ -1,6 +1,6 @@
 package com.java.recruitment.repositoty;
 
-import com.java.recruitment.service.model.User;
+import com.java.recruitment.service.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;

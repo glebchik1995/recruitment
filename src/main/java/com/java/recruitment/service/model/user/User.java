@@ -1,4 +1,4 @@
-package com.java.recruitment.service.model;
+package com.java.recruitment.service.model.user;
 
 import jakarta.persistence.*;
 import lombok.*;

@@ -8,8 +8,8 @@ import com.java.recruitment.service.dto.JwtAuthenticationResponse;
 import com.java.recruitment.service.dto.RefreshTokenRequest;
 import com.java.recruitment.service.dto.SignInRequest;
 import com.java.recruitment.service.dto.SignUpRequest;
-import com.java.recruitment.service.model.Role;
-import com.java.recruitment.service.model.User;
+import com.java.recruitment.service.model.user.Role;
+import com.java.recruitment.service.model.user.User;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -41,7 +41,7 @@ public class AuthenticationService implements IAuthenticationService {
                 .username(request.getUsername())
                 .email(request.getEmail())
                 .password(passwordEncoder.encode(request.getPassword()))
-                .role(Role.USER)
+                .role(Role.INTERVIEW_SPECIALIST)
                 .build();
 
         userService.create(user);
