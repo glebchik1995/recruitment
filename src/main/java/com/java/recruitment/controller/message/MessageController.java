@@ -1,4 +1,4 @@
-package com.java.recruitment.controller.HR;
+package com.java.recruitment.controller.message;
 
 import com.java.recruitment.service.impl.MessageService;
 import com.java.recruitment.service.model.message.Message;

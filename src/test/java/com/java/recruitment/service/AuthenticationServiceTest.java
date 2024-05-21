@@ -1,10 +1,10 @@
 package com.java.recruitment.service;
 
 import com.java.recruitment.repositoty.UserDAO;
-import com.java.recruitment.service.dto.JwtAuthenticationResponse;
-import com.java.recruitment.service.dto.RefreshTokenRequest;
-import com.java.recruitment.service.dto.SignInRequest;
-import com.java.recruitment.service.dto.SignUpRequest;
+import com.java.recruitment.service.dto.auth.JwtAuthenticationResponse;
+import com.java.recruitment.service.dto.auth.RefreshTokenRequest;
+import com.java.recruitment.service.dto.auth.SignInRequest;
+import com.java.recruitment.service.dto.auth.SignUpRequest;
 import com.java.recruitment.service.impl.AuthenticationService;
 import com.java.recruitment.service.impl.JwtService;
 import com.java.recruitment.service.impl.UserService;

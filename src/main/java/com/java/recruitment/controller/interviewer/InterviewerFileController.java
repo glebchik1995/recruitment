@@ -1,18 +1,18 @@
-package com.java.recruitment.controller.candidate;
+package com.java.recruitment.controller.interviewer;
 
 import com.java.recruitment.service.IFileService;
-import com.java.recruitment.service.IJobRequestService;
 import com.java.recruitment.service.model.attachment.AttachedFile;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ByteArrayResource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -21,19 +21,13 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name = "Attached File - Candidate", description = "Взаимодействие с вложенными файлами к заявке на работу")
+@Tag(name = "Attached File - HR or Interviewer", description = "Взаимодействие с вложенными файлами к заявке на работу")
 @RestController
-@RequestMapping("/candidate/files")
+@RequestMapping("/files")
 @RequiredArgsConstructor
-public class FileController {
+public class InterviewerFileController {
 
     private final IFileService fileService;
-
-    @PostMapping
-    public ResponseEntity<AttachedFile> uploadFile(@RequestParam("file") MultipartFile file) {
-        AttachedFile uploadedFile = fileService.uploadFile(file);
-        return new ResponseEntity<>(uploadedFile, HttpStatus.CREATED);
-    }
 
     @GetMapping("/{id}/download")
     public ResponseEntity<Resource> downloadFilesByJobRequestId(@PathVariable Long id) throws IOException {
@@ -56,11 +50,5 @@ public class FileController {
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"files.zip\"")
                 .body(resource);
-    }
-
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteFile(@PathVariable Long id) {
-        fileService.deleteFile(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
     }
 }

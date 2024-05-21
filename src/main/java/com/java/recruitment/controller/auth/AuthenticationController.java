@@ -1,10 +1,10 @@
-package com.java.recruitment.controller;
+package com.java.recruitment.controller.auth;
 
 import com.java.recruitment.service.IAuthenticationService;
-import com.java.recruitment.service.dto.JwtAuthenticationResponse;
-import com.java.recruitment.service.dto.RefreshTokenRequest;
-import com.java.recruitment.service.dto.SignInRequest;
-import com.java.recruitment.service.dto.SignUpRequest;
+import com.java.recruitment.service.dto.auth.JwtAuthenticationResponse;
+import com.java.recruitment.service.dto.auth.RefreshTokenRequest;
+import com.java.recruitment.service.dto.auth.SignInRequest;
+import com.java.recruitment.service.dto.auth.SignUpRequest;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;

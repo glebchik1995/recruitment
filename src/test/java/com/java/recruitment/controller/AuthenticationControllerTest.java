@@ -2,11 +2,12 @@ package com.java.recruitment.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.recruitment.config.BaseIntegrationTest;
+import com.java.recruitment.controller.auth.AuthenticationController;
 import com.java.recruitment.service.IAuthenticationService;
-import com.java.recruitment.service.dto.JwtAuthenticationResponse;
-import com.java.recruitment.service.dto.RefreshTokenRequest;
-import com.java.recruitment.service.dto.SignInRequest;
-import com.java.recruitment.service.dto.SignUpRequest;
+import com.java.recruitment.service.dto.auth.JwtAuthenticationResponse;
+import com.java.recruitment.service.dto.auth.RefreshTokenRequest;
+import com.java.recruitment.service.dto.auth.SignInRequest;
+import com.java.recruitment.service.dto.auth.SignUpRequest;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;

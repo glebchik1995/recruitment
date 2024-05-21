@@ -1,7 +1,7 @@
 package com.java.recruitment.service.model.hiring;
 
+import com.java.recruitment.service.model.hr.HR;
 import com.java.recruitment.service.model.candidate.Candidate;
-import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.service.model.attachment.AttachedFile;
 import jakarta.persistence.*;
 import lombok.*;
@@ -22,24 +22,21 @@ public class JobRequest {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private String position;
-
-    @Column(nullable = false)
-    private String department;
-
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
+    @Column(name = "job_request_status", nullable = false)
     private JobRequestStatus status;
 
     @ManyToOne
     @JoinColumn(name = "hr_id", nullable = false)
-    private User hr;
+    private HR hr;
 
     @OneToOne
-    @JoinColumn(name = "candidate_id")
+    @JoinColumn(name = "candidate_id", nullable = false)
     private Candidate candidate;
 
-    @OneToMany(mappedBy = "hiringRequest", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "job_requests", cascade = CascadeType.ALL)
     private List<AttachedFile> files;
+
+    @Column(name = "description")
+    private String description;
 }

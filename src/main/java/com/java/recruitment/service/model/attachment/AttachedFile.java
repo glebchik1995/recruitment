@@ -24,12 +24,12 @@ public class AttachedFile {
     @Column(name = "description", nullable = false)
     private String description;
 
-    @ManyToOne
-    @JoinColumn(name = "job_request_id")
-    private JobRequest jobRequest;
-
     @Lob
     @Column(nullable = false)
     private byte[] data;
+
+    @ManyToOne
+    @JoinColumn(name = "job_request_id")
+    private JobRequest jobRequest;
 
 }

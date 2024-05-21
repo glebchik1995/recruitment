@@ -1,34 +1,39 @@
-package com.java.recruitment.controller.candidate;
+package com.java.recruitment.controller.hr;
+
+import com.java.recruitment.service.dto.candidate.CandidateDTO;
+import com.java.recruitment.service.dto.validationGroup.OnCreate;
+import com.java.recruitment.service.dto.validationGroup.OnUpdate;
 import com.java.recruitment.service.impl.CandidateService;
 import com.java.recruitment.service.model.candidate.Candidate;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @SecurityRequirement(name = "bearerAuth")
-@Tag(name = "Candidate - Candidate", description = "Взаимодействие с перепиской между кандидатом и HR")
+@Tag(name = "HR - CANDIDATE", description = "CRUD OPERATIONS WITH CANDIDATES")
 @RestController
-@RequestMapping("/candidate/messages")
+@RequestMapping("/hr/candidate")
 @RequiredArgsConstructor
-public class CandidateController {
+public class HrCandidateController {
 
     private final CandidateService candidateService;
 
     @PostMapping
-    public ResponseEntity<Candidate> createCandidate(@RequestBody Candidate candidate) {
+    public ResponseEntity<Candidate> createCandidate(@Validated(OnCreate.class) @RequestBody CandidateDTO candidate) {
         Candidate createdCandidate = candidateService.createCandidate(candidate);
         return new ResponseEntity<>(createdCandidate, HttpStatus.CREATED);
     }
 
     @GetMapping
-    public ResponseEntity<List<Candidate>> getAllCandidates() {
-        List<Candidate> candidates = candidateService.getAllCandidates();
+    public ResponseEntity<Page<Candidate>> getAllCandidates(@ParameterObject Pageable pageable) {
+        Page<Candidate> candidates = candidateService.getAllCandidates(pageable);
         return new ResponseEntity<>(candidates, HttpStatus.OK);
     }
 
@@ -39,7 +44,7 @@ public class CandidateController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<Candidate> updateCandidate(@PathVariable Long id, @RequestBody Candidate candidate) {
+    public ResponseEntity<Candidate> editingDataCandidate(@PathVariable Long id, @Validated(OnUpdate.class) @RequestBody CandidateDTO candidate) {
         Candidate updatedCandidate = candidateService.updateCandidate(id, candidate);
         return new ResponseEntity<>(updatedCandidate, HttpStatus.OK);
     }
