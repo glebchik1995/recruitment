@@ -2,6 +2,7 @@ package com.java.recruitment.controller.error;
 
 import com.java.recruitment.config.BaseIntegrationTest;
 import com.java.recruitment.repositoty.exception.*;
+import com.java.recruitment.web.controller.ControllerAdvice;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -14,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class ErrorControllerTest extends BaseIntegrationTest {
 
     @Autowired
-    private ErrorController errorController;
+    private ControllerAdvice errorController;
 
     @Test
     void handleSaveExceptions_ReturnsBadRequest() {

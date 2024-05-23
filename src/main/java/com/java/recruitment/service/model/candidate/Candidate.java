@@ -3,6 +3,8 @@ package com.java.recruitment.service.model.candidate;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "candidate")
 @Getter
@@ -11,7 +13,7 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Builder
-public class Candidate {
+public class Candidate implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

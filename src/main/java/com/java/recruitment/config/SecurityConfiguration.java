@@ -1,96 +1,159 @@
 package com.java.recruitment.config;
 
-import com.java.recruitment.service.impl.UserService;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import jakarta.servlet.http.HttpServletResponse;
+import com.java.recruitment.web.security.JwtTokenFilter;
+import com.java.recruitment.web.security.JwtTokenProvider;
+import com.java.recruitment.web.security.expression.CustomSecurityExceptionHandler;
+import io.swagger.v3.oas.models.Components;
+import io.swagger.v3.oas.models.OpenAPI;
+import io.swagger.v3.oas.models.info.Info;
+import io.swagger.v3.oas.models.security.SecurityRequirement;
+import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
+import org.springframework.http.HttpStatus;
+import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
+import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.AuthenticationProvider;
-import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.web.cors.CorsConfiguration;
-
-import java.util.List;
-
-import static com.java.recruitment.service.model.user.Role.*;
-import static org.springframework.security.config.http.SessionCreationPolicy.STATELESS;
 
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
-@RequiredArgsConstructor
-@SecurityScheme(
-        name = "bearerAuth",
-        type = SecuritySchemeType.HTTP,
-        scheme = "bearer",
-        bearerFormat = "JWT"
-)
+@RequiredArgsConstructor(onConstructor = @__(@Lazy))
 public class SecurityConfiguration {
-    private final JwtAuthenticationFilter jwtAuthenticationFilter;
-    private final UserService userService;
 
+    private final JwtTokenProvider tokenProvider;
+
+    private final ApplicationContext applicationContext;
+
+    /**
+     * Создает и возвращает экземпляр обработчика выражений безопасности для методов.
+     *
+     * @return Обработчик выражений безопасности для методов.
+     */
     @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
-                .cors(cors -> cors.configurationSource(request -> {
-                    CorsConfiguration corsConfiguration = new CorsConfiguration();
-                    corsConfiguration.setAllowedOriginPatterns(List.of("*"));
-                    corsConfiguration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-                    corsConfiguration.setAllowedHeaders(List.of("*"));
-                    corsConfiguration.setAllowCredentials(true);
-                    return corsConfiguration;
-                }))
-                .authorizeHttpRequests(request -> request
-                        .requestMatchers("/auth/**").permitAll()
-                        .requestMatchers("/swagger-ui/**", "/swagger-resources/*", "/v3/api-docs/**").permitAll()
-                        .requestMatchers("/api/messages/**").hasAnyAuthority(String.valueOf(INTERVIEW_SPECIALIST), String.valueOf(HR))
-                        .requestMatchers("/interview-specialist/**").hasAnyAuthority(String.valueOf(INTERVIEW_SPECIALIST), String.valueOf(HR))
-                        .requestMatchers("/hr/**").hasAnyAuthority(String.valueOf(HR))
-                        .anyRequest().authenticated())
-                .sessionManagement(manager -> manager.sessionCreationPolicy(STATELESS))
-                .authenticationProvider(authenticationProvider())
-                .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
-                .exceptionHandling(exceptionHandling -> exceptionHandling
-                        .authenticationEntryPoint((request, response, authException) -> {
-                            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"error\": \"Unauthorized\"}");
-                        })
-                        .accessDeniedHandler((request, response, accessDeniedException) -> {
-                            response.setStatus(HttpServletResponse.SC_FORBIDDEN);
-                            response.setContentType("application/json");
-                            response.getWriter().write("{\"error\": \"Forbidden\"}");
-                        }));
-        return http.build();
+    public MethodSecurityExpressionHandler expressionHandler() {
+        DefaultMethodSecurityExpressionHandler expressionHandler = new CustomSecurityExceptionHandler();
+        expressionHandler.setApplicationContext(applicationContext);
+        return expressionHandler;
     }
+
+    /**
+     * Создает и возвращает экземпляр кодировщика паролей BCrypt.
+     *
+     * @return Кодировщик паролей.
+     */
 
     @Bean
     public PasswordEncoder passwordEncoder() {
         return new BCryptPasswordEncoder();
     }
 
-    @Bean
-    public AuthenticationProvider authenticationProvider() {
-        DaoAuthenticationProvider authProvider = new DaoAuthenticationProvider();
-        authProvider.setUserDetailsService(userService.userDetailsService());
-        authProvider.setPasswordEncoder(passwordEncoder());
-        return authProvider;
-    }
+    /**
+     * Получает и возвращает менеджер аутентификации из конфигурации аутентификации.
+     *
+     * @param configuration Конфигурация аутентификации.
+     * @return Менеджер аутентификации.
+     */
 
     @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration config)
-            throws Exception {
-        return config.getAuthenticationManager();
+    @SneakyThrows
+    public AuthenticationManager authenticationManager(final AuthenticationConfiguration configuration) {
+        return configuration.getAuthenticationManager();
+    }
+
+    /**
+     * Настраивает цепочку фильтров безопасности для обработки HTTP-запросов.
+     *
+     * @param httpSecurity Объект HttpSecurity для настройки безопасности.
+     * @return Цепочка фильтров безопасности.
+     */
+
+    @Bean
+    @SneakyThrows
+    public SecurityFilterChain filterChain(final HttpSecurity httpSecurity) {
+
+        httpSecurity
+                .csrf(AbstractHttpConfigurer::disable)
+                .cors(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .sessionManagement(sessionManagement ->
+                        sessionManagement
+                                .sessionCreationPolicy(
+                                        SessionCreationPolicy.STATELESS
+                                )
+                )
+                .exceptionHandling(configurer ->
+                        configurer.authenticationEntryPoint(
+                                        (request, response, exception) -> {
+                                            response.setStatus(
+                                                    HttpStatus.UNAUTHORIZED
+                                                            .value()
+                                            );
+                                            response.getWriter()
+                                                    .write("Unauthorized.");
+                                        })
+                                .accessDeniedHandler(
+                                        (request, response, exception) -> {
+                                            response.setStatus(
+                                                    HttpStatus.FORBIDDEN
+                                                            .value()
+                                            );
+                                            response.getWriter()
+                                                    .write("Unauthorized.");
+                                        }))
+                .authorizeHttpRequests(configurer ->
+                        configurer.requestMatchers("/api/v1/auth/**")
+                                .permitAll()
+                                .requestMatchers("/swagger-ui/**")
+                                .permitAll()
+                                .requestMatchers("/v3/api-docs/**")
+                                .permitAll()
+                                .anyRequest().authenticated())
+                .anonymous(AbstractHttpConfigurer::disable)
+                .addFilterBefore(new JwtTokenFilter(tokenProvider),
+                        UsernamePasswordAuthenticationFilter.class);
+
+        return httpSecurity.build();
+    }
+
+    /**
+     * Создает и возвращает объект OpenAPI для документации API.
+     *
+     * @return Объект OpenAPI с настройками безопасности и информацией о API.
+     */
+
+    @Bean
+    public OpenAPI openAPI() {
+        return new OpenAPI()
+                .addSecurityItem(new SecurityRequirement()
+                        .addList("bearerAuth"))
+                .components(
+                        new Components()
+                                .addSecuritySchemes("bearerAuth",
+                                        new SecurityScheme()
+                                                .type(SecurityScheme.Type.HTTP)
+                                                .scheme("bearer")
+                                                .bearerFormat("JWT")
+                                )
+                )
+                .info(new Info()
+                        .title("Task list API")
+                        .description("Spring Boot application")
+                        .version("1.0")
+                );
     }
 }

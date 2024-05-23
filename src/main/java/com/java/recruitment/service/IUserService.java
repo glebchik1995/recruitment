@@ -8,9 +8,13 @@ public interface IUserService {
 
     User create(User user);
 
+    User update(User user);
+
     User getByUsername(String username);
 
-    User getCurrentUser();
+    User getById(Long id);
 
-    void getAdmin();
+    void delete(Long id);
+
+    User getCurrentUser();
 }

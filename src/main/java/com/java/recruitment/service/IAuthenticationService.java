@@ -1,9 +1,8 @@
 package com.java.recruitment.service;
 
-import com.java.recruitment.service.dto.auth.JwtAuthenticationResponse;
-import com.java.recruitment.service.dto.auth.RefreshTokenRequest;
-import com.java.recruitment.service.dto.auth.SignInRequest;
-import com.java.recruitment.service.dto.auth.SignUpRequest;
+import com.java.recruitment.web.dto.auth.old.JwtAuthenticationResponse;
+import com.java.recruitment.web.dto.auth.old.RefreshTokenRequest;
+import com.java.recruitment.web.dto.auth.old.SignInRequest;
 
 public interface IAuthenticationService {
 

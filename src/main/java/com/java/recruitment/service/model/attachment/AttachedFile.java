@@ -21,9 +21,6 @@ public class AttachedFile {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "description", nullable = false)
-    private String description;
-
     @Lob
     @Column(nullable = false)
     private byte[] data;

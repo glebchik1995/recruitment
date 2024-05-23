@@ -1,21 +1,24 @@
 package com.java.recruitment.service.impl;
 
-import com.java.recruitment.repositoty.UserDAO;
+import com.java.recruitment.repositoty.UserRepository;
 import com.java.recruitment.repositoty.exception.DataAlreadyExistException;
 import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.IUserService;
-import com.java.recruitment.service.model.user.Role;
 import com.java.recruitment.service.model.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class UserService implements IUserService {
 
-    private final UserDAO userDAO;
+    private final UserRepository userRepository;
+
+    private final PasswordEncoder passwordEncoder;
 
     /**
      * Сохранение пользователя
@@ -23,8 +26,9 @@ public class UserService implements IUserService {
      * @return сохраненный пользователь
      */
     @Override
+    @Transactional
     public User save(User user) {
-        return userDAO.save(user);
+        return userRepository.save(user);
     }
 
 
@@ -34,40 +38,48 @@ public class UserService implements IUserService {
      * @return созданный пользователь
      */
     @Override
+    @Transactional
     public User create(User user) {
 
-        if (userDAO.existsByUsername(user.getUsername())) {
+        if (userRepository.existsByUsername(user.getUsername())) {
             throw new DataAlreadyExistException("Пользователь с таким именем уже существует");
         }
 
-        if (userDAO.existsByEmail(user.getEmail())) {
+        if (userRepository.existsByEmail(user.getEmail())) {
             throw new DataAlreadyExistException("Пользователь с таким email уже существует");
         }
 
         return save(user);
     }
 
-    /**
-     * Получение пользователя по имени пользователя
-     *
-     * @return пользователь
-     */
     @Override
-    public User getByUsername(String username) {
-        return userDAO.findByUsername(username)
-                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
-
+    @Transactional
+    public User update(final User user) {
+        User existingUser = getById(user.getId());
+        existingUser.setEmail(user.getEmail());
+        existingUser.setUsername(user.getUsername());
+        existingUser.setPassword(user.getPassword());
+        return userRepository.save(existingUser);
     }
 
     /**
      * Получение пользователя по имени пользователя
-     * <p>
-     * Нужен для Spring Security
      *
      * @return пользователь
      */
-    public UserDetailsService userDetailsService() {
-        return this::getByUsername;
+    public User getByUsername(final String username) {
+        return userRepository.findByUsername(username).orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
+    }
+
+    @Override
+    public User getById(final Long id) {
+        return userRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
+    }
+
+    @Override
+    @Transactional
+    public void delete(final Long id) {
+        userRepository.deleteById(id);
     }
 
     /**
@@ -80,19 +92,5 @@ public class UserService implements IUserService {
         // Получение имени пользователя из контекста Spring Security
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         return getByUsername(username);
-    }
-
-
-    /**
-     * Выдача прав администратора текущему пользователю
-     * <p>
-     * Нужен для демонстрации
-     */
-    @Deprecated
-    @Override
-    public void getAdmin() {
-        User user = getCurrentUser();
-        user.setRole(Role.HR);
-        save(user);
     }
 }
