@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_interviewer_data
+      author: Gleb
+      changes:
+        - insert:
+            tableName: interviewer
+            columns:
+              - column:
+                  name: id
+                  value: '1'
+              - column:
+                  name: name
+                  value: 'Max'
+              - column:
+                  name: surname
+                  value: 'Ivanov'
+              - column:
+                  name: email
+                  value: 'bigmax1993@mail.com'

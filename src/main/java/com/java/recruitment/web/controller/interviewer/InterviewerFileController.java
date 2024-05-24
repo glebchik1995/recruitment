@@ -1,7 +1,7 @@
 package com.java.recruitment.web.controller.interviewer;
 
 import com.java.recruitment.service.IFileService;
-import com.java.recruitment.service.model.attachment.AttachedFile;
+import com.java.recruitment.web.dto.hiring.JobRequestFileDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -31,14 +31,14 @@ public class InterviewerFileController {
 
     @GetMapping("/{id}/download")
     public ResponseEntity<Resource> downloadFilesByJobRequestId(@PathVariable Long id) throws IOException {
-        List<AttachedFile> files = fileService.downloadFile(id);
+        List<JobRequestFileDTO> files = fileService.downloadFile(id);
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         ZipOutputStream zos = new ZipOutputStream(baos);
 
-        for (AttachedFile file : files) {
-            ZipEntry zipEntry = new ZipEntry(file.getName());
+        for (JobRequestFileDTO file : files) {
+            ZipEntry zipEntry = new ZipEntry(file.getFile().getName());
             zos.putNextEntry(zipEntry);
-            zos.write(file.getData());
+            zos.write(file.getFile().getBytes());
             zos.closeEntry();
         }
 

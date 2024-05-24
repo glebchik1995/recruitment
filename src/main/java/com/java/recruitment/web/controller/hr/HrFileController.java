@@ -1,7 +1,7 @@
 package com.java.recruitment.web.controller.hr;
 
 import com.java.recruitment.service.IFileService;
-import com.java.recruitment.service.model.attachment.AttachedFile;
+import com.java.recruitment.service.model.hiring.JobRequestFile;
 import com.java.recruitment.web.dto.hiring.JobRequestFileDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -22,8 +22,8 @@ public class HrFileController {
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<AttachedFile> loadFile(@Valid @RequestBody JobRequestFileDTO file) {
-        AttachedFile uploadedFile = fileService.loadFile(file);
+    public ResponseEntity<JobRequestFile> loadFile(@Valid @RequestBody JobRequestFileDTO file) {
+        JobRequestFile uploadedFile = fileService.loadFile(file);
         return new ResponseEntity<>(uploadedFile, HttpStatus.CREATED);
     }
 

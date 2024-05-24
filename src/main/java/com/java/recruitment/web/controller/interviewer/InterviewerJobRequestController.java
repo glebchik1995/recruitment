@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import java.io.IOException;
 
 @RestController
-@RequestMapping("/interviewer/job-request")
+@RequestMapping("/api/v1/interviewer/job-request")
 @RequiredArgsConstructor
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "HR - INTERVIEWER-REQUEST", description = "CRUD OPERATIONS WITH JOB-REQUESTS")
@@ -36,7 +36,11 @@ public class InterviewerJobRequestController {
 
 
     @GetMapping
-    public ResponseEntity<Page<JobRequestDTO>> getAllJobRequests(@RequestParam(required = false) String criteriaJson, @ParameterObject Pageable pageable) throws BadRequestException {
+    public ResponseEntity<Page<JobRequestDTO>> getAllJobRequests(
+            @RequestParam(required = false) String criteriaJson,
+            @ParameterObject Pageable pageable)
+            throws BadRequestException {
+
         CriteriaModel model = null;
         if (criteriaJson != null) {
             ObjectMapper objectMapper = new ObjectMapper();

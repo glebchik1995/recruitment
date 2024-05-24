@@ -7,7 +7,6 @@ import com.java.recruitment.service.IUserService;
 import com.java.recruitment.service.model.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -17,8 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService implements IUserService {
 
     private final UserRepository userRepository;
-
-    private final PasswordEncoder passwordEncoder;
 
     /**
      * Сохранение пользователя

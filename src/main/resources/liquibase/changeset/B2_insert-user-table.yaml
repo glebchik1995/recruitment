@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_users_data
+      author: Gleb
+      changes:
+        - insert:
+            tableName: users
+            columns:
+              - column:
+                  name: id
+                  value: '2'
+              - column:
+                  name: username
+                  value: 'John'
+              - column:
+                  name: password
+                  value: '$2a$12$UjTnVRR62i9N2z754aBX4unF9Xcz9d30uNyh.zC4YNrEvLpXhA3Rb'
+              - column:
+                  name: email
+                  value: 'john1994@mail.com'
