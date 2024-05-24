@@ -1,15 +1,16 @@
 package com.java.recruitment.web.controller.hr;
 
 import com.java.recruitment.service.IFileService;
-import com.java.recruitment.service.model.hiring.JobRequestFile;
 import com.java.recruitment.web.dto.hiring.JobRequestFileDTO;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.IOException;
 
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "HR - FILE", description = "CRUD OPERATIONS WITH ATTACHED FILES")
@@ -21,15 +22,13 @@ public class HrFileController {
     private final IFileService fileService;
 
     @PostMapping
-    @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<JobRequestFile> loadFile(@Valid @RequestBody JobRequestFileDTO file) {
-        JobRequestFile uploadedFile = fileService.loadFile(file);
-        return new ResponseEntity<>(uploadedFile, HttpStatus.CREATED);
+    public ResponseEntity<JobRequestFileDTO> upload(@RequestParam MultipartFile attachment) {
+        return new ResponseEntity<>(fileService.upload(attachment), HttpStatus.CREATED);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteFile(@PathVariable Long id) {
+    @DeleteMapping(value = "/{id}")
+    public ResponseEntity<Void> delete(@PathVariable("id") Long id) throws IOException {
         fileService.deleteFile(id);
-        return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        return new ResponseEntity<>(HttpStatus.OK);
     }
 }

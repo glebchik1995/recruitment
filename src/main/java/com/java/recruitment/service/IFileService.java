@@ -1,16 +1,19 @@
 package com.java.recruitment.service;
 
-import com.java.recruitment.service.model.hiring.JobRequestFile;
 import com.java.recruitment.web.dto.hiring.JobRequestFileDTO;
+import org.springframework.core.io.Resource;
+import org.springframework.web.multipart.MultipartFile;
 
-import java.util.List;
+import java.io.IOException;
 
 public interface IFileService {
 
 
-    JobRequestFile loadFile(JobRequestFileDTO fileDTO);
+    JobRequestFileDTO upload(MultipartFile resource);
 
-    List<JobRequestFileDTO> downloadFile(Long id);
+    JobRequestFileDTO findById(Long fileId);
 
-    void deleteFile(Long id);
+    Resource download(String key) throws IOException;
+
+    void deleteFile(Long id) throws IOException;
 }

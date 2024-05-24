@@ -5,14 +5,26 @@ import com.java.recruitment.service.filter.CriteriaModel;
 import com.java.recruitment.service.model.hiring.JobRequest;
 import com.java.recruitment.web.dto.hiring.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.hiring.JobRequestDTO;
+import com.java.recruitment.web.mapper.impl.JobRequestFileMapper;
+import com.java.recruitment.web.mapper.impl.JobRequestMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 @Service
+@RequiredArgsConstructor
 public class JobRequestService implements IJobRequestService {
+
+    private final JobRequestFileMapper jobRequestFileMapper;
+
+    private final JobRequestMapper jobRequestMapper;
+
+
     @Override
     public JobRequest createJobRequest(JobRequestDTO jobRequestDto) {
+        JobRequest jobRequest = jobRequestMapper.toEntity(jobRequestDto);
+
         return null;
     }
 

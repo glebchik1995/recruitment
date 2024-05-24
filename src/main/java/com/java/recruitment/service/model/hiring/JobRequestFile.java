@@ -1,7 +1,11 @@
 package com.java.recruitment.service.model.hiring;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.FutureOrPresent;
 import lombok.*;
+
+import java.time.LocalDate;
 
 @Entity
 @Table(name = "job_requset_file")
@@ -20,16 +24,14 @@ public class JobRequestFile {
     @Column(name = "name", nullable = false)
     private String name;
 
-    @Column(name = "path", nullable = false)
-    private String path;
-
     @Column(name = "size", nullable = false)
     private long size;
 
-    @Column(name = "file_type", nullable = false)
-    private String fileType;
+    @Column(name = "key", nullable = false)
+    private String key;
 
-    @ManyToOne
-    @JoinColumn(name = "job_request_id")
-    private JobRequest jobRequest;
+    @Column(name = "upload_Date", nullable = false)
+    @FutureOrPresent
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    private LocalDate uploadDate;
 }

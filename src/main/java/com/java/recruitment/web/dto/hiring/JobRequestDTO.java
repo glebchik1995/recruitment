@@ -1,9 +1,9 @@
 package com.java.recruitment.web.dto.hiring;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
-import com.java.recruitment.service.model.candidate.Candidate;
 import com.java.recruitment.service.model.hiring.Status;
 import com.java.recruitment.service.model.hr.HR;
+import com.java.recruitment.web.dto.candidate.CandidateDTO;
 import com.java.recruitment.web.dto.validation.OnCreate;
 import com.java.recruitment.web.dto.validation.OnUpdate;
 import jakarta.validation.constraints.NotNull;
@@ -28,7 +28,7 @@ public class JobRequestDTO {
     private HR hr;
 
     @NotNull
-    private Candidate candidate;
+    private CandidateDTO candidate;
 
     @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     private List<String> files;
