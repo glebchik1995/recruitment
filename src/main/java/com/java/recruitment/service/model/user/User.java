@@ -31,10 +31,9 @@ public class User {
     @Transient
     private String passwordConfirmation;
 
-    @Column(name = "role")
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "users_roles")
-    @Enumerated(value = EnumType.STRING)
+    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
+    @CollectionTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"))
+    @Enumerated(EnumType.STRING)
     private Set<Role> roles;
 
 }

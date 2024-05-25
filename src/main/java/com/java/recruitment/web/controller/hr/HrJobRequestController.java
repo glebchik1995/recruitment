@@ -11,6 +11,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.Set;
 
 @RestController
 @RequestMapping("/hr/job-request")
@@ -25,7 +28,7 @@ public class HrJobRequestController {
     @Operation(summary = "Создание запроса на работу")
     @ResponseStatus(HttpStatus.CREATED)
     public ResponseEntity<?> createJobRequest(@Valid @RequestBody JobRequestDTO jobRequestDto) {
-        JobRequest jobRequest = jobRequestService.createJobRequest(jobRequestDto);
+        JobRequestDTO jobRequest = jobRequestService.createJobRequest(jobRequestDto);
         return new ResponseEntity<>(jobRequest, HttpStatus.CREATED);
     }
 }

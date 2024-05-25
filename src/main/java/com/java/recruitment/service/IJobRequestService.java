@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface IJobRequestService {
 
-    JobRequest createJobRequest(JobRequestDTO jobRequestDto);
+    JobRequestDTO createJobRequest(JobRequestDTO jobRequestDto);
     JobRequest getJobRequestById(Long id);
     JobRequest updateJobRequest(Long id, ChangeJobRequestStatusDTO jobRequestDto);
     void deleteJobRequest(Long id);

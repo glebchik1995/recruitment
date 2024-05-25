@@ -1,25 +1,23 @@
 version: '3.8'
-
 services:
-  app:
-    build:
-      context: .
-    container_name: recruitment
-    depends_on:
-      - db
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://localhost:5432/recruitment
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=root
-    ports:
-      - '8080:8080'
 
   db:
     image: postgres:latest
-    container_name: postgres
+    container_name: postgres_db_recruitment
+    restart: always
     ports:
       - "5432:5432"
     environment:
+      - DB_NAME=recruitment_db
       - POSTGRES_USER=root
       - POSTGRES_PASSWORD=root
-      - POSTGRES_DB=recruitment
+
+  app:
+    restart: always
+    build: .
+    container_name: app_recruitment
+    ports:
+      - '8080:8080'
+    depends_on: [ db ]
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/recruitment

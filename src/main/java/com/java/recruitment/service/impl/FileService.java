@@ -8,6 +8,7 @@ import com.java.recruitment.service.model.hiring.JobRequestFile;
 import com.java.recruitment.web.dto.hiring.JobRequestFileDTO;
 import com.java.recruitment.web.mapper.impl.JobRequestFileMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.codec.digest.DigestUtils;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
@@ -15,11 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class FileService implements IFileService {
 
     private final FileRepository fileRepository;
@@ -30,21 +33,24 @@ public class FileService implements IFileService {
 
     @Transactional(rollbackFor = {IOException.class})
     @Override
-    public JobRequestFileDTO upload(MultipartFile resource) {
-        String key = generateKey(resource.getName());
-        JobRequestFile createdFile = JobRequestFile.builder()
-                .name(resource.getOriginalFilename())
+    public JobRequestFileDTO upload(MultipartFile file) {
+        String key = generateKey(file.getOriginalFilename());
+        JobRequestFile newFile = JobRequestFile.builder()
+                .name(file.getOriginalFilename())
                 .key(key)
-                .size(resource.getSize())
+                .size(file.getSize())
+                .uploadDate(LocalDate.now())
                 .build();
-        createdFile = fileRepository.save(createdFile);
+        JobRequestFile savedFile = fileRepository.save(newFile);
         try {
-            fileManager.upload(resource.getBytes(), key);
+            fileManager.upload(file.getBytes(), key);
+            log.info("Файл '{}' успешно загружен", file.getOriginalFilename());
         } catch (IOException e) {
+            log.error("Ошибка при загрузке файла '{}': {}", file.getOriginalFilename(), e.getMessage());
             throw new RuntimeException(e);
         }
 
-        return jobRequestFileMapper.toDto(createdFile);
+        return jobRequestFileMapper.toDto(savedFile);
     }
 
     @Transactional(readOnly = true)
