@@ -6,6 +6,7 @@ import com.java.recruitment.service.IJobRequestService;
 import com.java.recruitment.web.dto.hiring.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.hiring.JobRequestDTO;
 import com.java.recruitment.service.filter.CriteriaModel;
+import com.java.recruitment.web.dto.hiring.JobResponseDTO;
 import com.java.recruitment.web.mapper.impl.JobRequestMapper;
 import com.java.recruitment.service.model.hiring.JobRequest;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -36,7 +37,7 @@ public class InterviewerJobRequestController {
 
 
     @GetMapping
-    public ResponseEntity<Page<JobRequestDTO>> getAllJobRequests(
+    public ResponseEntity<Page<JobResponseDTO>> getAllJobRequests(
             @RequestParam(required = false) String criteriaJson,
             @ParameterObject Pageable pageable)
             throws BadRequestException {
@@ -50,7 +51,7 @@ public class InterviewerJobRequestController {
                 throw new BadRequestException("Не удалось проанализировать условия", ex);
             }
         }
-        Page<JobRequestDTO> jobRequests;
+        Page<JobResponseDTO> jobRequests;
         if (model != null) {
 
             jobRequests = jobRequestService.getAllJobRequests(model, pageable);

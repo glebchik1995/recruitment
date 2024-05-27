@@ -1,25 +1,14 @@
 package com.java.recruitment.web.dto.hiring;
 
-import io.swagger.v3.oas.annotations.media.Schema;
-import lombok.Builder;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.Setter;
-
-import java.time.LocalDate;
+import org.springframework.web.multipart.MultipartFile;
 
 @Getter
 @Setter
-@Builder
-@Schema(description = "File DTO")
 public class JobRequestFileDTO {
 
-    private Long id;
-
-    private String name;
-
-    private Long size;
-
-    private String key;
-
-    private LocalDate uploadDate;
+    @NotNull
+    private MultipartFile file;
 }

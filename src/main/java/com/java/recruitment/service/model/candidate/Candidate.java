@@ -1,7 +1,11 @@
 package com.java.recruitment.service.model.candidate;
 
+import com.java.recruitment.web.dto.validation.OnCreate;
+import com.java.recruitment.web.dto.validation.OnUpdate;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
 import lombok.*;
+import org.hibernate.validator.constraints.Length;
 
 import java.io.Serializable;
 
@@ -21,6 +25,9 @@ public class Candidate implements Serializable {
 
     @Column(name = "name", nullable = false)
     private String name;
+
+    @Column(name = "surname", nullable = false)
+    private String surname;
 
     @Column(name = "age", nullable = false)
     private int age;

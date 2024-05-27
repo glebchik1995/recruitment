@@ -17,7 +17,8 @@ public class ControllerAdvice {
             DataSaveException.class,
             DataUpdateException.class,
             DataValidationException.class,
-            DataAlreadyExistException.class
+            DataAlreadyExistException.class,
+            DataUploadException.class
     })
     public ResponseEntity<String> handleCustomExceptions(Exception ex) {
         HttpStatus status = HttpStatus.BAD_REQUEST;

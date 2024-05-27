@@ -1,8 +1,7 @@
 package com.java.recruitment.service.model.hiring;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.java.recruitment.service.model.hr.HR;
 import com.java.recruitment.service.model.candidate.Candidate;
+import com.java.recruitment.service.model.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -29,15 +28,16 @@ public class JobRequest implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "hr_id", nullable = false)
-    private HR hr;
+    private User hr;
 
     @OneToOne
     @JoinColumn(name = "candidate_id", nullable = false)
     private Candidate candidate;
 
-    @OneToMany(mappedBy = "jobRequest", cascade = CascadeType.ALL)
-    @JsonIgnore
-    private List<JobRequestFile> files;
+    @Column(name = "files")
+    @CollectionTable(name = "job_requests_files")
+    @ElementCollection(fetch = FetchType.EAGER)
+    private List<String> files;
 
     @Column(name = "description")
     private String description;

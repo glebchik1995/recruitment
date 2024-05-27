@@ -1,8 +1,10 @@
 package com.java.recruitment.config;
 
+import com.java.recruitment.service.properties.MinioProperties;
 import com.java.recruitment.web.security.JwtTokenFilter;
 import com.java.recruitment.web.security.JwtTokenProvider;
 import com.java.recruitment.web.security.expression.CustomSecurityExceptionHandler;
+import io.minio.MinioClient;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Info;
@@ -38,6 +40,8 @@ public class SecurityConfiguration {
     private final JwtTokenProvider tokenProvider;
 
     private final ApplicationContext applicationContext;
+
+    private final MinioProperties minioProperties;
 
     /**
      * Создает и возвращает экземпляр обработчика выражений безопасности для методов.
@@ -128,6 +132,15 @@ public class SecurityConfiguration {
                         UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
+    }
+
+    @Bean
+    public MinioClient minioClient() {
+        return MinioClient.builder()
+                .endpoint(minioProperties.getUrl())
+                .credentials(minioProperties.getAccessKey(),
+                        minioProperties.getSecretKey())
+                .build();
     }
 
     /**

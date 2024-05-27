@@ -34,6 +34,7 @@
         <liquibase.version>4.27.0</liquibase.version>
         <junit-jupiter.version>5.10.2</junit-jupiter.version>
         <mapstruct.version>1.5.5.Final</mapstruct.version>
+        <minio.version>8.5.10</minio.version>
     </properties>
 
     <dependencies>
@@ -188,6 +189,12 @@
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
             <version>2.2.21</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>${minio.version}</version>
         </dependency>
 
         <dependency>

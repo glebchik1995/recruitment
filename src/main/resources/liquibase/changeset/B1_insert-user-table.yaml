@@ -7,14 +7,11 @@ databaseChangeLog:
             tableName: users
             columns:
               - column:
-                  name: id
-                  value: '1'
-              - column:
-                  name: username
+                  name: name
                   value: 'Gleb'
               - column:
-                  name: password
-                  value: '$2a$12$UjTnVRR62i9N2z754aBX4unF9Xcz9d30uNyh.zC4YNrEvLpXhA3Rq'
-              - column:
-                  name: email
+                  name: username
                   value: 'gleb1995@mail.com'
+              - column:
+                  name: password
+                  value: '$2a$12$x9Rhx2BKVeNd/iV0tpm1AOwFVhm835KvYILXSu5UHT19qMkbG3MSS'

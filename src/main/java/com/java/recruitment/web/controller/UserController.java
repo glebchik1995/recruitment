@@ -24,7 +24,7 @@ public class UserController {
     private final UserMapper userMapper;
 
     @PutMapping
-    @Operation(summary = "Update user")
+    @Operation(summary = "Изменить данные пользователя")
     @PreAuthorize("@cse.canAccessUser(#dto.id)")
     public UserDTO update(@Validated(OnUpdate.class) @RequestBody final UserDTO dto) {
         User user = userMapper.toEntity(dto);
@@ -33,7 +33,7 @@ public class UserController {
     }
 
     @GetMapping("/{id}")
-    @Operation(summary = "Get UserDto by id")
+    @Operation(summary = "Получить пользователя по идентификатору")
     @PreAuthorize("@cse.canAccessUser(#id)")
     public UserDTO getById(@PathVariable final Long id) {
         User user = userService.getById(id);
@@ -41,7 +41,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{id}")
-    @Operation(summary = "Delete user by id")
+    @Operation(summary = "Удалить пользователя по идентификатору")
     @PreAuthorize("@cse.canAccessUser(#id)")
     public void deleteById(@PathVariable final Long id) {
         userService.delete(id);

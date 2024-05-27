@@ -1,23 +1,22 @@
 package com.java.recruitment.service.impl;
 
-import com.java.recruitment.repositoty.FileRepository;
-import com.java.recruitment.repositoty.exception.DataNotFoundException;
-import com.java.recruitment.service.IFileManager;
+import com.java.recruitment.repositoty.exception.DataUploadException;
 import com.java.recruitment.service.IFileService;
-import com.java.recruitment.service.model.hiring.JobRequestFile;
+import com.java.recruitment.service.properties.MinioProperties;
 import com.java.recruitment.web.dto.hiring.JobRequestFileDTO;
-import com.java.recruitment.web.mapper.impl.JobRequestFileMapper;
+import io.minio.BucketExistsArgs;
+import io.minio.MakeBucketArgs;
+import io.minio.MinioClient;
+import io.minio.PutObjectArgs;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.codec.digest.DigestUtils;
-import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.io.InputStream;
+import java.util.Objects;
+import java.util.UUID;
 
 
 @Service
@@ -25,57 +24,63 @@ import java.time.LocalDateTime;
 @Slf4j
 public class FileService implements IFileService {
 
-    private final FileRepository fileRepository;
+    private final MinioClient minioClient;
 
-    private final IFileManager fileManager;
+    private final MinioProperties minioProperties;
 
-    private final JobRequestFileMapper jobRequestFileMapper;
-
-    @Transactional(rollbackFor = {IOException.class})
     @Override
-    public JobRequestFileDTO upload(MultipartFile file) {
-        String key = generateKey(file.getOriginalFilename());
-        JobRequestFile newFile = JobRequestFile.builder()
-                .name(file.getOriginalFilename())
-                .key(key)
-                .size(file.getSize())
-                .uploadDate(LocalDate.now())
-                .build();
-        JobRequestFile savedFile = fileRepository.save(newFile);
+    public String upload(final JobRequestFileDTO files) {
         try {
-            fileManager.upload(file.getBytes(), key);
-            log.info("Файл '{}' успешно загружен", file.getOriginalFilename());
-        } catch (IOException e) {
-            log.error("Ошибка при загрузке файла '{}': {}", file.getOriginalFilename(), e.getMessage());
-            throw new RuntimeException(e);
+            createBucket();
+        } catch (Exception e) {
+            throw new DataUploadException("Не удалось загрузить файл: " + e.getMessage());
         }
+        MultipartFile file = files.getFile();
+        if (file.isEmpty() || file.getOriginalFilename() == null) {
+            throw new DataUploadException("Файл должен иметь название.");
+        }
+        String fileName = generateFileName(file);
+        InputStream inputStream;
+        try {
+            inputStream = file.getInputStream();
+        } catch (Exception e) {
+            throw new DataUploadException("Не удалось загрузить файл: " + e.getMessage());
+        }
+        saveImage(inputStream, fileName);
 
-        return jobRequestFileMapper.toDto(savedFile);
+        return fileName;
     }
 
-    @Transactional(readOnly = true)
-    @Override
-    public JobRequestFileDTO findById(Long fileId) {
-        JobRequestFile file = fileRepository.findById(fileId).orElseThrow(() -> new DataNotFoundException("Файл не найден"));
-        return jobRequestFileMapper.toDto(file);
+
+    @SneakyThrows
+    private void createBucket() {
+        boolean found = minioClient.bucketExists(BucketExistsArgs.builder()
+                .bucket(minioProperties.getBucket())
+                .build());
+        if (!found) {
+            minioClient.makeBucket(MakeBucketArgs.builder()
+                    .bucket(minioProperties.getBucket())
+                    .build());
+        }
     }
 
-    @Override
-    @Transactional
-    public Resource download(String key) throws IOException {
-        return fileManager.download(key);
+    private String generateFileName(final MultipartFile file) {
+        String extension = getExtension(file);
+        return UUID.randomUUID() + "." + extension;
     }
 
-
-    @Override
-    @Transactional(rollbackFor = {IOException.class})
-    public void deleteFile(Long fileId) throws IOException {
-        JobRequestFile file = fileRepository.findById(fileId).orElseThrow(() -> new DataNotFoundException("Файл не найден"));
-        fileRepository.delete(file);
-        fileManager.delete(file.getKey());
+    private String getExtension(final MultipartFile file) {
+        return Objects.requireNonNull(file.getOriginalFilename())
+                .substring(file.getOriginalFilename()
+                        .lastIndexOf(".") + 1);
     }
 
-    private String generateKey(String name) {
-        return DigestUtils.md5Hex(name + LocalDateTime.now());
+    @SneakyThrows
+    private void saveImage(final InputStream inputStream, final String fileName) {
+        minioClient.putObject(PutObjectArgs.builder()
+                .stream(inputStream, inputStream.available(), -1)
+                .bucket(minioProperties.getBucket())
+                .object(fileName)
+                .build());
     }
 }

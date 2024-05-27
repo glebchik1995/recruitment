@@ -7,10 +7,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
-
-import java.io.IOException;
+import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 @SecurityRequirement(name = "bearerAuth")
 @Tag(name = "HR - FILE", description = "CRUD OPERATIONS WITH ATTACHED FILES")
@@ -22,13 +23,13 @@ public class HrFileController {
     private final IFileService fileService;
 
     @PostMapping
-    public ResponseEntity<JobRequestFileDTO> upload(@RequestParam MultipartFile attachment) {
+    public ResponseEntity<String> upload(@Validated @ModelAttribute JobRequestFileDTO attachment) {
         return new ResponseEntity<>(fileService.upload(attachment), HttpStatus.CREATED);
     }
 
-    @DeleteMapping(value = "/{id}")
-    public ResponseEntity<Void> delete(@PathVariable("id") Long id) throws IOException {
-        fileService.deleteFile(id);
-        return new ResponseEntity<>(HttpStatus.OK);
-    }
+//    @DeleteMapping(value = "/{id}")
+//    public ResponseEntity<Void> delete(@PathVariable("id") Long id) throws IOException {
+//        fileService.deleteFile(id);
+//        return new ResponseEntity<>(HttpStatus.OK);
+//    }
 }

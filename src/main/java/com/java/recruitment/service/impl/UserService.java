@@ -1,14 +1,16 @@
 package com.java.recruitment.service.impl;
 
 import com.java.recruitment.repositoty.UserRepository;
-import com.java.recruitment.repositoty.exception.DataAlreadyExistException;
 import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.IUserService;
+import com.java.recruitment.service.model.user.Role;
 import com.java.recruitment.service.model.user.User;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.Set;
 
 @Service
 @Transactional(readOnly = true)
@@ -16,17 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class UserService implements IUserService {
 
     private final UserRepository userRepository;
-
-    /**
-     * Сохранение пользователя
-     *
-     * @return сохраненный пользователь
-     */
-    @Override
-    @Transactional
-    public User save(User user) {
-        return userRepository.save(user);
-    }
+    private final PasswordEncoder passwordEncoder;
 
 
     /**
@@ -36,24 +28,25 @@ public class UserService implements IUserService {
      */
     @Override
     @Transactional
-    public User create(User user) {
-
-        if (userRepository.existsByUsername(user.getUsername())) {
-            throw new DataAlreadyExistException("Пользователь с таким именем уже существует");
+    public User create(final User user) {
+        if (userRepository.findByUsername(user.getUsername()).isPresent()) {
+            throw new IllegalStateException("Пользователь уже существует.");
         }
-
-        if (userRepository.existsByEmail(user.getEmail())) {
-            throw new DataAlreadyExistException("Пользователь с таким email уже существует");
+        if (!user.getPassword().equals(user.getPasswordConfirmation())) {
+            throw new IllegalStateException("Пароль и подтверждение пароля не совпадают.");
         }
-
-        return save(user);
+        user.setPassword(passwordEncoder.encode(user.getPassword()));
+        Set<Role> roles = Set.of(Role.USER);
+        user.setRoles(roles);
+        userRepository.save(user);
+        return user;
     }
 
     @Override
     @Transactional
     public User update(final User user) {
         User existingUser = getById(user.getId());
-        existingUser.setEmail(user.getEmail());
+        existingUser.setUsername(user.getName());
         existingUser.setUsername(user.getUsername());
         existingUser.setPassword(user.getPassword());
         return userRepository.save(existingUser);
@@ -77,17 +70,5 @@ public class UserService implements IUserService {
     @Transactional
     public void delete(final Long id) {
         userRepository.deleteById(id);
-    }
-
-    /**
-     * Получение текущего пользователя
-     *
-     * @return текущий пользователь
-     */
-    @Override
-    public User getCurrentUser() {
-        // Получение имени пользователя из контекста Spring Security
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return getByUsername(username);
     }
 }

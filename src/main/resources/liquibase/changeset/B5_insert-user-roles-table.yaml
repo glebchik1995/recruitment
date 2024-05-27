@@ -11,4 +11,4 @@ databaseChangeLog:
                   value: '2'
               - column:
                   name: role
-                  value: 'ADMIN'
+                  value: 'INTERVIEW_SPECIALIST'

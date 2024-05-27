@@ -8,10 +8,15 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: BIG SERIAL
+                  type: BIGSERIAL
                   autoIncrement: true
                   constraints:
                     primaryKey: true
+                    nullable: false
+              - column:
+                  name: name
+                  type: VARCHAR(255)
+                  constraints:
                     nullable: false
               - column:
                   name: username
@@ -24,9 +29,3 @@ databaseChangeLog:
                   type: VARCHAR(255)
                   constraints:
                     nullable: false
-              - column:
-                  name: email
-                  type: VARCHAR(255)
-                  constraints:
-                    nullable: false
-                    unique: true
