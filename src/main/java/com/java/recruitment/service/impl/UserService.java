@@ -9,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import java.util.Set;
 
@@ -45,10 +46,20 @@ public class UserService implements IUserService {
     @Override
     @Transactional
     public User update(final User user) {
+
         User existingUser = getById(user.getId());
-        existingUser.setUsername(user.getName());
-        existingUser.setUsername(user.getUsername());
-        existingUser.setPassword(user.getPassword());
+        if (!ObjectUtils.isEmpty(user.getName())) {
+            existingUser.setName(user.getName());
+        }
+        if (!ObjectUtils.isEmpty(user.getUsername())) {
+            existingUser.setUsername(user.getUsername());
+        }
+        if (!ObjectUtils.isEmpty(user.getPassword())) {
+            existingUser.setPassword(user.getPassword());
+        }
+        if (!ObjectUtils.isEmpty(user.getRoles())) {
+            existingUser.setRoles(user.getRoles());
+        }
         return userRepository.save(existingUser);
     }
 

@@ -164,7 +164,7 @@ public class SecurityConfiguration {
                                 )
                 )
                 .info(new Info()
-                        .title("Task list API")
+                        .title("Recruitment for job API")
                         .description("Spring Boot application")
                         .version("1.0")
                 );
