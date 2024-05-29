@@ -1,9 +1,11 @@
 package com.java.recruitment.service;
 
-import com.java.recruitment.web.dto.hiring.JobRequestFileDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface IFileService {
 
 
-    String upload(JobRequestFileDTO files);
+    String upload(MultipartFile file);
+
+    String download(Long id);
 }

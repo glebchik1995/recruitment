@@ -25,7 +25,6 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/interviewer/job-request")
 @RequiredArgsConstructor
-@SecurityRequirement(name = "bearerAuth")
 @Tag(name = "HR - INTERVIEWER-REQUEST", description = "CRUD OPERATIONS WITH JOB-REQUESTS")
 public class InterviewerJobRequestController {
 
@@ -70,9 +69,8 @@ public class InterviewerJobRequestController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JobRequest> updateStatusJobRequest(@PathVariable Long id,
-                                                             @RequestBody ChangeJobRequestStatusDTO jobRequestDto) {
-        JobRequest updatedJobRequest = jobRequestService.updateJobRequest(id, jobRequestDto);
+    public ResponseEntity<JobRequest> updateStatusJobRequest(@RequestBody ChangeJobRequestStatusDTO jobRequestDto) {
+        JobRequest updatedJobRequest = jobRequestService.updateJobRequest(jobRequestDto);
         return new ResponseEntity<>(updatedJobRequest, HttpStatus.OK);
     }
 

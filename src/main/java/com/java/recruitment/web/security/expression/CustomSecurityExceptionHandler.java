@@ -12,8 +12,7 @@ import org.springframework.security.core.Authentication;
 public class CustomSecurityExceptionHandler extends DefaultMethodSecurityExpressionHandler {
 
     private ApplicationContext applicationContext;
-    private final AuthenticationTrustResolver trustResolver
-            = new AuthenticationTrustResolverImpl();
+    private final AuthenticationTrustResolver trustResolver = new AuthenticationTrustResolverImpl();
 
     @Override
     protected MethodSecurityExpressionOperations createSecurityExpressionRoot(

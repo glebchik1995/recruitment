@@ -12,7 +12,7 @@ public interface IJobRequestService {
 
     JobResponseDTO createJobRequest(JobRequestDTO jobRequestDto);
     JobRequest getJobRequestById(Long id);
-    JobRequest updateJobRequest(Long id, ChangeJobRequestStatusDTO jobRequestDto);
+    JobRequest updateJobRequest(ChangeJobRequestStatusDTO jobRequestDto);
     void deleteJobRequest(Long id);
     Page<JobResponseDTO> getAllJobRequests(CriteriaModel model, Pageable pageable);
 }

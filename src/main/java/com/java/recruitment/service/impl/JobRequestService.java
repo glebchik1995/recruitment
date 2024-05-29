@@ -1,5 +1,6 @@
 package com.java.recruitment.service.impl;
 
+import com.java.recruitment.repositoty.CandidateRepository;
 import com.java.recruitment.repositoty.JobRequestRepository;
 import com.java.recruitment.repositoty.UserRepository;
 import com.java.recruitment.repositoty.exception.DataNotFoundException;
@@ -10,6 +11,7 @@ import com.java.recruitment.service.model.hiring.JobRequest;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.web.dto.hiring.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.hiring.JobRequestDTO;
+import com.java.recruitment.web.dto.hiring.JobRequestFileDTO;
 import com.java.recruitment.web.dto.hiring.JobResponseDTO;
 import com.java.recruitment.web.mapper.impl.CandidateMapper;
 import com.java.recruitment.web.mapper.impl.JobRequestMapper;
@@ -19,6 +21,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -37,6 +40,7 @@ public class JobRequestService implements IJobRequestService {
 
     private final UserRepository userRepository;
 
+    private final CandidateRepository candidateRepository;
 
     private final FileService fileService;
 
@@ -46,7 +50,11 @@ public class JobRequestService implements IJobRequestService {
 
         Candidate candidate = candidateMapper.toEntity(jobRequestDto.getCandidate());
 
-        User hr = userRepository.findById(jobRequestDto.getId()).orElseThrow(() -> new DataNotFoundException("HR не найден"));
+        candidateRepository.save(candidate);
+
+        User hr = userRepository.findById(jobRequestDto.getHrId()).orElseThrow(() -> new DataNotFoundException("HR не найден"));
+
+        MultipartFile file = jobRequestDto.getFile();
 
         JobRequest jobRequest = JobRequest.builder()
                 .status(NEW)
@@ -54,15 +62,12 @@ public class JobRequestService implements IJobRequestService {
                 .hr(hr)
                 .build();
 
-        List<String> jobRequestFilesName = jobRequestDto.getFiles().stream()
-                .map(fileService::upload)
-                .toList();
-
-        if (!jobRequestFilesName.isEmpty()) {
-            jobRequest.setFiles(jobRequestFilesName);
+        if (file != null) {
+            String jobRequestFilesName = fileService.upload(file);
+            jobRequest.setFiles(List.of(jobRequestFilesName));
         }
 
-        if (!jobRequestDto.getDescription().isEmpty()) {
+        if (jobRequestDto.getDescription() != null) {
             jobRequest.setDescription(jobRequestDto.getDescription());
         }
 
@@ -74,11 +79,11 @@ public class JobRequestService implements IJobRequestService {
 
     @Override
     public JobRequest getJobRequestById(Long id) {
-        return null;
+        return jobRequestRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
     }
 
     @Override
-    public JobRequest updateJobRequest(Long id, ChangeJobRequestStatusDTO jobRequestDto) {
+    public JobRequest updateJobRequest(ChangeJobRequestStatusDTO jobRequestDto) {
         return null;
     }
 

@@ -31,15 +31,15 @@ CREATE TABLE IF NOT EXISTS job_request
 CREATE TABLE IF NOT EXISTS candidate
 (
     id             BIGSERIAL PRIMARY KEY,
-    job_request_id BIGINT       NOT NULL,
+--     job_request_id BIGINT       NOT NULL,
     name           VARCHAR(255) NOT NULL,
     surname        VARCHAR(255) NOT NULL,
     age            INT          NOT NULL,
     email          VARCHAR(255) NOT NULL,
     phone          VARCHAR(20)  NOT NULL,
     position       VARCHAR(255) NOT NULL,
-    department     VARCHAR(255) NOT NULL,
-    FOREIGN KEY (job_request_id) REFERENCES job_request (id) ON DELETE CASCADE ON UPDATE NO ACTION
+    department     VARCHAR(255) NOT NULL
+--     FOREIGN KEY (job_request_id) REFERENCES job_request (id) ON DELETE CASCADE ON UPDATE NO ACTION
 );
 
 CREATE TABLE IF NOT EXISTS job_request_files
