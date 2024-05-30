@@ -1,0 +1,25 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_job_request_files_table
+      author: Gleb
+      changes:
+        - createTable:
+            tableName: job_request_files
+            columns:
+              - column:
+                  name: job_request_id
+                  type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: file
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+            constraints:
+              - foreignKeyConstraint:
+                  foreignKeyName: fk_job_request_files_job_request_id
+                  referencedTableName: job_request
+                  referencedColumnNames: id
+                  baseColumnNames: job_request_id
+                  onDelete: CASCADE

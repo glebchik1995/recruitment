@@ -31,6 +31,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+import static com.java.recruitment.service.model.user.Role.ADMIN;
+
 @Configuration
 @EnableWebSecurity
 @EnableMethodSecurity
@@ -126,6 +128,7 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 .requestMatchers("/v3/api-docs/**")
                                 .permitAll()
+                                .requestMatchers("/api/v1/admin/**").hasAnyRole(String.valueOf(ADMIN))
                                 .anyRequest().authenticated())
                 .anonymous(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JwtTokenFilter(tokenProvider),

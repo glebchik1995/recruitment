@@ -3,10 +3,6 @@ package com.java.recruitment.web.controller.interviewer;
 import com.java.recruitment.service.IFileService;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.core.io.Resource;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -21,13 +17,9 @@ public class InterviewerFileController {
 
     private final IFileService fileService;
 
-    @GetMapping(value = "/{id}")
-    public ResponseEntity<Resource> downloadFiles(@PathVariable Long id) {
-        String downloadUrl = fileService.download(id);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add(HttpHeaders.LOCATION, downloadUrl);
-        return ResponseEntity.status(HttpStatus.FOUND)
-                .headers(headers)
-                .build();
+    @GetMapping(value = "{id}")
+    public ResponseEntity<String> downloadFiles(@PathVariable Long id) {
+        String downloadLinks = fileService.download(id);
+        return ResponseEntity.ok(downloadLinks);
     }
 }

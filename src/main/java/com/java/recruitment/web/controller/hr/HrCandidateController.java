@@ -43,7 +43,10 @@ public class HrCandidateController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<CandidateDTO> editingDataCandidate(@PathVariable Long id, @Validated(OnUpdate.class) @RequestBody CandidateDTO candidate) {
+    public ResponseEntity<CandidateDTO> editingDataCandidate(
+            @PathVariable Long id,
+            @Validated(OnUpdate.class) @RequestBody CandidateDTO candidate
+    ) {
         CandidateDTO updatedCandidate = candidateService.updateCandidate(id, candidate);
         return new ResponseEntity<>(updatedCandidate, HttpStatus.OK);
     }

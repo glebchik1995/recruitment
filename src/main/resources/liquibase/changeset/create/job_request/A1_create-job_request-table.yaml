@@ -1,0 +1,46 @@
+databaseChangeLog:
+  - changeSet:
+      id: create_job_request_table
+      author: Gleb
+      changes:
+        - createTable:
+            tableName: job_request
+            columns:
+              - column:
+                  name: id
+                  type: BIGSERIAL
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: status
+                  type: VARCHAR(50)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: hr_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: candidate_id
+                  type: INT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: description
+                  type: VARCHAR(1000)
+            constraints:
+              - foreignKeyConstraint:
+                  foreignKeyName: fk_job_request_hr_id
+                  referencedTableName: users
+                  referencedColumnNames: id
+                  baseColumnNames: hr_id
+                  onUpdate: CASCADE
+              - foreignKeyConstraint:
+                  foreignKeyName: fk_job_request_candidate_id
+                  referencedTableName: candidate
+                  referencedColumnNames: id
+                  baseColumnNames: candidate_id
+                  onDelete: CASCADE
+                  onUpdate: NO ACTION

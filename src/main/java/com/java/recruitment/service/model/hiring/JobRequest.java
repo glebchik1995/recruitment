@@ -30,7 +30,7 @@ public class JobRequest implements Serializable {
     @JoinColumn(name = "hr_id", referencedColumnName = "id", nullable = false)
     private User hr;
 
-    @OneToOne
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "candidate_id", referencedColumnName = "id", nullable = false)
     private Candidate candidate;
 

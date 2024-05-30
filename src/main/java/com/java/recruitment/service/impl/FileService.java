@@ -6,6 +6,7 @@ import com.java.recruitment.repositoty.exception.DataUploadException;
 import com.java.recruitment.service.IFileService;
 import com.java.recruitment.service.model.hiring.JobRequest;
 import com.java.recruitment.service.properties.MinioProperties;
+import com.java.recruitment.web.dto.file.DeleteFileDTO;
 import io.minio.*;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
@@ -14,13 +15,11 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.InputStream;
-import java.util.*;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
 
 
 @Service
@@ -57,122 +56,52 @@ public class FileService implements IFileService {
         return fileName;
     }
 
-//    @SneakyThrows
-//    public List<InputStreamResource> download(Long id) {
-//
-//        JobRequest jobRequest = jobRequestRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Заявка не найдена!"));
-//
-//        List<InputStreamResource> resources = new ArrayList<>();
-//        for (String fileName : jobRequest.getFiles()) {
-//            InputStream inputStream = minioClient.getObject(
-//                    GetObjectArgs.builder()
-//                            .bucket(minioProperties.getBucket())
-//                            .object(fileName)
-//                            .build()
-//            );
-//            resources.add(new InputStreamResource(inputStream));
-//        }
-//        return resources;
-//    }
-
-//    @SneakyThrows
-//    public InputStreamResource download(Long id) {
-//        JobRequest jobRequest = jobRequestRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Заявка не найдена!"));
-//        List<String> fileNames = jobRequest.getFiles();
-//
-//        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-//        try (ZipOutputStream zos = new ZipOutputStream(baos)) {
-//            for (String fileName : fileNames) {
-//                InputStream inputStream = minioClient.getObject(
-//                        GetObjectArgs.builder()
-//                                .bucket(minioProperties.getBucket())
-//                                .object(fileName)
-//                                .build()
-//                );
-//                zos.putNextEntry(new ZipEntry(fileName));
-//                byte[] bytes = inputStream.readAllBytes();
-//                zos.write(bytes, 0, bytes.length);
-//                zos.closeEntry();
-//                inputStream.close();
-//            }
-//        }
-//        return new InputStreamResource(new ByteArrayInputStream(baos.toByteArray()));
-//    }
-
-//    @SneakyThrows
-//    public List<String> download(Long id) {
-//        JobRequest jobRequest = jobRequestRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Заявка не найдена!"));
-//        List<String> fileNames = jobRequest.getFiles();
-//        List<String> returnNames = new ArrayList<>();
-//        String bucketName = minioProperties.getBucket();
-////        String objectName = "files.zip";
-//        try {
-//            // Создаем временную ссылку на скачивание файла
-//
-//            for (String fileName : fileNames) {
-//                String url = minioClient.getPresignedObjectUrl(
-//                        GetPresignedObjectUrlArgs.builder()
-//                                .method(Method.GET)
-//                                .bucket(bucketName)
-//                                .object(fileName)
-//                                .expiry(60 * 60) // Ссылка действительна в течение 1 часа
-//                                .build()
-//                );
-//
-//                returnNames.add(url);
-//            }
-//            return returnNames;
-//        } catch (Exception e) {
-//            throw new RuntimeException("Не удалось создать ссылку на скачивание файла", e);
-//        }
-//    }
-        @SneakyThrows
+    @SneakyThrows
     public String download(Long id) {
-        JobRequest jobRequest = jobRequestRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Заявка не найдена!"));
+        JobRequest jobRequest = jobRequestRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Заявка не найдена!"));
         List<String> fileNames = jobRequest.getFiles();
-     try {
-        // Создаем временный файл для архива
-        File tempFile = File.createTempFile("files", ".zip");
 
-        // Создаем поток для записи в архив
-        FileOutputStream fos = new FileOutputStream(tempFile);
-        ZipOutputStream zos = new ZipOutputStream(fos);
-
-        // Добавляем каждый файл в архив
+        // Создание ссылки на скачивание файлов
+        List<String> downloadLinks = new ArrayList<>();
         for (String fileName : fileNames) {
-            File file = new File(fileName);
-            FileInputStream fis = new FileInputStream(file);
-            ZipEntry zipEntry = new ZipEntry(file.getName());
-            zos.putNextEntry(zipEntry);
-
-            byte[] bytes = new byte[1024];
-            int length;
-            while ((length = fis.read(bytes)) >= 0) {
-                zos.write(bytes, 0, length);
-            }
-
-            fis.close();
+            String downloadUrl = minioClient.getPresignedObjectUrl(
+                    GetPresignedObjectUrlArgs.builder()
+                            .method(Method.GET)
+                            .bucket(minioProperties.getBucket())
+                            .object(fileName)
+                            .expiry(60 * 60)
+                            .build()
+            );
+            downloadLinks.add(downloadUrl);
         }
 
-        // Закрываем потоки
-        zos.closeEntry();
-        zos.close();
-        fos.close();
-
-        // Возвращаем ссылку на архив
-        return minioClient.getPresignedObjectUrl(
-                GetPresignedObjectUrlArgs.builder()
-                        .method(Method.GET)
-                        .bucket(minioProperties.getBucket())
-                        .object(tempFile.getName())
-                        .expiry(60 * 60) // Ссылка действительна в течение 1 часа
-                        .build()
-        );
-    } catch (Exception e) {
-        throw new RuntimeException("Не удалось создать архив", e);
+        return formatDownloadLinks(downloadLinks);
     }
-}
 
+    public void delete(DeleteFileDTO dto) {
+        JobRequest jobRequest = jobRequestRepository.findById(dto.getJobRequestId())
+                .orElseThrow(() -> new DataNotFoundException("Заявка не найдена!"));
+
+        String fileName = dto.getFileName();
+        List<String> files = jobRequest.getFiles();
+        if (files.contains(fileName)) {
+            try {
+                minioClient.removeObject(
+                        RemoveObjectArgs.builder()
+                                .bucket(minioProperties.getBucket())
+                                .object(fileName)
+                                .build()
+                );
+                files.remove(fileName);
+                jobRequestRepository.save(jobRequest);
+            } catch (Exception e) {
+                throw new RuntimeException("Не удалось создать архив", e);
+            }
+        } else {
+            log.error("Файл {} не найден в запросе на работу {}", fileName, dto.getJobRequestId());
+        }
+    }
 
     @SneakyThrows
     private void createBucket() {
@@ -204,5 +133,13 @@ public class FileService implements IFileService {
                 .bucket(minioProperties.getBucket())
                 .object(fileName)
                 .build());
+    }
+
+    private String formatDownloadLinks(List<String> downloadLinks) {
+        StringBuilder formattedLinks = new StringBuilder();
+        for (int i = 0; i < downloadLinks.size(); i++) {
+            formattedLinks.append("File ").append(i + 1).append(": ").append(downloadLinks.get(i)).append("\n");
+        }
+        return formattedLinks.toString();
     }
 }
