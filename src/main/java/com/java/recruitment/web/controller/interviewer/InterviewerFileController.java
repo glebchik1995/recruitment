@@ -19,7 +19,6 @@ public class InterviewerFileController {
     private final IFileService fileService;
 
     @GetMapping(value = "{id}")
-    @PreAuthorize("@cse.canAccessJobRequest(#id)")
     public ResponseEntity<String> downloadFiles(@PathVariable Long id) {
         String downloadLinks = fileService.download(id);
         return ResponseEntity.ok(downloadLinks);
