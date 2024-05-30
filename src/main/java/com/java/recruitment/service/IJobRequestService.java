@@ -11,7 +11,7 @@ import org.springframework.data.domain.Pageable;
 public interface IJobRequestService {
 
     JobResponseDTO createJobRequest(JobRequestDTO jobRequestDto);
-    JobRequest getJobRequestById(Long id);
+    JobResponseDTO getJobRequestById(Long id);
     JobRequest updateJobRequest(ChangeJobRequestStatusDTO jobRequestDto);
     void deleteJobRequest(Long id);
     Page<JobResponseDTO> getAllJobRequests(CriteriaModel model, Pageable pageable);

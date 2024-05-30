@@ -18,8 +18,28 @@ public class CustomSecurityExpression {
     public boolean canAccessUser(final Long id) {
         JwtEntity user = getPrincipal();
         Long userId = user.getId();
-
         return userId.equals(id) || hasAnyRole(Role.ADMIN);
+    }
+
+    public boolean canAccessInterviewer(final Long id) {
+        JwtEntity user = this.getPrincipal();
+        Long userId = user.getId();
+
+        return (userId.equals(id) && hasAnyRole(Role.INTERVIEW_SPECIALIST)) || hasAnyRole(Role.ADMIN);
+    }
+
+    public boolean canAccessHr(final Long id) {
+        JwtEntity user = this.getPrincipal();
+        Long userId = user.getId();
+
+        return (userId.equals(id) && hasAnyRole(Role.HR)) || hasAnyRole(Role.ADMIN);
+    }
+
+    public boolean canAccessJobRequest(final Long job_request_id) {
+        JwtEntity user = this.getPrincipal();
+        Long id = user.getId();
+
+        return userService.isJobRequestOwner(id, job_request_id);
     }
 
     private boolean hasAnyRole(final Role... roles) {
@@ -33,13 +53,6 @@ public class CustomSecurityExpression {
         }
         return false;
     }
-
-//    public boolean canAccessTask(final Long taskId) {
-//        JwtEntity user = getPrincipal();
-//        Long id = user.getId();
-//
-//        return userService.isTaskOwner(id, taskId);
-//    }
 
     private JwtEntity getPrincipal() {
         Authentication authentication = SecurityContextHolder.getContext()

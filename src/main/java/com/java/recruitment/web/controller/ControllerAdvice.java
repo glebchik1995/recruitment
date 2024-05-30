@@ -30,9 +30,9 @@ public class ControllerAdvice {
     }
 
     @ExceptionHandler(DataAuthException.class)
-    @ResponseStatus(HttpStatus.UNAUTHORIZED)
+    @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<String> handleAuthException(DataAuthException ex) {
-        log.error("ResponseStatus: UNAUTHORIZED. Status code: 401 {}", ex.getMessage());
+        log.error("ResponseStatus: UNAUTHORIZED. Status code: 403 {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 

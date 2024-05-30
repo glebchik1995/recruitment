@@ -24,10 +24,4 @@ public class HrFileController {
     public ResponseEntity<String> upload(@Validated @ModelAttribute MultipartFile attachment) {
         return new ResponseEntity<>(fileService.upload(attachment), HttpStatus.CREATED);
     }
-
-//    @DeleteMapping(value = "/{id}")
-//    public ResponseEntity<Void> delete(@PathVariable("id") Long id) throws IOException {
-//        fileService.deleteFile(id);
-//        return new ResponseEntity<>(HttpStatus.OK);
-//    }
 }

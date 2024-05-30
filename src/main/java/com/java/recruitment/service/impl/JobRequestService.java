@@ -11,7 +11,6 @@ import com.java.recruitment.service.model.hiring.JobRequest;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.web.dto.hiring.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.hiring.JobRequestDTO;
-import com.java.recruitment.web.dto.hiring.JobRequestFileDTO;
 import com.java.recruitment.web.dto.hiring.JobResponseDTO;
 import com.java.recruitment.web.mapper.impl.CandidateMapper;
 import com.java.recruitment.web.mapper.impl.JobRequestMapper;
@@ -78,8 +77,10 @@ public class JobRequestService implements IJobRequestService {
     }
 
     @Override
-    public JobRequest getJobRequestById(Long id) {
-        return jobRequestRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
+    public JobResponseDTO getJobRequestById(Long id) {
+        JobRequest jobRequest = jobRequestRepository.findById(id).orElseThrow(
+                () -> new DataNotFoundException("Заявка не найдена"));
+        return jobRequestMapper.toDto(jobRequest);
     }
 
     @Override

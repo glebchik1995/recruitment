@@ -3,13 +3,11 @@ package com.java.recruitment.web.controller.interviewer;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.recruitment.repositoty.JobRequestRepository;
 import com.java.recruitment.service.IJobRequestService;
-import com.java.recruitment.web.dto.hiring.ChangeJobRequestStatusDTO;
-import com.java.recruitment.web.dto.hiring.JobRequestDTO;
 import com.java.recruitment.service.filter.CriteriaModel;
+import com.java.recruitment.service.model.hiring.JobRequest;
+import com.java.recruitment.web.dto.hiring.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.hiring.JobResponseDTO;
 import com.java.recruitment.web.mapper.impl.JobRequestMapper;
-import com.java.recruitment.service.model.hiring.JobRequest;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
@@ -63,8 +61,8 @@ public class InterviewerJobRequestController {
 
 
     @GetMapping("/{id}")
-    public ResponseEntity<JobRequest> getJobRequestById(@PathVariable Long id) {
-        JobRequest jobRequest = jobRequestService.getJobRequestById(id);
+    public ResponseEntity<JobResponseDTO> getJobRequestById(@PathVariable Long id) {
+        JobResponseDTO jobRequest = jobRequestService.getJobRequestById(id);
         return new ResponseEntity<>(jobRequest, HttpStatus.OK);
     }
 

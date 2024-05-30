@@ -82,4 +82,12 @@ public class UserService implements IUserService {
     public void delete(final Long id) {
         userRepository.deleteById(id);
     }
+
+    @Override
+    public boolean isJobRequestOwner(
+            final Long userId,
+            final Long job_request_id
+    ) {
+        return userRepository.isJobRequestOwner(userId, job_request_id);
+    }
 }

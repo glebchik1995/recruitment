@@ -3,7 +3,6 @@ package com.java.recruitment.config;
 import com.java.recruitment.service.properties.MinioProperties;
 import com.java.recruitment.web.security.JwtTokenFilter;
 import com.java.recruitment.web.security.JwtTokenProvider;
-import com.java.recruitment.web.security.expression.CustomSecurityExceptionHandler;
 import io.minio.MinioClient;
 import io.swagger.v3.oas.models.Components;
 import io.swagger.v3.oas.models.OpenAPI;
@@ -12,13 +11,10 @@ import io.swagger.v3.oas.models.security.SecurityRequirement;
 import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.expression.method.DefaultMethodSecurityExpressionHandler;
-import org.springframework.security.access.expression.method.MethodSecurityExpressionHandler;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
@@ -31,7 +27,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
-import static com.java.recruitment.service.model.user.Role.ADMIN;
+import static com.java.recruitment.service.model.user.Role.*;
 
 @Configuration
 @EnableWebSecurity
@@ -41,21 +37,7 @@ public class SecurityConfiguration {
 
     private final JwtTokenProvider tokenProvider;
 
-    private final ApplicationContext applicationContext;
-
     private final MinioProperties minioProperties;
-
-    /**
-     * Создает и возвращает экземпляр обработчика выражений безопасности для методов.
-     *
-     * @return Обработчик выражений безопасности для методов.
-     */
-    @Bean
-    public MethodSecurityExpressionHandler expressionHandler() {
-        DefaultMethodSecurityExpressionHandler expressionHandler = new CustomSecurityExceptionHandler();
-        expressionHandler.setApplicationContext(applicationContext);
-        return expressionHandler;
-    }
 
     /**
      * Создает и возвращает экземпляр кодировщика паролей BCrypt.
@@ -128,7 +110,9 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 .requestMatchers("/v3/api-docs/**")
                                 .permitAll()
-                                .requestMatchers("/api/v1/admin/**").hasAnyRole(String.valueOf(ADMIN))
+                                .requestMatchers("/api/v1/admin/**").hasAnyAuthority(String.valueOf(ADMIN))
+                                .requestMatchers("/api/v1/interviewer/**").hasAnyAuthority(String.valueOf(ADMIN), String.valueOf(INTERVIEW_SPECIALIST))
+                                .requestMatchers("/api/v1/hr/**").hasAnyAuthority(String.valueOf(ADMIN), String.valueOf(HR))
                                 .anyRequest().authenticated())
                 .anonymous(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JwtTokenFilter(tokenProvider),
@@ -168,7 +152,7 @@ public class SecurityConfiguration {
                 )
                 .info(new Info()
                         .title("Recruitment for job API")
-                        .description("Spring Boot application")
+                        .description("Spring Boot Application")
                         .version("1.0")
                 );
     }

@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -29,7 +30,11 @@ public class HrJobRequestController {
     )
     @Operation(summary = "Создание запроса на работу")
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<JobResponseDTO> createJobRequest(@Validated(OnCreate.class) @ModelAttribute JobRequestDTO jobRequestDto) {
+    @PreAuthorize("@cse.canAccessHr(#jobRequestDto.hrId)")
+    public ResponseEntity<JobResponseDTO> createJobRequest(
+            @Validated(OnCreate.class)
+            @ModelAttribute JobRequestDTO jobRequestDto
+    ) {
         JobResponseDTO jobRequest = jobRequestService.createJobRequest(jobRequestDto);
         return new ResponseEntity<>(jobRequest, HttpStatus.CREATED);
     }

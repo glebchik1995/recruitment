@@ -14,4 +14,8 @@ public interface IUserService {
 
     void delete(Long id);
 
+    boolean isJobRequestOwner(
+            Long userId,
+            Long taskId
+    );
 }
