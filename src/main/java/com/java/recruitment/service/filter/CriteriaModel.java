@@ -14,4 +14,6 @@ public class CriteriaModel {
     private Operation operation;
 
     private Object value;
+
+    private JoinType joinType;
 }

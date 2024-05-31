@@ -11,9 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneOffset;
-import java.util.Date;
-import java.util.EnumSet;
-import java.util.Set;
+import java.util.*;
 
 import static com.java.recruitment.service.filter.Operation.NOT_NULL;
 import static com.java.recruitment.service.filter.Operation.NULL;
@@ -21,27 +19,33 @@ import static com.java.recruitment.service.filter.Operation.NULL;
 public class GenericSpecification<T> implements Specification<T> {
     private static final EnumSet<Operation> NULL_OPERATIONS = EnumSet.of(NULL, NOT_NULL);
     private static final Set<String> PRIMITIVE_NUMBERS = Set.of("byte", "short", "int", "long", "float", "double");
-    private final CriteriaModel criteriaModel;
+    private final List<CriteriaModel> criteriaModelList;
     private final Class<T> entityClass;
 
-    public GenericSpecification(CriteriaModel criteriaModel, Class<T> entityClass) {
-        checkCriteria(criteriaModel);
-        this.criteriaModel = criteriaModel;
+    public GenericSpecification(List<CriteriaModel> criteriaModelList, Class<T> entityClass) {
+        this.criteriaModelList = criteriaModelList;
         this.entityClass = entityClass;
     }
 
     @Override
     public Predicate toPredicate(
-            Root<T> root,
+            @NotNull Root<T> root,
             @NotNull CriteriaQuery<?> query,
             @NotNull CriteriaBuilder criteriaBuilder
     ) {
-        checkCriteria(criteriaModel);
+        List<Predicate> predicates = criteriaModelList.stream()
+                .map(criteria -> createPredicate(criteria, root, criteriaBuilder))
+                .toList();
 
-        Operation operation = criteriaModel.getOperation();
-        String fieldName = criteriaModel.getField();
+        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+    }
+
+    private Predicate createPredicate(CriteriaModel criteria, Root<T> root, CriteriaBuilder criteriaBuilder) {
+        Operation operation = criteria.getOperation();
+        String fieldName = criteria.getField();
         Path<Object> expression = root.get(fieldName);
-        Object value = criteriaModel.getValue();
+        Object value = criteria.getValue();
+
         switch (operation) {
             case NULL -> {
                 return criteriaBuilder.isNull(expression);
@@ -76,21 +80,19 @@ public class GenericSpecification<T> implements Specification<T> {
         return null;
     }
 
-    private void checkCriteria(CriteriaModel criteriaModel) {
-        if (criteriaModel == null) {
-            throw new IllegalArgumentException("CriteriaModel имеет значение null");
-        }
+    public Specification<T> mergeSpecifications(List<Specification> specifications, JoinType joinType) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
 
-        if (StringUtils.isBlank(criteriaModel.getField())) {
-            throw new IllegalArgumentException("Поле должно быть не нулевым!");
-        }
-        Operation operation = criteriaModel.getOperation();
-        if (operation == null) {
-            throw new IllegalArgumentException("Операция не должна быть нулевой!");
-        }
-        if (!NULL_OPERATIONS.contains(operation) && criteriaModel.getValue() == null) {
-            throw new IllegalArgumentException("Значение должно быть не нулевым!");
-        }
+            specifications.forEach(specification -> predicates.add(specification.toPredicate(root, query, cb)));
+
+            if (joinType.equals(JoinType.AND)) {
+                return cb.and(predicates.toArray(new Predicate[0]));
+            } else {
+                return cb.or(predicates.toArray(new Predicate[0]));
+            }
+
+        };
     }
 
     private LocalDateTime toDate(Object value) {

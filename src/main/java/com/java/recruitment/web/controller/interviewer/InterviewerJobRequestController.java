@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.recruitment.repositoty.JobRequestRepository;
 import com.java.recruitment.service.IJobRequestService;
 import com.java.recruitment.service.filter.CriteriaModel;
+import com.java.recruitment.service.filter.jobRequest.JobRequestFilter;
 import com.java.recruitment.web.dto.hiring.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.hiring.JobResponseDTO;
 import com.java.recruitment.web.mapper.impl.JobRequestMapper;
@@ -19,6 +20,8 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/interviewer/job-request")
@@ -54,6 +57,35 @@ public class InterviewerJobRequestController {
         if (model != null) {
 
             jobRequests = jobRequestService.getAllJobRequests(model, pageable);
+        } else {
+            jobRequests = jobRequestRepository.findAll(pageable).map(mapper::toDto);
+
+        }
+        return new ResponseEntity<>(jobRequests, HttpStatus.OK);
+    }
+
+    @GetMapping
+    public ResponseEntity<Page<JobResponseDTO>> getAllJobRequestss(
+            @ParameterObject JobRequestFilter filer,
+            @ParameterObject Pageable pageable)
+            throws BadRequestException {
+
+        List<CriteriaModel> criteria = filer.getCriteriaModel();
+        List<CriteriaModel> foundCriteria = new ArrayList<>();
+
+        if (!criteria.isEmpty()) {
+            ObjectMapper objectMapper = new ObjectMapper();
+            try {
+                for (CriteriaModel current : criteria) {
+                    foundCriteria.add(objectMapper.readValue(current, CriteriaModel.class));
+                }
+            } catch (IOException ex) {
+                throw new BadRequestException("Не удалось проанализировать условия", ex);
+            }
+        }
+        Page<JobResponseDTO> jobRequests;
+        if (!models.isEmpty()) {
+            jobRequests = jobRequestService.getAllJobRequests(models, pageable);
         } else {
             jobRequests = jobRequestRepository.findAll(pageable).map(mapper::toDto);
 
