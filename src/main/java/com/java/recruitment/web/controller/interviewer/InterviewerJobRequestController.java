@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.recruitment.repositoty.JobRequestRepository;
 import com.java.recruitment.service.IJobRequestService;
 import com.java.recruitment.service.filter.CriteriaModel;
-import com.java.recruitment.service.model.hiring.JobRequest;
 import com.java.recruitment.web.dto.hiring.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.hiring.JobResponseDTO;
 import com.java.recruitment.web.mapper.impl.JobRequestMapper;
@@ -16,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -23,7 +23,10 @@ import java.io.IOException;
 @RestController
 @RequestMapping("/api/v1/interviewer/job-request")
 @RequiredArgsConstructor
-@Tag(name = "HR - INTERVIEWER-REQUEST", description = "CRUD OPERATIONS WITH JOB-REQUESTS")
+@Tag(
+        name = "INTERVIEWER - JOB_REQUESTS",
+        description = "CRUD OPERATIONS WITH JOB-REQUESTS"
+)
 public class InterviewerJobRequestController {
 
     private final IJobRequestService jobRequestService;
@@ -31,7 +34,6 @@ public class InterviewerJobRequestController {
     private final JobRequestRepository jobRequestRepository;
 
     private final JobRequestMapper mapper;
-
 
     @GetMapping
     public ResponseEntity<Page<JobResponseDTO>> getAllJobRequests(
@@ -61,14 +63,16 @@ public class InterviewerJobRequestController {
 
 
     @GetMapping("/{id}")
+    @PreAuthorize("@cse.canAccessJobRequest(#id)")
     public ResponseEntity<JobResponseDTO> getJobRequestById(@PathVariable Long id) {
         JobResponseDTO jobRequest = jobRequestService.getJobRequestById(id);
         return new ResponseEntity<>(jobRequest, HttpStatus.OK);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<JobRequest> updateStatusJobRequest(@RequestBody ChangeJobRequestStatusDTO jobRequestDto) {
-        JobRequest updatedJobRequest = jobRequestService.updateJobRequest(jobRequestDto);
+    @PreAuthorize("@cse.canAccessJobRequest(#jobRequestDto.id)")
+    public ResponseEntity<JobResponseDTO> updateStatusJobRequest(@RequestBody ChangeJobRequestStatusDTO jobRequestDto) {
+        JobResponseDTO updatedJobRequest = jobRequestService.updateJobRequest(jobRequestDto);
         return new ResponseEntity<>(updatedJobRequest, HttpStatus.OK);
     }
 

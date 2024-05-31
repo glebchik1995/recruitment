@@ -46,3 +46,7 @@ CREATE TABLE IF NOT EXISTS job_request_files
     file           VARCHAR(255) NOT NULL,
     FOREIGN KEY (job_request_id) REFERENCES job_request (id) ON DELETE CASCADE
 );
+
+CREATE INDEX idx_status ON candidate(position);
+CREATE INDEX idx_status ON candidate(department);
+CREATE INDEX idx_status ON candidate(age);

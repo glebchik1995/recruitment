@@ -6,6 +6,7 @@ import com.java.recruitment.repositoty.UserRepository;
 import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.IJobRequestService;
 import com.java.recruitment.service.filter.CriteriaModel;
+import com.java.recruitment.service.filter.GenericSpecification;
 import com.java.recruitment.service.model.candidate.Candidate;
 import com.java.recruitment.service.model.hiring.JobRequest;
 import com.java.recruitment.service.model.user.User;
@@ -18,6 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -78,23 +80,37 @@ public class JobRequestService implements IJobRequestService {
 
     @Override
     public JobResponseDTO getJobRequestById(Long id) {
-        JobRequest jobRequest = jobRequestRepository.findById(id).orElseThrow(
-                () -> new DataNotFoundException("Заявка не найдена"));
+        JobRequest jobRequest = jobRequestRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
         return jobRequestMapper.toDto(jobRequest);
     }
 
     @Override
-    public JobRequest updateJobRequest(ChangeJobRequestStatusDTO jobRequestDto) {
-        return null;
+    public Page<JobResponseDTO> getAllJobRequests(
+            CriteriaModel criteriaModel,
+            Pageable pageable
+    ) {
+        Specification<JobRequest> specification
+                = new GenericSpecification<>(criteriaModel, JobRequest.class);
+        Page<JobRequest> rooms = jobRequestRepository.findAll(specification, pageable);
+        return rooms.map(jobRequestMapper::toDto);
     }
 
     @Override
+    @Transactional
+    public JobResponseDTO updateJobRequest(ChangeJobRequestStatusDTO jobRequestDto) {
+        JobRequest jobRequest = jobRequestRepository.findById(jobRequestDto.getId())
+                .orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
+        jobRequest.setStatus(jobRequestDto.getStatus());
+        jobRequestRepository.save(jobRequest);
+        return jobRequestMapper.toDto(jobRequest);
+    }
+
+    @Override
+    @Transactional
     public void deleteJobRequest(Long id) {
-
-    }
-
-    @Override
-    public Page<JobResponseDTO> getAllJobRequests(CriteriaModel model, Pageable pageable) {
-        return null;
+        JobRequest jobRequest = jobRequestRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
+        jobRequestRepository.delete(jobRequest);
     }
 }

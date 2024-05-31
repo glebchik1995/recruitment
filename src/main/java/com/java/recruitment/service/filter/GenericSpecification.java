@@ -2,6 +2,7 @@ package com.java.recruitment.service.filter;
 
 import jakarta.persistence.criteria.*;
 import org.apache.commons.lang3.StringUtils;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Field;
@@ -30,7 +31,11 @@ public class GenericSpecification<T> implements Specification<T> {
     }
 
     @Override
-    public Predicate toPredicate(Root<T> root, CriteriaQuery<?> query, CriteriaBuilder criteriaBuilder) {
+    public Predicate toPredicate(
+            Root<T> root,
+            @NotNull CriteriaQuery<?> query,
+            @NotNull CriteriaBuilder criteriaBuilder
+    ) {
         checkCriteria(criteriaModel);
 
         Operation operation = criteriaModel.getOperation();
@@ -70,7 +75,6 @@ public class GenericSpecification<T> implements Specification<T> {
         }
         return null;
     }
-
 
     private void checkCriteria(CriteriaModel criteriaModel) {
         if (criteriaModel == null) {
