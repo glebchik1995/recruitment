@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_data_into_candidate_table
+      author: Gleb
+      changes:
+        - insert:
+            tableName: candidate
+            columns:
+              - column:
+                  name: name
+                  value: John
+              - column:
+                  name: surname
+                  value: Junior
+              - column:
+                  name: age
+                  valueNumeric: '22'
+              - column:
+                  name: email
+                  value: "john.jun@mail.com"
+              - column:
+                  name: phone
+                  value: "+7 (953) 454-66-22"
+              - column:
+                  name: position
+                  value: "Java Developer"
+              - column:
+                  name: department
+                  value: "IT"

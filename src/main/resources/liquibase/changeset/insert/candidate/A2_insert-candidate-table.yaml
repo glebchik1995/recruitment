@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_data_into_candidate_table
+      author: Gleb
+      changes:
+        - insert:
+            tableName: candidate
+            columns:
+              - column:
+                  name: name
+                  value: Ivan
+              - column:
+                  name: surname
+                  value: Ivanov
+              - column:
+                  name: age
+                  valueNumeric: '25'
+              - column:
+                  name: email
+                  value: "ivan1999@mail.com"
+              - column:
+                  name: phone
+                  value: "+7 (977) 555-33-11"
+              - column:
+                  name: position
+                  value: "Engineer"
+              - column:
+                  name: department
+                  value: "Radio Electronics"

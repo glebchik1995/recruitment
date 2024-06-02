@@ -5,11 +5,13 @@ import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.IUserService;
 import com.java.recruitment.service.model.user.Role;
 import com.java.recruitment.service.model.user.User;
+import com.java.recruitment.web.dto.user.UserDTO;
+import com.java.recruitment.web.mapper.impl.UserMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.ObjectUtils;
+import util.NullPropertyCopyHelper;
 
 import java.util.Set;
 
@@ -20,6 +22,7 @@ public class UserService implements IUserService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final UserMapper userMapper;
 
 
     /**
@@ -29,7 +32,8 @@ public class UserService implements IUserService {
      */
     @Override
     @Transactional
-    public User create(final User user) {
+    public UserDTO create(final UserDTO userDTO) {
+        User user = userMapper.toEntity(userDTO);
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new IllegalStateException("Пользователь уже существует.");
         }
@@ -39,28 +43,16 @@ public class UserService implements IUserService {
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         Set<Role> roles = Set.of(Role.USER);
         user.setRoles(roles);
-        userRepository.save(user);
-        return user;
+        return userMapper.toDto(userRepository.save(user));
     }
 
     @Override
     @Transactional
-    public User update(final User user) {
-
-        User existingUser = getById(user.getId());
-        if (!ObjectUtils.isEmpty(user.getName())) {
-            existingUser.setName(user.getName());
-        }
-        if (!ObjectUtils.isEmpty(user.getUsername())) {
-            existingUser.setUsername(user.getUsername());
-        }
-        if (!ObjectUtils.isEmpty(user.getPassword())) {
-            existingUser.setPassword(user.getPassword());
-        }
-        if (!ObjectUtils.isEmpty(user.getRoles())) {
-            existingUser.setRoles(user.getRoles());
-        }
-        return userRepository.save(existingUser);
+    public UserDTO update(final UserDTO userDTO) {
+        User user = userRepository.findById(userDTO.getId()).orElseThrow(()-> new DataNotFoundException("Пользователь не найден"));
+        NullPropertyCopyHelper.copyNonNullProperties(userDTO, user);
+        User updatedUser = userRepository.save(user);
+        return userMapper.toDto(updatedUser);
     }
 
     /**
@@ -69,18 +61,22 @@ public class UserService implements IUserService {
      * @return пользователь
      */
     public User getByUsername(final String username) {
-        return userRepository.findByUsername(username).orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
+        return userRepository.findByUsername(username)
+                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
     }
 
     @Override
-    public User getById(final Long id) {
-        return userRepository.findById(id).orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
+    public UserDTO getById(final Long id) {
+        return userMapper.toDto(userRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден")));
     }
 
     @Override
     @Transactional
     public void delete(final Long id) {
-        userRepository.deleteById(id);
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
+        userRepository.deleteById(user.getId());
     }
 
     @Override

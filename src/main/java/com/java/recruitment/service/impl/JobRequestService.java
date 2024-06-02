@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static com.java.recruitment.service.model.hiring.Status.NEW;
@@ -55,7 +56,9 @@ public class JobRequestService implements IJobRequestService {
 
         User hr = userRepository.findById(jobRequestDto.getHrId()).orElseThrow(() -> new DataNotFoundException("HR не найден"));
 
-        MultipartFile file = jobRequestDto.getFile();
+        List<MultipartFile> files = jobRequestDto.getFiles();
+
+        List<String> filesName = new ArrayList<>();
 
         JobRequest jobRequest = JobRequest.builder()
                 .status(NEW)
@@ -63,10 +66,14 @@ public class JobRequestService implements IJobRequestService {
                 .hr(hr)
                 .build();
 
-        if (file != null) {
-            String jobRequestFilesName = fileService.upload(file);
-            jobRequest.setFiles(List.of(jobRequestFilesName));
+        if (files != null) {
+            files.stream()
+                    .map(fileService::upload)
+                    .forEach(filesName::add);
         }
+
+        jobRequest.setFiles(filesName);
+
 
         if (jobRequestDto.getDescription() != null) {
             jobRequest.setDescription(jobRequestDto.getDescription());
@@ -86,17 +93,6 @@ public class JobRequestService implements IJobRequestService {
     }
 
     @Override
-    public Page<JobResponseDTO> getAllJobRequests(
-            CriteriaModel criteriaModel,
-            Pageable pageable
-    ) {
-        Specification<JobRequest> specification
-                = new GenericSpecification<>(criteriaModel, JobRequest.class);
-        Page<JobRequest> rooms = jobRequestRepository.findAll(specification, pageable);
-        return rooms.map(jobRequestMapper::toDto);
-    }
-
-    @Override
     @Transactional
     public JobResponseDTO updateJobRequest(ChangeJobRequestStatusDTO jobRequestDto) {
         JobRequest jobRequest = jobRequestRepository.findById(jobRequestDto.getId())
@@ -112,5 +108,16 @@ public class JobRequestService implements IJobRequestService {
         JobRequest jobRequest = jobRequestRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
         jobRequestRepository.delete(jobRequest);
+    }
+
+    @Override
+    public Page<JobResponseDTO> getAllJobRequests(
+            List<CriteriaModel> criteriaModelList,
+            Pageable pageable
+    ) {
+        Specification<JobRequest> specification
+                = new GenericSpecification<>(criteriaModelList, JobRequest.class);
+        Page<JobRequest> rooms = jobRequestRepository.findAll(specification, pageable);
+        return rooms.map(jobRequestMapper::toDto);
     }
 }

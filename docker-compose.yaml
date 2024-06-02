@@ -28,20 +28,23 @@ services:
     container_name: mongo_db_recruitment
     restart: always
     ports:
-      - "27018:27018"
+      - "27017:27017"
+    environment:
+      - MONGO_INITDB_ROOT_USERNAME=${MONGO_USERNAME}
+      - MONGO_INITDB_ROOT_PASSWORD=${MONGO_PASSWORD}
 
   minio:
-    image: minio/minio:latest
-    container_name: minio
-    environment:
-      - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
-      - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
-    command: server ~/minio --console-address :9090
-    ports:
-      - '9090:9090'
-      - '9000:9000'
-    volumes:
-      - minio-data:/minio
+      image: minio/minio:latest
+      container_name: minio
+      environment:
+        - MINIO_ROOT_USER=${MINIO_ACCESS_KEY}
+        - MINIO_ROOT_PASSWORD=${MINIO_SECRET_KEY}
+      command: server ~/minio --console-address :9090
+      ports:
+        - '9090:9090'
+        - '9000:9000'
+      volumes:
+        - minio-data:/minio
 
 volumes:
   minio-data:

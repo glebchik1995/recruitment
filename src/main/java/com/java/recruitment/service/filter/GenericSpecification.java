@@ -25,75 +25,115 @@ public class GenericSpecification<T> implements Specification<T> {
     public GenericSpecification(List<CriteriaModel> criteriaModelList, Class<T> entityClass) {
         this.criteriaModelList = criteriaModelList;
         this.entityClass = entityClass;
+        checkCriteria(criteriaModelList);
     }
 
     @Override
     public Predicate toPredicate(
             @NotNull Root<T> root,
             @NotNull CriteriaQuery<?> query,
-            @NotNull CriteriaBuilder criteriaBuilder
+            @NotNull CriteriaBuilder cb
     ) {
-        List<Predicate> predicates = criteriaModelList.stream()
-                .map(criteria -> createPredicate(criteria, root, criteriaBuilder))
-                .toList();
-
-        return criteriaBuilder.and(predicates.toArray(new Predicate[0]));
+        List<Predicate> predicates = new ArrayList<>();
+        for (CriteriaModel criteria : criteriaModelList) {
+            predicates.add(createPredicate(criteria, root, cb));
+        }
+        if (predicates.isEmpty()) {
+            return cb.conjunction();
+        } else if (predicates.size() == 1) {
+            return predicates.getFirst();
+        } else {
+            JoinType joinType = JoinType.AND; // по умолчанию соединяем предикаты через AND
+            for (CriteriaModel criteria : criteriaModelList) {
+                if (criteria.getJoinType() != null) {
+                    joinType = criteria.getJoinType();
+                    break;
+                }
+            }
+            Predicate[] predicateArray = predicates.toArray(new Predicate[0]);
+            return joinType == JoinType.AND ? cb.and(predicateArray) : cb.or(predicateArray);
+        }
     }
 
-    private Predicate createPredicate(CriteriaModel criteria, Root<T> root, CriteriaBuilder criteriaBuilder) {
+    private void checkCriteria(List<CriteriaModel> criteriaModel) {
+
+        for (CriteriaModel model : criteriaModel) {
+            if (model == null) {
+                throw new IllegalArgumentException("CriteriaModel не должен быть null");
+            }
+
+            if (StringUtils.isBlank(model.getField())) {
+                throw new IllegalArgumentException("Поле должно быть заполнено!");
+            }
+
+            Operation operation = model.getOperation();
+            if (operation == null) {
+                throw new IllegalArgumentException("Операция не должна быть null");
+            }
+
+            if (!NULL_OPERATIONS.contains(operation) && model.getValue() == null) {
+                throw new IllegalArgumentException("Значение не должно быть null");
+            }
+        }
+    }
+
+    private Predicate createPredicate(CriteriaModel criteria, Root<T> root, CriteriaBuilder cb) {
         Operation operation = criteria.getOperation();
         String fieldName = criteria.getField();
         Path<Object> expression = root.get(fieldName);
         Object value = criteria.getValue();
-
         switch (operation) {
             case NULL -> {
-                return criteriaBuilder.isNull(expression);
+                return cb.isNull(expression);
             }
             case NOT_NULL -> {
-                return criteriaBuilder.isNotNull(expression);
+                return cb.isNotNull(expression);
             }
             case EQ -> {
-                return criteriaBuilder.equal(expression, value);
+                return cb.equal(expression, value);
             }
             case LIKE -> {
                 if (isString(fieldName)) {
                     String likeString = "%" + value + "%";
-                    return criteriaBuilder.like(expression.as(String.class), likeString);
+                    return cb.like(expression.as(String.class), likeString);
                 }
             }
             case GT -> {
                 if (isNumber(fieldName)) {
-                    return criteriaBuilder.gt(expression.as(BigDecimal.class), new BigDecimal(String.valueOf(value)));
+                    return cb.gt(expression.as(BigDecimal.class), new BigDecimal(String.valueOf(value)));
                 } else if (isDate(fieldName)) {
-                    return criteriaBuilder.greaterThan(expression.as(LocalDateTime.class), toDate(value));
+                    return cb.greaterThan(expression.as(LocalDateTime.class), toDate(value));
                 }
             }
             case LT -> {
                 if (isNumber(fieldName)) {
-                    return criteriaBuilder.lt(expression.as(BigDecimal.class), new BigDecimal(String.valueOf(value)));
+                    return cb.lt(expression.as(BigDecimal.class), new BigDecimal(String.valueOf(value)));
                 } else if (isDate(fieldName)) {
-                    return criteriaBuilder.lessThan(expression.as(LocalDateTime.class), toDate(value));
+                    return cb.lessThan(expression.as(LocalDateTime.class), toDate(value));
                 }
             }
         }
         return null;
     }
 
-    public Specification<T> mergeSpecifications(List<Specification> specifications, JoinType joinType) {
-        return (root, query, cb) -> {
-            List<Predicate> predicates = new ArrayList<>();
-
-            specifications.forEach(specification -> predicates.add(specification.toPredicate(root, query, cb)));
-
-            if (joinType.equals(JoinType.AND)) {
-                return cb.and(predicates.toArray(new Predicate[0]));
-            } else {
-                return cb.or(predicates.toArray(new Predicate[0]));
-            }
-
-        };
-    }
+//    private Specification<T> createSpecification(CriteriaModel criteria) {
+//        return (root, query, cb) -> createPredicate(criteria, root, cb);
+//    }
+//
+//    public Specification<T> mergeSpecifications(List<Specification<T>> specifications, JoinType joinType) {
+//        return (root, query, cb) -> {
+//            List<Predicate> predicates = new ArrayList<>();
+//
+//            specifications.forEach(specification -> predicates.add(specification.toPredicate(root, query, cb)));
+//
+//            if (joinType.equals(JoinType.AND)) {
+//                return cb.and(predicates.toArray(new Predicate[0]));
+//            } else {
+//                return cb.or(predicates.toArray(new Predicate[0]));
+//            }
+//
+//        };
+//    }
 
     private LocalDateTime toDate(Object value) {
         return switch (value) {

@@ -1,35 +1,28 @@
 package com.java.recruitment.service.impl;
 
+import com.java.recruitment.repositoty.CandidateRepository;
+import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.ICandidateService;
+import com.java.recruitment.service.model.candidate.Candidate;
 import com.java.recruitment.web.dto.candidate.CandidateDTO;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
+import com.java.recruitment.web.mapper.impl.CandidateMapper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import util.NullPropertyCopyHelper;
 
 @Service
+@RequiredArgsConstructor
 public class CandidateService implements ICandidateService {
-    @Override
-    public CandidateDTO createCandidate(CandidateDTO candidateDTO) {
-        return null;
-    }
+
+    private final CandidateMapper candidateMapper;
+
+    private final CandidateRepository candidateRepository;
 
     @Override
-    public Page<CandidateDTO> getAllCandidates(Pageable pageable) {
-        return null;
-    }
-
-    @Override
-    public CandidateDTO getCandidateById(Long id) {
-        return null;
-    }
-
-    @Override
-    public CandidateDTO updateCandidate(Long id, CandidateDTO candidateDTO) {
-        return null;
-    }
-
-    @Override
-    public void deleteCandidate(Long id) {
-
+    public CandidateDTO updateCandidate(CandidateDTO candidateDTO) {
+        Candidate candidate = candidateRepository.findById(candidateDTO.getId()).orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
+        NullPropertyCopyHelper.copyNonNullProperties(candidateDTO, candidate);
+        Candidate updatedCandidate = candidateRepository.save(candidate);
+        return candidateMapper.toDto(updatedCandidate);
     }
 }

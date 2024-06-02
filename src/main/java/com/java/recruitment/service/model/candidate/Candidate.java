@@ -1,6 +1,5 @@
 package com.java.recruitment.service.model.candidate;
 
-import com.java.recruitment.service.model.hiring.JobRequest;
 import jakarta.persistence.*;
 import lombok.*;
 

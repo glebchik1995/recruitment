@@ -3,9 +3,9 @@ package com.java.recruitment.web.security;
 import com.java.recruitment.repositoty.exception.DataAccessException;
 import com.java.recruitment.service.impl.UserService;
 import com.java.recruitment.service.model.user.Role;
-import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.service.properties.JwtProperties;
 import com.java.recruitment.web.dto.auth.JwtResponse;
+import com.java.recruitment.web.dto.user.UserDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -90,7 +90,7 @@ public class JwtTokenProvider {
             throw new DataAccessException("Отказано в доступе");
         }
         Long userId = Long.valueOf(getId(refreshToken));
-        User user = userService.getById(userId);
+        UserDTO user = userService.getById(userId);
         jwtResponse.setId(userId);
         jwtResponse.setUsername(user.getUsername());
         jwtResponse.setAccessToken(createAccessToken(userId, user.getUsername(), user.getRoles()));

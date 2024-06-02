@@ -2,7 +2,6 @@ package com.java.recruitment.web.dto.hiring;
 
 import com.java.recruitment.service.model.hiring.Status;
 import com.java.recruitment.web.dto.candidate.CandidateDTO;
-import com.java.recruitment.web.dto.validation.OnUpdate;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
@@ -30,7 +29,7 @@ public class JobRequestDTO {
     private CandidateDTO candidate;
 
     @Nullable
-    private MultipartFile file;
+    private List<MultipartFile> files;
 
     @Length(max = 255)
     @Nullable

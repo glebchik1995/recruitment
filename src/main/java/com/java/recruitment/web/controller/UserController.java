@@ -1,10 +1,8 @@
 package com.java.recruitment.web.controller;
 
 import com.java.recruitment.service.IUserService;
-import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.web.dto.user.UserDTO;
 import com.java.recruitment.web.dto.validation.OnUpdate;
-import com.java.recruitment.web.mapper.impl.UserMapper;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -21,23 +19,18 @@ public class UserController {
 
     private final IUserService userService;
 
-    private final UserMapper userMapper;
-
     @PutMapping
     @Operation(summary = "Изменить данные пользователя")
     @PreAuthorize("@cse.canAccessUser(#dto.id)")
     public UserDTO update(@Validated(OnUpdate.class) @RequestBody final UserDTO dto) {
-        User user = userMapper.toEntity(dto);
-        User updatedUser = userService.update(user);
-        return userMapper.toDto(updatedUser);
+        return userService.update(dto);
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Получить пользователя по идентификатору")
     @PreAuthorize("@cse.canAccessUser(#id)")
     public UserDTO getById(@PathVariable final Long id) {
-        User user = userService.getById(id);
-        return userMapper.toDto(user);
+        return userService.getById(id);
     }
 
     @DeleteMapping("/{id}")

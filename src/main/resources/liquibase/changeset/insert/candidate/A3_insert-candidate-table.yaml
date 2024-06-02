@@ -1,0 +1,29 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_data_into_candidate_table
+      author: Gleb
+      changes:
+        - insert:
+            tableName: candidate
+            columns:
+              - column:
+                  name: name
+                  value: Oleg
+              - column:
+                  name: surname
+                  value: Smirnov
+              - column:
+                  name: age
+                  valueNumeric: '44'
+              - column:
+                  name: email
+                  value: "oleg1980@mail.com"
+              - column:
+                  name: phone
+                  value: "+7 (920) 222-13-44"
+              - column:
+                  name: position
+                  value: "Manager"
+              - column:
+                  name: department
+                  value: "Sales"

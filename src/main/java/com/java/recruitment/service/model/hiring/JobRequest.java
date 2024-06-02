@@ -26,7 +26,7 @@ public class JobRequest implements Serializable {
     @Column(name = "status", nullable = false)
     private Status status;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hr_id", referencedColumnName = "id", nullable = false)
     private User hr;
 

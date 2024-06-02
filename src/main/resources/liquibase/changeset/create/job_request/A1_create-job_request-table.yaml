@@ -43,4 +43,4 @@ databaseChangeLog:
                   referencedColumnNames: id
                   baseColumnNames: candidate_id
                   onDelete: CASCADE
-                  onUpdate: NO ACTION
+                  onUpdate: CASCADE

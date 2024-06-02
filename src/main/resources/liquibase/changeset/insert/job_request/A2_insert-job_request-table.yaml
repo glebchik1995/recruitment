@@ -1,0 +1,20 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_data_into_job_request_table
+      author: Gleb
+      changes:
+        - insert:
+            tableName: job_request
+            columns:
+              - column:
+                  name: status
+                  value: NEW
+              - column:
+                  name: hr_id
+                  valueNumeric: 1
+              - column:
+                  name: candidate_id
+                  valueNumeric: 2
+              - column:
+                  name: description
+                  value: "Job request description"

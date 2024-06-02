@@ -24,8 +24,7 @@ CREATE TABLE IF NOT EXISTS job_request
     candidate_id INT         NOT NULL,
     description  varchar(1000),
     FOREIGN KEY (hr_id) REFERENCES users (id) ON UPDATE CASCADE,
-    FOREIGN KEY (candidate_id) REFERENCES candidate (id) ON DELETE CASCADE ON UPDATE NO ACTION
-
+    FOREIGN KEY (candidate_id) REFERENCES candidate (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS candidate
@@ -47,6 +46,6 @@ CREATE TABLE IF NOT EXISTS job_request_files
     FOREIGN KEY (job_request_id) REFERENCES job_request (id) ON DELETE CASCADE
 );
 
-CREATE INDEX idx_status ON candidate(position);
-CREATE INDEX idx_status ON candidate(department);
-CREATE INDEX idx_status ON candidate(age);
+CREATE INDEX idx_status ON candidate (position);
+CREATE INDEX idx_status ON candidate (department);
+CREATE INDEX idx_status ON candidate (age);

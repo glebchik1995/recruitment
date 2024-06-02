@@ -36,5 +36,4 @@ public class User {
     @CollectionTable(name = "users_roles")
     @Enumerated(value = EnumType.STRING)
     private Set<Role> roles;
-
 }
