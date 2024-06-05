@@ -46,6 +46,34 @@ CREATE TABLE IF NOT EXISTS job_request_files
     FOREIGN KEY (job_request_id) REFERENCES job_request (id) ON DELETE CASCADE
 );
 
+CREATE TABLE chat_message
+(
+    id             VARCHAR(255) PRIMARY KEY,
+    chat_id        VARCHAR(255),
+    sender_id      VARCHAR(255),
+    recipient_id   VARCHAR(255),
+    sender_name    VARCHAR(255),
+    recipient_name VARCHAR(255),
+    content        TEXT,
+    timestamp      TIMESTAMP,
+    status         VARCHAR(50)
+);
+
+CREATE TABLE chat_notification
+(
+    id          VARCHAR(255) PRIMARY KEY,
+    sender_id   VARCHAR(255),
+    sender_name VARCHAR(255)
+);
+
+CREATE TABLE chat_room
+(
+    id           VARCHAR(255) PRIMARY KEY,
+    chat_id      VARCHAR(255),
+    sender_id    VARCHAR(255),
+    recipient_id VARCHAR(255)
+);
+
 CREATE INDEX idx_status ON candidate (position);
 CREATE INDEX idx_status ON candidate (department);
 CREATE INDEX idx_status ON candidate (age);

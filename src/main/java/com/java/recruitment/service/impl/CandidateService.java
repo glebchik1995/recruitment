@@ -20,7 +20,8 @@ public class CandidateService implements ICandidateService {
 
     @Override
     public CandidateDTO updateCandidate(CandidateDTO candidateDTO) {
-        Candidate candidate = candidateRepository.findById(candidateDTO.getId()).orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
+        Candidate candidate = candidateRepository.findById(candidateDTO.getId())
+                .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
         NullPropertyCopyHelper.copyNonNullProperties(candidateDTO, candidate);
         Candidate updatedCandidate = candidateRepository.save(candidate);
         return candidateMapper.toDto(updatedCandidate);

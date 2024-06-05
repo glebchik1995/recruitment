@@ -9,7 +9,10 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@Tag(name = "Attached File - HR or Interviewer", description = "Взаимодействие с вложенными файлами к заявке на работу")
+@Tag(
+        name = "Attached File - HR",
+        description = "Взаимодействие с вложенными файлами к заявке на работу"
+)
 @RestController
 @RequestMapping("/api/v1/interviewer/files")
 @RequiredArgsConstructor

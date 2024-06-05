@@ -54,7 +54,8 @@ public class JobRequestService implements IJobRequestService {
 
         candidateRepository.save(candidate);
 
-        User hr = userRepository.findById(jobRequestDto.getHrId()).orElseThrow(() -> new DataNotFoundException("HR не найден"));
+        User hr = userRepository.findById(jobRequestDto.getHrId())
+                .orElseThrow(() -> new DataNotFoundException("HR не найден"));
 
         List<MultipartFile> files = jobRequestDto.getFiles();
 
@@ -115,9 +116,14 @@ public class JobRequestService implements IJobRequestService {
             List<CriteriaModel> criteriaModelList,
             Pageable pageable
     ) {
-        Specification<JobRequest> specification
-                = new GenericSpecification<>(criteriaModelList, JobRequest.class);
-        Page<JobRequest> rooms = jobRequestRepository.findAll(specification, pageable);
+        Page<JobRequest> rooms;
+        if (criteriaModelList.isEmpty()) {
+            rooms = jobRequestRepository.findAll(pageable);
+        } else {
+            Specification<JobRequest> specification
+                    = new GenericSpecification<>(criteriaModelList, JobRequest.class);
+            rooms = jobRequestRepository.findAll(specification, pageable);
+        }
         return rooms.map(jobRequestMapper::toDto);
     }
 }

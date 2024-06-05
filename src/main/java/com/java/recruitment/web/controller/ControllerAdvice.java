@@ -12,27 +12,26 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @Slf4j
 public class ControllerAdvice {
 
-    @ExceptionHandler({
-            DataDeleteException.class,
-            DataSaveException.class,
-            DataUpdateException.class,
-            DataValidationException.class,
-            DataAlreadyExistException.class,
-            DataUploadException.class
-    })
+    @ExceptionHandler(
+            {
+                    DataDeleteException.class,
+                    DataSaveException.class,
+                    DataUpdateException.class,
+                    DataValidationException.class,
+                    DataAlreadyExistException.class,
+                    DataUploadException.class
+            }
+    )
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public ResponseEntity<String> handleCustomExceptions(Exception ex) {
-        HttpStatus status = HttpStatus.BAD_REQUEST;
-        if (ex instanceof DataDeleteException || ex instanceof DataSaveException || ex instanceof DataUpdateException
-                || ex instanceof DataValidationException || ex instanceof DataAlreadyExistException) {
-            log.error("ResponseStatus: {}. Status code: {} {}", status, status.value(), ex.getMessage());
-        }
-        return new ResponseEntity<>(ex.getMessage(), status);
+        log.error("ResponseStatus: {}. Status code: {} {}", HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.value(), ex.getMessage());
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataAuthException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<String> handleAuthException(DataAuthException ex) {
-        log.error("ResponseStatus: UNAUTHORIZED. Status code: 403 {}", ex.getMessage());
+        log.error("ResponseStatus: FORBIDDEN. Status code: 403 {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
     }
 

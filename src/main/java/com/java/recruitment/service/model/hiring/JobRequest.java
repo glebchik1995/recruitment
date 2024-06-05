@@ -10,8 +10,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "job_request")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")

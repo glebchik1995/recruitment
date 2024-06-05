@@ -1,21 +1,25 @@
 package com.java.recruitment.service.model.message;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-import org.springframework.data.annotation.Id;
-import org.springframework.data.mongodb.core.mapping.Document;
+import jakarta.persistence.*;
+import lombok.*;
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Document
+@Entity
+@Table(name = "chat_room")
 public class ChatRoom {
     @Id
-    private String id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "chat_id")
     private String chatId;
+
+    @Column(name = "sender_id")
     private String senderId;
+
+    @Column(name = "recipient_id")
     private String recipientId;
 }

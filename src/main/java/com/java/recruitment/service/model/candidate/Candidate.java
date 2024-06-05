@@ -7,12 +7,12 @@ import java.io.Serializable;
 
 @Entity
 @Table(name = "candidate")
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Builder
+@Access(AccessType.FIELD)
 public class Candidate implements Serializable {
 
     @Id

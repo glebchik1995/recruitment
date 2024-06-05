@@ -6,6 +6,7 @@ import org.jetbrains.annotations.NotNull;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Field;
+import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,11 +14,11 @@ import java.time.LocalTime;
 import java.time.ZoneOffset;
 import java.util.*;
 
-import static com.java.recruitment.service.filter.Operation.NOT_NULL;
-import static com.java.recruitment.service.filter.Operation.NULL;
+import static com.java.recruitment.service.filter.Operation.IS_NOT_NULL;
+import static com.java.recruitment.service.filter.Operation.IS_NULL;
 
 public class GenericSpecification<T> implements Specification<T> {
-    private static final EnumSet<Operation> NULL_OPERATIONS = EnumSet.of(NULL, NOT_NULL);
+    private static final EnumSet<Operation> NULL_OPERATIONS = EnumSet.of(IS_NULL, IS_NOT_NULL);
     private static final Set<String> PRIMITIVE_NUMBERS = Set.of("byte", "short", "int", "long", "float", "double");
     private final List<CriteriaModel> criteriaModelList;
     private final Class<T> entityClass;
@@ -43,7 +44,7 @@ public class GenericSpecification<T> implements Specification<T> {
         } else if (predicates.size() == 1) {
             return predicates.getFirst();
         } else {
-            JoinType joinType = JoinType.AND; // по умолчанию соединяем предикаты через AND
+            JoinType joinType = JoinType.AND;
             for (CriteriaModel criteria : criteriaModelList) {
                 if (criteria.getJoinType() != null) {
                     joinType = criteria.getJoinType();
@@ -80,17 +81,21 @@ public class GenericSpecification<T> implements Specification<T> {
     private Predicate createPredicate(CriteriaModel criteria, Root<T> root, CriteriaBuilder cb) {
         Operation operation = criteria.getOperation();
         String fieldName = criteria.getField();
-        Path<Object> expression = root.get(fieldName);
+        Path<Object> expression = getExpression(root, fieldName);
+
         Object value = criteria.getValue();
         switch (operation) {
-            case NULL -> {
+            case IS_NULL -> {
                 return cb.isNull(expression);
             }
-            case NOT_NULL -> {
+            case IS_NOT_NULL -> {
                 return cb.isNotNull(expression);
             }
-            case EQ -> {
+            case EQUALS -> {
                 return cb.equal(expression, value);
+            }
+            case NOT_EQUALS -> {
+                return cb.notEqual(expression, value);
             }
             case LIKE -> {
                 if (isString(fieldName)) {
@@ -98,42 +103,59 @@ public class GenericSpecification<T> implements Specification<T> {
                     return cb.like(expression.as(String.class), likeString);
                 }
             }
-            case GT -> {
+            case NOT_LIKE -> {
+                if (isString(fieldName)) {
+                    String likeString = "%" + value + "%";
+                    return cb.notLike(expression.as(String.class), likeString);
+                }
+            }
+            case GREATER_THAN -> {
                 if (isNumber(fieldName)) {
                     return cb.gt(expression.as(BigDecimal.class), new BigDecimal(String.valueOf(value)));
                 } else if (isDate(fieldName)) {
                     return cb.greaterThan(expression.as(LocalDateTime.class), toDate(value));
                 }
             }
-            case LT -> {
+            case GREATER_THAN_OR_EQUALS -> {
+                if (isNumber(fieldName)) {
+                    return cb.ge(expression.as(BigDecimal.class), new BigDecimal(String.valueOf(value)));
+                } else if (isDate(fieldName)) {
+                    return cb.greaterThanOrEqualTo(expression.as(LocalDateTime.class), toDate(value));
+                }
+            }
+            case LESS_THAN -> {
                 if (isNumber(fieldName)) {
                     return cb.lt(expression.as(BigDecimal.class), new BigDecimal(String.valueOf(value)));
                 } else if (isDate(fieldName)) {
                     return cb.lessThan(expression.as(LocalDateTime.class), toDate(value));
                 }
             }
+            case LESS_THAN_OR_EQUALS -> {
+                if (isNumber(fieldName)) {
+                    return cb.le(expression.as(BigDecimal.class), new BigDecimal(String.valueOf(value)));
+                } else if (isDate(fieldName)) {
+                    return cb.lessThanOrEqualTo(expression.as(LocalDateTime.class), toDate(value));
+                }
+            }
+            case IN -> {
+                return expression.in((List<?>) value);
+            }
+            case NOT_IN -> {
+                return cb.not(expression.in((List<?>) value));
+            }
         }
         return null;
     }
 
-//    private Specification<T> createSpecification(CriteriaModel criteria) {
-//        return (root, query, cb) -> createPredicate(criteria, root, cb);
-//    }
-//
-//    public Specification<T> mergeSpecifications(List<Specification<T>> specifications, JoinType joinType) {
-//        return (root, query, cb) -> {
-//            List<Predicate> predicates = new ArrayList<>();
-//
-//            specifications.forEach(specification -> predicates.add(specification.toPredicate(root, query, cb)));
-//
-//            if (joinType.equals(JoinType.AND)) {
-//                return cb.and(predicates.toArray(new Predicate[0]));
-//            } else {
-//                return cb.or(predicates.toArray(new Predicate[0]));
-//            }
-//
-//        };
-//    }
+    private Path<Object> getExpression(Root<T> root, String fieldName) {
+        if (fieldName.contains(".")) {
+            String[] fieldParts = fieldName.split("\\.");
+            Join<Object, Object> join = root.join(fieldParts[0], jakarta.persistence.criteria.JoinType.INNER);
+            return join.get(fieldParts[1]);
+        } else {
+            return root.get(fieldName);
+        }
+    }
 
     private LocalDateTime toDate(Object value) {
         return switch (value) {
@@ -168,10 +190,32 @@ public class GenericSpecification<T> implements Specification<T> {
 
     private Class<?> getFieldType(String fieldName) {
         try {
-            Field field = entityClass.getDeclaredField(fieldName);
-            return field.getType();
+            Field field = getFieldByFieldName(fieldName);
+            Class<?> fieldType = field.getType();
+            if (fieldType.isAssignableFrom(Collection.class)) {
+                ParameterizedType genericType = (ParameterizedType) field.getGenericType();
+                return (Class<?>) genericType.getActualTypeArguments()[0];
+            } else {
+                return fieldType;
+            }
         } catch (NoSuchFieldException e) {
             throw new RuntimeException(e);
+        }
+    }
+
+    private Field getFieldByFieldName(String fieldName) throws NoSuchFieldException {
+        if (fieldName.contains(".")) {
+            String[] fieldParts = fieldName.split("\\.");
+            Field field = entityClass.getDeclaredField(fieldParts[0]);
+            if (Collection.class.isAssignableFrom(field.getType())) {
+                ParameterizedType genericType = (ParameterizedType) field.getGenericType();
+                Class<?> collectionType = (Class<?>) genericType.getActualTypeArguments()[0];
+                return collectionType.getDeclaredField(fieldParts[1]);
+            } else {
+                return field.getType().getDeclaredField(fieldParts[1]);
+            }
+        } else {
+            return entityClass.getDeclaredField(fieldName);
         }
     }
 }

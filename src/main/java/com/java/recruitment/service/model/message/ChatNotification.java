@@ -1,16 +1,23 @@
 package com.java.recruitment.service.model.message;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
+
 
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
+@Entity
+@Table(name = "chat_notification")
 public class ChatNotification {
-    private String id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = "sender_id")
     private String senderId;
+
+    @Column(name = "sender_name")
     private String senderName;
 }

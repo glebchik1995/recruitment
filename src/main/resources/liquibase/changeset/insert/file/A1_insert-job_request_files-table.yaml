@@ -1,0 +1,14 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_data_into_job_request_files_table
+      author: Gleb
+      changes:
+        - insert:
+            tableName: job_request_files
+            columns:
+              - column:
+                  name: job_request_id
+                  valueNumeric: 2
+              - column:
+                  name: file
+                  value: "cd0a0431-0d1a-4831-9bde-9db50ef629e8.txt"

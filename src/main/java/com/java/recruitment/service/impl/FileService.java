@@ -13,6 +13,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -57,9 +58,12 @@ public class FileService implements IFileService {
     }
 
     @SneakyThrows
-    public String download(Long id) {
+    @Transactional
+    public String download(final Long id) {
+
         JobRequest jobRequest = jobRequestRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Заявка не найдена!"));
+
         List<String> fileNames = jobRequest.getFiles();
 
         // Создание ссылки на скачивание файлов
@@ -79,7 +83,8 @@ public class FileService implements IFileService {
         return formatDownloadLinks(downloadLinks);
     }
 
-    public void delete(DeleteFileDTO dto) {
+    @Transactional
+    public void delete(final DeleteFileDTO dto) {
         JobRequest jobRequest = jobRequestRepository.findById(dto.getJobRequestId())
                 .orElseThrow(() -> new DataNotFoundException("Заявка не найдена!"));
 
@@ -127,7 +132,10 @@ public class FileService implements IFileService {
     }
 
     @SneakyThrows
-    private void saveImage(final InputStream inputStream, final String fileName) {
+    private void saveImage(
+            final InputStream inputStream,
+            final String fileName
+    ) {
         minioClient.putObject(PutObjectArgs.builder()
                 .stream(inputStream, inputStream.available(), -1)
                 .bucket(minioProperties.getBucket())
@@ -135,10 +143,15 @@ public class FileService implements IFileService {
                 .build());
     }
 
-    private String formatDownloadLinks(List<String> downloadLinks) {
+    private String formatDownloadLinks(final List<String> downloadLinks) {
         StringBuilder formattedLinks = new StringBuilder();
         for (int i = 0; i < downloadLinks.size(); i++) {
-            formattedLinks.append("File ").append(i + 1).append(": ").append(downloadLinks.get(i)).append("\n");
+            formattedLinks
+                    .append("File ")
+                    .append(i + 1)
+                    .append(": ")
+                    .append(downloadLinks.get(i))
+                    .append("\n");
         }
         return formattedLinks.toString();
     }
