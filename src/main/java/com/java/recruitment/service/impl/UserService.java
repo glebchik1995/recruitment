@@ -5,6 +5,7 @@ import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.IUserService;
 import com.java.recruitment.service.model.user.Role;
 import com.java.recruitment.service.model.user.User;
+import com.java.recruitment.web.dto.user.ShortUserDTO;
 import com.java.recruitment.web.dto.user.UserDTO;
 import com.java.recruitment.web.mapper.impl.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -48,8 +49,19 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public UserDTO update(final UserDTO userDTO) {
-        User user = userRepository.findById(userDTO.getId()).orElseThrow(()-> new DataNotFoundException("Пользователь не найден"));
+    public UserDTO updateWithRoleSimpleUser(final ShortUserDTO userDTO) {
+        User user = userRepository.findById(userDTO.getId())
+                .orElseThrow(()-> new DataNotFoundException("Пользователь не найден"));
+        NullPropertyCopyHelper.copyNonNullProperties(userDTO, user);
+        User updatedUser = userRepository.save(user);
+        return userMapper.toDto(updatedUser);
+    }
+
+    @Override
+    @Transactional
+    public UserDTO updateWithRoleAdmin(final UserDTO userDTO) {
+        User user = userRepository.findById(userDTO.getId())
+                .orElseThrow(()-> new DataNotFoundException("Пользователь не найден"));
         NullPropertyCopyHelper.copyNonNullProperties(userDTO, user);
         User updatedUser = userRepository.save(user);
         return userMapper.toDto(updatedUser);

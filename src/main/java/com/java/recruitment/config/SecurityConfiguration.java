@@ -110,9 +110,23 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 .requestMatchers("/v3/api-docs/**")
                                 .permitAll()
-                                .requestMatchers("/api/v1/admin/**").hasAnyAuthority(String.valueOf(ADMIN))
-                                .requestMatchers("/api/v1/interviewer/**").hasAnyAuthority(String.valueOf(ADMIN), String.valueOf(INTERVIEW_SPECIALIST))
-                                .requestMatchers("/api/v1/hr/**").hasAnyAuthority(String.valueOf(ADMIN), String.valueOf(HR))
+                                .requestMatchers("/api/v1/admin/**").hasAnyAuthority(
+                                        String.valueOf(ADMIN)
+                                )
+                                .requestMatchers("/api/v1/interviewer/**").hasAnyAuthority(
+                                        String.valueOf(ADMIN),
+                                        String.valueOf(INTERVIEW_SPECIALIST)
+                                )
+                                .requestMatchers("/api/v1/hr/**").hasAnyAuthority(
+                                        String.valueOf(ADMIN),
+                                        String.valueOf(HR)
+                                )
+                                .requestMatchers("/api/v1/user/**").hasAnyAuthority(
+                                        String.valueOf(ADMIN),
+                                        String.valueOf(HR),
+                                        String.valueOf(INTERVIEW_SPECIALIST),
+                                        String.valueOf(USER)
+                                )
                                 .anyRequest().authenticated())
                 .anonymous(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JwtTokenFilter(tokenProvider),

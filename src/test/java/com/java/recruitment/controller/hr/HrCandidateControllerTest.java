@@ -1,4 +1,4 @@
-package com.java.recruitment.controller;
+package com.java.recruitment.controller.hr;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;

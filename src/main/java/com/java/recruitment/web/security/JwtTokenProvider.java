@@ -49,7 +49,11 @@ public class JwtTokenProvider {
         return new SecretKeySpec(keyBytes, "HmacSHA256");
     }
 
-    public String createAccessToken(final Long userId, final String username, final Set<Role> roles) {
+    public String createAccessToken(
+            final Long userId,
+            final String username,
+            final Set<Role> roles
+    ) {
         Claims claims = Jwts.claims()
                 .subject(username)
                 .add("id", userId)

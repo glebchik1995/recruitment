@@ -26,4 +26,4 @@ databaseChangeLog:
                   referencedColumnNames: id
                   referencedTableName: users
                   onDelete: CASCADE
-                  onUpdate: NO ACTION
+                  onUpdate: CASCADE
