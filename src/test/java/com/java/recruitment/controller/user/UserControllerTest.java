@@ -8,6 +8,7 @@ import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.web.dto.user.ShortUserDTO;
 import com.java.recruitment.web.dto.user.UserDTO;
 import com.java.recruitment.web.mapper.impl.UserMapper;
+import com.java.recruitment.web.security.expression.CustomSecurityExpression;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -26,8 +27,8 @@ import static com.java.recruitment.service.model.user.Role.ADMIN;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
-@WithMockUser(username = "admin", authorities = {"ADMIN"})
-public class UserControllerTest extends BaseIntegrationTest {
+@WithMockUser(username = "bigmax1993@mail.com", authorities = "ADMIN")
+class UserControllerTest extends BaseIntegrationTest {
 
     @Autowired
     private MockMvc mvc;
@@ -38,21 +39,24 @@ public class UserControllerTest extends BaseIntegrationTest {
     @Autowired
     private UserMapper userMapper;
 
+    @Autowired
+    private CustomSecurityExpression expression;
+
+
     private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     @Test
     @DisplayName("Изменение публичных данных пользователя")
     void shouldUpdatePublicDataInOneUser() throws Exception {
-
         ShortUserDTO updatedUserDTO = ShortUserDTO.builder()
                 .id(1L)
                 .name("TEST_NAME")
-                .username("TEST_SURNAME")
+                .username("test@gmail.com")
                 .build();
 
+        // Ваш остальной код теста
         MockHttpServletResponse response = mvc.perform(
-                        MockMvcRequestBuilders.put("/api/v1/users"
-                                )
+                        MockMvcRequestBuilders.put("/api/v1/users")
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(updatedUserDTO))
                                 .characterEncoding(StandardCharsets.UTF_8)
@@ -61,22 +65,13 @@ public class UserControllerTest extends BaseIntegrationTest {
                 .andReturn().getResponse();
 
         response.setCharacterEncoding("UTF-8");
-
-        User candidate = userRepository
-                .findById(updatedUserDTO.getId())
-                .orElse(null);
-
+        User candidate = userRepository.findById(updatedUserDTO.getId()).orElse(null);
         Assertions.assertNotNull(candidate);
-
         candidate.setName(updatedUserDTO.getName());
         candidate.setUsername(updatedUserDTO.getUsername());
-
         userRepository.save(candidate);
-
         UserDTO userDTO = userMapper.toDto(candidate);
-
         Assertions.assertEquals(mapper.writeValueAsString(userDTO), response.getContentAsString());
-
     }
 
     @Test
@@ -86,13 +81,13 @@ public class UserControllerTest extends BaseIntegrationTest {
         UserDTO updatedUserDTO = UserDTO.builder()
                 .id(1L)
                 .name("TEST_NAME")
-                .username("TEST_SURNAME")
+                .username("test@gmail.com")
                 .password("$2a$12$x9Rhx2BKVeNd/iV0tpm1AOwFVhm835KvYILXSu5UHT19qMkbG3MSQ")
                 .roles(Set.of(ADMIN))
                 .build();
 
         MockHttpServletResponse response = mvc.perform(
-                        MockMvcRequestBuilders.put("/api/v1/admin/user"
+                        MockMvcRequestBuilders.put("/api/v1/admin/users"
                                 )
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(updatedUserDTO))

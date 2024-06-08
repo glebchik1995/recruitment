@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api/v1/admin/user")
+@RequestMapping("/api/v1/admin/users")
 @RequiredArgsConstructor
 @Validated
 @Tag(name = "User Controller", description = "User API")
@@ -26,4 +26,5 @@ public class AdminController {
     public UserDTO update(@Validated(OnUpdate.class) @RequestBody final UserDTO dto) {
         return userService.updateWithRoleAdmin(dto);
     }
+
 }

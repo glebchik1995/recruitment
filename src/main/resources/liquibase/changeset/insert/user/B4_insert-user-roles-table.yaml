@@ -11,4 +11,13 @@ databaseChangeLog:
                   value: '1'
               - column:
                   name: role
+                  value: 'USER'
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  value: '1'
+              - column:
+                  name: role
                   value: 'HR'
