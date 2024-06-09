@@ -1,33 +1,25 @@
 package com.java.recruitment.web.controller.message;
 
-import com.java.recruitment.service.impl.EmailService;
-import com.java.recruitment.service.model.message.MultipleReceiverRequest;
-import com.java.recruitment.service.model.message.SingleReceiverRequest;
-import jakarta.mail.MessagingException;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
-
-import java.io.UnsupportedEncodingException;
+import com.java.recruitment.service.IEmailService;
+import com.java.recruitment.web.dto.mail.MailDTO;
+import com.java.recruitment.web.dto.mail.MailResponseDTO;
+import lombok.RequiredArgsConstructor;
+import org.simpleframework.xml.core.Validate;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/emails")
+@RequiredArgsConstructor
 public class EmailController {
 
-    private final EmailService emailService;
+    private final IEmailService emailService;
 
-    public EmailController(EmailService emailService) {
-        this.emailService = emailService;
-    }
-
-    @PostMapping("/text")
-    public void sendTextEmail(@RequestBody SingleReceiverRequest request) {
-        emailService.sendTextEmail(request);
-    }
-
-    @PostMapping("/html")
-    public void sendHtmlEmail(@RequestBody MultipleReceiverRequest request) throws MessagingException, UnsupportedEncodingException {
-        emailService.sendHtmlEmail(request);
+    @PostMapping
+    public MailResponseDTO sendTextEmail(
+            @RequestParam(value = "file", required = false) MultipartFile[] file,
+            @RequestBody @Validate MailDTO mail
+    ) {
+        return emailService.sendMail(mail, file);
     }
 }

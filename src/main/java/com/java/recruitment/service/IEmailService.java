@@ -1,16 +1,10 @@
 package com.java.recruitment.service;
 
-import jakarta.mail.MessagingException;
-
-import java.io.FileNotFoundException;
+import com.java.recruitment.web.dto.mail.MailDTO;
+import com.java.recruitment.web.dto.mail.MailResponseDTO;
+import org.springframework.web.multipart.MultipartFile;
 
 public interface IEmailService {
 
-    void sendSimpleEmail(final String toAddress, final String subject, final String message);
-    void sendEmailWithAttachment
-            (final String toAddress,
-                                 final String subject,
-                                 final String message,
-                                 String attachment
-            ) throws MessagingException, FileNotFoundException, MessagingException, FileNotFoundException;
+    MailResponseDTO sendMail(MailDTO file, MultipartFile[] mail);
 }

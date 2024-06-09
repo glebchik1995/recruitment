@@ -5,7 +5,6 @@ import com.java.recruitment.service.model.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.io.Serializable;
 import java.util.List;
 
 @Entity
@@ -15,7 +14,7 @@ import java.util.List;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Builder
-public class JobRequest implements Serializable {
+public class JobRequest {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -46,32 +46,16 @@ CREATE TABLE IF NOT EXISTS job_request_files
     FOREIGN KEY (job_request_id) REFERENCES job_request (id) ON DELETE CASCADE
 );
 
-CREATE TABLE chat_message
+CREATE TABLE mail
 (
-    id             VARCHAR(255) PRIMARY KEY,
-    chat_id        VARCHAR(255),
-    sender_id      VARCHAR(255),
-    recipient_id   VARCHAR(255),
-    sender_name    VARCHAR(255),
-    recipient_name VARCHAR(255),
-    content        TEXT,
-    timestamp      TIMESTAMP,
-    status         VARCHAR(50)
-);
-
-CREATE TABLE chat_notification
-(
-    id          VARCHAR(255) PRIMARY KEY,
-    sender_id   VARCHAR(255),
-    sender_name VARCHAR(255)
-);
-
-CREATE TABLE chat_room
-(
-    id           VARCHAR(255) PRIMARY KEY,
-    chat_id      VARCHAR(255),
-    sender_id    VARCHAR(255),
-    recipient_id VARCHAR(255)
+    id          BIGSERIAL PRIMARY KEY,
+    sender_id   BIGINT NOT NULL,
+    receiver_id BIGINT NOT NULL,
+    subject     VARCHAR(255) NOT NULL,
+    text        TEXT,
+    sent_date   TIMESTAMP,
+    FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE INDEX idx_status ON candidate (position);
