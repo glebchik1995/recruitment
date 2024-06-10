@@ -13,7 +13,7 @@ public interface MailMapper {
     @Mapping(source = "receiver.username", target = "receiverMail")
     MailResponseDTO toDto(Mail mail);
 
-    @Mapping(source = "sender_id", target = "sender.id")
-    @Mapping(source = "receiver_id", target = "receiver.id")
+    @Mapping(source = "senderId", target = "sender.id")
+    @Mapping(source = "receiverId", target = "receiver.id")
     Mail toEntity(MailDTO mailDTO);
 }

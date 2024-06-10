@@ -1,22 +1,23 @@
-- changeSet:
-    id: insert-mail-data
-    author: Gleb
-    changes:
-      - insert:
-          tableName: mail
-          columns:
-            - column:
-                name: sender_id
-                value: '1'
-            - column:
-                name: receiver_id
-                value: '2'
-            - column:
-                name: subject
-                value: 'Test Subject'
-            - column:
-                name: text
-                value: 'Test Text'
-            - column:
-                name: sent_date
-                value: '2022-09-20 12:00:00'
+databaseChangeLog:
+  - changeSet:
+      id: insert-mail-data
+      author: Gleb
+      changes:
+        - insert:
+            tableName: mail
+            columns:
+              - column:
+                  name: sender_id
+                  valueNumeric: 1
+              - column:
+                  name: receiver_id
+                  valueNumeric: 2
+              - column:
+                  name: subject
+                  value: "Test Subject"
+              - column:
+                  name: text
+                  value: "Test Text"
+              - column:
+                  name: sent_date
+                  value: '2022-09-20 12:00:00'

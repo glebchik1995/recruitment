@@ -34,7 +34,7 @@ public class Mail {
     @Column(name = "text")
     private String text;
 
-    @Column(name = "date")
+    @Column(name = "sent_date")
     private LocalDateTime sentDate;
 
 }

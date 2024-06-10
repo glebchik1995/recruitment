@@ -2,7 +2,9 @@ package com.java.recruitment.web.security.expression;
 
 import com.java.recruitment.service.impl.UserService;
 import com.java.recruitment.service.model.user.Role;
+
 import com.java.recruitment.web.security.JwtEntity;
+import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -15,8 +17,8 @@ public class CustomSecurityExpression {
 
     private final UserService userService;
 
-    public boolean canAccessUser(final Long id) {
-        JwtEntity user = getPrincipal();
+    public boolean canAccessUser(@NotNull final Long id) {
+        JwtEntity user = this.getPrincipal();
         Long userId = user.getId();
         return userId.equals(id) || hasAnyRole(Role.ADMIN);
     }
@@ -35,11 +37,11 @@ public class CustomSecurityExpression {
         return (userId.equals(id) && hasAnyRole(Role.HR)) || hasAnyRole(Role.ADMIN);
     }
 
-    public boolean canAccessJobRequest(final Long job_request_id) {
+    public boolean canAccessJobRequest(final Long jobRequestId) {
         JwtEntity user = this.getPrincipal();
         Long id = user.getId();
 
-        return userService.isJobRequestOwner(id, job_request_id);
+        return userService.isJobRequestOwner(id, jobRequestId);
     }
 
     private boolean hasAnyRole(final Role... roles) {
@@ -55,9 +57,10 @@ public class CustomSecurityExpression {
     }
 
     private JwtEntity getPrincipal() {
-        Authentication authentication = SecurityContextHolder.getContext()
-                .getAuthentication();
+        Authentication authentication =
+                SecurityContextHolder
+                        .getContext()
+                        .getAuthentication();
         return (JwtEntity) authentication.getPrincipal();
     }
-
 }

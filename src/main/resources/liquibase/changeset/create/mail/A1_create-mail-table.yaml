@@ -8,10 +8,10 @@ databaseChangeLog:
             columns:
               - column:
                   name: id
-                  type: BIGINT
-                  autoIncrement: true
+                  type: BIGSERIAL
                   constraints:
                     primaryKey: true
+                    nullable: false
               - column:
                   name: sender_id
                   type: BIGINT
@@ -25,25 +25,26 @@ databaseChangeLog:
               - column:
                   name: subject
                   type: VARCHAR(255)
+                  constraints:
+                    nullable: false
               - column:
                   name: text
                   type: TEXT
               - column:
                   name: sent_date
                   type: TIMESTAMP
-              - column:
-                  name: CONSTRAINT_FK_sender_id
-                  type: BIGINT
-                  constraints:
-                    foreignKeyName: FK_sender_id
-                    references: users(id)
-                    onDelete: CASCADE
-                    onUpdate: CASCADE
-              - column:
-                  name: CONSTRAINT_FK_receiver_id
-                  type: BIGINT
-                  constraints:
-                    foreignKeyName: FK_receiver_id
-                    references: users(id)
-                    onDelete: CASCADE
-                    onUpdate: CASCADE
+                constraints:
+                  - foreignKeyConstraint:
+                      foreignKeyName: fk_sender_id
+                      referencedTableName: users
+                      referencedColumnNames: id
+                      baseColumnNames: sender_id
+                      onDelete: CASCADE
+                      onUpdate: CASCADE
+                  - foreignKeyConstraint:
+                      foreignKeyName: fk_receiver_id
+                      referencedTableName: users
+                      referencedColumnNames: id
+                      baseColumnNames: receiver_id
+                      onDelete: CASCADE
+                      onUpdate: CASCADE

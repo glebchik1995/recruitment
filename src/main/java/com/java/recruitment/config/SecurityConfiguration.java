@@ -121,7 +121,11 @@ public class SecurityConfiguration {
                                         String.valueOf(ADMIN),
                                         String.valueOf(HR)
                                 )
-                                .requestMatchers("/api/v1/user/**").hasAnyAuthority(
+                                .requestMatchers("/emails/**").hasAnyAuthority(
+                                        String.valueOf(INTERVIEW_SPECIALIST),
+                                        String.valueOf(HR)
+                                )
+                                .requestMatchers("/api/v1/users/**").hasAnyAuthority(
                                         String.valueOf(ADMIN),
                                         String.valueOf(HR),
                                         String.valueOf(INTERVIEW_SPECIALIST),

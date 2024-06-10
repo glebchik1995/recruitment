@@ -11,7 +11,7 @@ databaseChangeLog:
                   value: 'Gleb'
               - column:
                   name: username
-                  value: 'gleb1995@mail.com'
+                  value: 'glebchik.verbickiy95@gmail.com'
               - column:
                   name: password
                   value: '$2a$12$x9Rhx2BKVeNd/iV0tpm1AOwFVhm835KvYILXSu5UHT19qMkbG3MSS'

@@ -1,6 +1,6 @@
-package com.java.recruitment.web.controller.message;
+package com.java.recruitment.web.controller.mail;
 
-import com.java.recruitment.service.IEmailService;
+import com.java.recruitment.service.IMailService;
 import com.java.recruitment.web.dto.mail.MailDTO;
 import com.java.recruitment.web.dto.mail.MailResponseDTO;
 import lombok.RequiredArgsConstructor;
@@ -13,7 +13,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequiredArgsConstructor
 public class EmailController {
 
-    private final IEmailService emailService;
+    private final IMailService emailService;
 
     @PostMapping
     public MailResponseDTO sendTextEmail(
