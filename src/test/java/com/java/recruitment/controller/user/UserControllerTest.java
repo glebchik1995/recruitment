@@ -7,7 +7,7 @@ import com.java.recruitment.repositoty.UserRepository;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.web.dto.user.ShortUserDTO;
 import com.java.recruitment.web.dto.user.UserDTO;
-import com.java.recruitment.web.mapper.impl.UserMapper;
+import com.java.recruitment.web.mapper.UserMapper;
 import com.java.recruitment.web.security.expression.CustomSecurityExpression;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

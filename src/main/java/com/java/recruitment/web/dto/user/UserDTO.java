@@ -2,6 +2,7 @@ package com.java.recruitment.web.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.java.recruitment.service.model.user.Role;
+import com.java.recruitment.web.dto.validation.FieldMatch;
 import com.java.recruitment.web.dto.validation.OnCreate;
 import com.java.recruitment.web.dto.validation.OnUpdate;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -19,6 +20,13 @@ import java.util.Set;
 @NoArgsConstructor
 @Builder
 @Schema(description = "User DTO")
+@FieldMatch
+        (
+                first = "password",
+                second = "passwordConfirmation",
+                message = "Поля пароля должны совпадать",
+                groups = {OnCreate.class}
+        )
 public class UserDTO {
 
     @Schema(description = "User id", example = "1")
@@ -34,11 +42,6 @@ public class UserDTO {
     private String name;
 
     @Schema(description = "User email", example = "johndoe@gmail.com")
-    @NotNull(message = "Имя пользователя должно быть null.", groups = {OnCreate.class})
-    @Length(
-            max = 255, message = "Длина имени пользователя должна быть меньше 255 символов.",
-            groups = {OnCreate.class, OnUpdate.class}
-    )
     @Email(
             message = "Email адрес должен быть в формате user@example.com.",
             groups = {OnCreate.class, OnUpdate.class}

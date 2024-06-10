@@ -5,7 +5,7 @@ import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.ICandidateService;
 import com.java.recruitment.service.model.candidate.Candidate;
 import com.java.recruitment.web.dto.candidate.CandidateDTO;
-import com.java.recruitment.web.mapper.impl.CandidateMapper;
+import com.java.recruitment.web.mapper.CandidateMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import util.NullPropertyCopyHelper;

@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -20,12 +19,7 @@ public class HrJobRequestController {
 
     private final IJobRequestService jobRequestService;
 
-    @PostMapping(
-            consumes = {
-                    MediaType.MULTIPART_FORM_DATA_VALUE,
-                    MediaType.APPLICATION_JSON_VALUE
-            }
-    )
+    @PostMapping
     @Operation(summary = "Создание запроса на работу")
     @ResponseStatus(HttpStatus.CREATED)
     public JobResponseDTO createJobRequest(

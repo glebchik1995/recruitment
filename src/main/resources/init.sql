@@ -46,18 +46,6 @@ CREATE TABLE IF NOT EXISTS job_request_files
     FOREIGN KEY (job_request_id) REFERENCES job_request (id) ON DELETE CASCADE
 );
 
-CREATE TABLE mail
-(
-    id          BIGSERIAL PRIMARY KEY,
-    sender_id   BIGINT NOT NULL,
-    receiver_id BIGINT NOT NULL,
-    subject     VARCHAR(255) NOT NULL,
-    text        TEXT,
-    sent_date   TIMESTAMP,
-    FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
-);
-
 CREATE INDEX idx_status ON candidate (position);
 CREATE INDEX idx_status ON candidate (department);
 CREATE INDEX idx_status ON candidate (age);

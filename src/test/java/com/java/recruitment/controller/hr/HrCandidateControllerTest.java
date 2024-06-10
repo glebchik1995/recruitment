@@ -7,7 +7,7 @@ import com.java.recruitment.BaseIntegrationTest;
 import com.java.recruitment.repositoty.CandidateRepository;
 import com.java.recruitment.service.model.candidate.Candidate;
 import com.java.recruitment.web.dto.candidate.CandidateDTO;
-import com.java.recruitment.web.mapper.impl.CandidateMapper;
+import com.java.recruitment.web.mapper.CandidateMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

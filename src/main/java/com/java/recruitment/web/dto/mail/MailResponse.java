@@ -12,9 +12,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @Builder
 @Schema(description = "MailResponse DTO")
-public class MailResponseDTO {
-
-    private Long id;
+public class MailResponse {
 
     private String senderMail;
 

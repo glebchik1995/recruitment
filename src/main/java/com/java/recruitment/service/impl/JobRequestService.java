@@ -13,8 +13,8 @@ import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.web.dto.hiring.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.hiring.JobRequestDTO;
 import com.java.recruitment.web.dto.hiring.JobResponseDTO;
-import com.java.recruitment.web.mapper.impl.CandidateMapper;
-import com.java.recruitment.web.mapper.impl.JobRequestMapper;
+import com.java.recruitment.web.mapper.CandidateMapper;
+import com.java.recruitment.web.mapper.JobRequestMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -49,17 +49,15 @@ public class JobRequestService implements IJobRequestService {
     @Override
     @Transactional
     public JobResponseDTO createJobRequest(JobRequestDTO jobRequestDto) {
-
         Candidate candidate = candidateMapper.toEntity(jobRequestDto.getCandidate());
-
         candidateRepository.save(candidate);
 
         User hr = userRepository.findById(jobRequestDto.getHrId())
                 .orElseThrow(() -> new DataNotFoundException("HR не найден"));
 
-        List<MultipartFile> files = jobRequestDto.getFiles();
+        MultipartFile[] files = jobRequestDto.getFiles();
 
-        List<String> filesName = new ArrayList<>();
+        List<String> filesNames = new ArrayList<>();
 
         JobRequest jobRequest = JobRequest.builder()
                 .status(NEW)
@@ -68,13 +66,12 @@ public class JobRequestService implements IJobRequestService {
                 .build();
 
         if (files != null) {
-            files.stream()
-                    .map(fileService::upload)
-                    .forEach(filesName::add);
+            for (MultipartFile file : files) {
+                filesNames.add(fileService.upload(file));
+            }
         }
 
-        jobRequest.setFiles(filesName);
-
+        jobRequest.setFiles(filesNames);
 
         if (jobRequestDto.getDescription() != null) {
             jobRequest.setDescription(jobRequestDto.getDescription());

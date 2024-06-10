@@ -32,7 +32,6 @@ public class CandidateDTO {
     private int age;
 
     @Email(groups = {OnCreate.class, OnUpdate.class})
-    @NotBlank(groups = {OnCreate.class})
     @Schema(description = "email", example = "ivan1977@mail.com")
     private String email;
 

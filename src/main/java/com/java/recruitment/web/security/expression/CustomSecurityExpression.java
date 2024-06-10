@@ -1,8 +1,7 @@
 package com.java.recruitment.web.security.expression;
 
-import com.java.recruitment.service.impl.UserService;
+import com.java.recruitment.service.IUserService;
 import com.java.recruitment.service.model.user.Role;
-
 import com.java.recruitment.web.security.JwtEntity;
 import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class CustomSecurityExpression {
 
-    private final UserService userService;
+    private final IUserService userService;
 
     public boolean canAccessUser(@NotNull final Long id) {
         JwtEntity user = this.getPrincipal();

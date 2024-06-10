@@ -19,7 +19,8 @@ public class ControllerAdvice {
                     DataUpdateException.class,
                     DataValidationException.class,
                     DataAlreadyExistException.class,
-                    DataUploadException.class
+                    DataUploadException.class,
+                    DataProcessingException.class
             }
     )
     @ResponseStatus(HttpStatus.BAD_REQUEST)

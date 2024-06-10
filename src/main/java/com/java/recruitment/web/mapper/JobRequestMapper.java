@@ -1,4 +1,4 @@
-package com.java.recruitment.web.mapper.impl;
+package com.java.recruitment.web.mapper;
 
 import com.java.recruitment.service.model.hiring.JobRequest;
 import com.java.recruitment.web.dto.hiring.JobResponseDTO;

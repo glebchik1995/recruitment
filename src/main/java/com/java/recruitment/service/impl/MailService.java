@@ -1,15 +1,13 @@
 package com.java.recruitment.service.impl;
 
-import com.java.recruitment.repositoty.MailRepository;
 import com.java.recruitment.repositoty.UserRepository;
 import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.repositoty.exception.DataProcessingException;
 import com.java.recruitment.service.IMailService;
-import com.java.recruitment.service.model.mail.Mail;
 import com.java.recruitment.service.model.user.User;
-import com.java.recruitment.web.dto.mail.MailDTO;
-import com.java.recruitment.web.dto.mail.MailResponseDTO;
-import com.java.recruitment.web.mapper.impl.MailMapper;
+import com.java.recruitment.web.dto.mail.MailRequest;
+import com.java.recruitment.web.dto.mail.MailResponse;
+import com.java.recruitment.web.mapper.MailMapper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
@@ -23,6 +21,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 @Service
@@ -34,67 +33,40 @@ public class MailService implements IMailService {
 
     private final UserRepository userRepository;
 
-    private final MailRepository mailRepository;
-
     @Override
     @Transactional
-    public MailResponseDTO sendMail(MailDTO mailDTO, MultipartFile[] files) {
-
-        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
-
-        User sender = userRepository.findById(mailDTO.getSenderId())
+    public MailResponse sendMail(MailRequest mailRequest) {
+        User sender = userRepository.findByUsername(mailRequest.getSenderMail())
                 .orElseThrow(() -> new DataNotFoundException("Отправитель не найден"));
 
-        User receiver = userRepository.findById(mailDTO.getReceiverId())
+        User receiver = userRepository.findByUsername(mailRequest.getReceiverMail())
                 .orElseThrow(() -> new DataNotFoundException("Получатель не найден"));
 
-        String protocol = "smtp";
-
-        String host = protocol + "." + getDomainFromEmail(sender.getUsername());
-
-        Mail mail = mailMapper.toEntity(mailDTO);
-        javaMailSender.setProtocol(protocol);
-        javaMailSender.setHost(host);
+        JavaMailSenderImpl javaMailSender = new JavaMailSenderImpl();
+        javaMailSender.setProtocol("smtp");
+        javaMailSender.setHost("smtp." + getDomainFromEmail(sender.getUsername()));
         javaMailSender.setPort(587);
         javaMailSender.setUsername(sender.getUsername());
-        javaMailSender.setPassword(mailDTO.getPassword());
+        javaMailSender.setPassword(mailRequest.getPassword());
         javaMailSender.getJavaMailProperties().setProperty("mail.smtp.starttls.enable", "true");
         javaMailSender.getJavaMailProperties().setProperty("mail.smtp.auth", "true");
 
         try {
             MimeMessage mimeMessage = javaMailSender.createMimeMessage();
-            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper(
-                    mimeMessage,
-                    true,
-                    "UTF-8"
-            );
+            MimeMessageHelper mimeMessageHelper = new MimeMessageHelper
+                    (
+                            mimeMessage,
+                            true,
+                            StandardCharsets.UTF_8.name()
+                    );
 
-            mimeMessageHelper.setFrom(sender.getUsername());
-            mimeMessageHelper.setTo(receiver.getUsername());
-            mimeMessageHelper.setSubject(mailDTO.getSubject());
-            if (mailDTO.getText() != null) {
-                mimeMessageHelper.setText(mailDTO.getText());
-            }
-
-            if (files != null) {
-                for (MultipartFile file : files) {
-                    if (file.getOriginalFilename() != null) {
-                        mimeMessageHelper.addAttachment(
-                                file.getOriginalFilename(),
-                                new ByteArrayResource(file.getBytes()));
-                    }
-                }
-            }
+            prepareMailMessage(mimeMessageHelper, sender, receiver, mailRequest);
 
             javaMailSender.send(mimeMessage);
 
-            mail.setSentDate(LocalDateTime.now());
-            mailRepository.save(mail);
-
-            MailResponseDTO mailResponseDTO = mailMapper.toDto(mail);
-            mailResponseDTO.setSenderMail(sender.getUsername());
-            mailResponseDTO.setReceiverMail(receiver.getUsername());
-            return mailResponseDTO;
+            MailResponse mailResponse = mailMapper.toResponse(mailRequest);
+            mailResponse.setSentDate(LocalDateTime.now());
+            return mailResponse;
 
         } catch (MessagingException e) {
             log.error("Ошибка отправки письма", e);
@@ -105,7 +77,31 @@ public class MailService implements IMailService {
         }
     }
 
-    public String getDomainFromEmail(String email) {
+    private void prepareMailMessage(MimeMessageHelper mimeMessageHelper, User sender, User receiver, MailRequest mailRequest) throws MessagingException, IOException {
+        mimeMessageHelper.setFrom(sender.getUsername());
+        mimeMessageHelper.setTo(receiver.getUsername());
+        mimeMessageHelper.setSubject(mailRequest.getSubject());
+        if (mailRequest.getText() != null) {
+            mimeMessageHelper.setText(mailRequest.getText());
+        }
+
+        if (mailRequest.getFiles() != null) {
+            addAttachments(mimeMessageHelper, mailRequest.getFiles());
+        }
+    }
+
+    private void addAttachments(MimeMessageHelper mimeMessageHelper, MultipartFile[] files) throws MessagingException, IOException {
+        for (MultipartFile file : files) {
+            if (file != null && file.getOriginalFilename() != null) {
+                mimeMessageHelper.addAttachment(
+                        file.getOriginalFilename(),
+                        new ByteArrayResource(file.getBytes())
+                );
+            }
+        }
+    }
+
+    private String getDomainFromEmail(String email) {
         int atIndex = email.indexOf('@');
         if (atIndex != -1) {
             return email.substring(atIndex + 1);

@@ -13,7 +13,6 @@ import org.hibernate.validator.constraints.Length;
 public class JwtRequest {
 
     @Schema(description = "email", example = "johndoe@gmail.com")
-    @NotNull
     @Email
     private String username;
 

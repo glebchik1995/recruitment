@@ -1,7 +1,6 @@
-package com.java.recruitment.web.mapper.impl;
+package com.java.recruitment.web.mapper;
 
 import com.java.recruitment.web.dto.candidate.CandidateDTO;
-import com.java.recruitment.web.mapper.Mappable;
 import com.java.recruitment.service.model.candidate.Candidate;
 import org.mapstruct.Mapper;
 
