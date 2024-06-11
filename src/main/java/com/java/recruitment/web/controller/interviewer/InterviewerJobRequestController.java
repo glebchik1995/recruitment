@@ -11,7 +11,6 @@ import org.apache.coyote.BadRequestException;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -47,13 +46,13 @@ public class InterviewerJobRequestController {
     }
 
     @GetMapping("/{id}")
-    @PreAuthorize("@cse.canAccessJobRequest(#id)")
+//    @PreAuthorize("@cse.canAccessJobRequest(#id)")
     public JobResponseDTO getJobRequestById(@PathVariable Long id) {
         return jobRequestService.getJobRequestById(id);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("@cse.canAccessJobRequest(#jobRequestDto.id)")
+//    @PreAuthorize("@cse.canAccessJobRequest(#jobRequestDto.id)")
     public JobResponseDTO updateStatusJobRequest(@RequestBody ChangeJobRequestStatusDTO jobRequestDto) {
         return jobRequestService.updateJobRequest(jobRequestDto);
     }

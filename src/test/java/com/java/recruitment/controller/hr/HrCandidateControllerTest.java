@@ -29,11 +29,14 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser(username = "admin", authorities = {"ADMIN"})
 class HrCandidateControllerTest extends BaseIntegrationTest {
 
-    @Autowired private MockMvc mvc;
+    @Autowired
+    private MockMvc mvc;
 
-    @Autowired private CandidateRepository candidateRepository;
+    @Autowired
+    private CandidateRepository candidateRepository;
 
-    @Autowired private CandidateMapper candidateMapper;
+    @Autowired
+    private CandidateMapper candidateMapper;
 
     private final ObjectMapper mapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
@@ -52,11 +55,14 @@ class HrCandidateControllerTest extends BaseIntegrationTest {
                 .department("TEST DEPARTMENT")
                 .build();
 
-        MockHttpServletResponse response = mvc.perform(MockMvcRequestBuilders.put("/api/v1/hr/candidate")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(updatedCandidateDTO))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .accept(MediaType.APPLICATION_JSON))
+        MockHttpServletResponse response = mvc.perform(
+                        MockMvcRequestBuilders.put(
+                                        "/api/v1/hr/candidate"
+                                )
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(updatedCandidateDTO))
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 
@@ -99,11 +105,14 @@ class HrCandidateControllerTest extends BaseIntegrationTest {
                 .department(null)
                 .build();
 
-        MockHttpServletResponse response = mvc.perform(MockMvcRequestBuilders.put("/api/v1/hr/candidate")
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(mapper.writeValueAsString(updatedCandidateDTO))
-                        .characterEncoding(StandardCharsets.UTF_8)
-                        .accept(MediaType.APPLICATION_JSON))
+        MockHttpServletResponse response = mvc.perform(
+                        MockMvcRequestBuilders.put(
+                                        "/api/v1/hr/candidate"
+                                )
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(mapper.writeValueAsString(updatedCandidateDTO))
+                                .characterEncoding(StandardCharsets.UTF_8)
+                                .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
 

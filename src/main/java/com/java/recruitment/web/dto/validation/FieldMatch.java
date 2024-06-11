@@ -23,11 +23,4 @@ public @interface FieldMatch
     String first();
     String second();
 
-    @Target({TYPE, ANNOTATION_TYPE})
-    @Retention(RUNTIME)
-    @Documented
-    @interface List
-    {
-        FieldMatch[] value();
-    }
 }

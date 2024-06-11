@@ -1,25 +1,17 @@
 package com.java.recruitment.service.impl;
 
-import com.java.recruitment.repositoty.PasswordResetTokenRepository;
 import com.java.recruitment.repositoty.UserRepository;
 import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.IUserService;
-import com.java.recruitment.service.model.password.PasswordResetToken;
 import com.java.recruitment.service.model.user.Role;
 import com.java.recruitment.service.model.user.User;
-import com.java.recruitment.web.dto.password.PasswordResetDTO;
 import com.java.recruitment.web.dto.user.ShortUserDTO;
 import com.java.recruitment.web.dto.user.UserDTO;
 import com.java.recruitment.web.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.ui.Model;
-import org.springframework.validation.BindingResult;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import util.NullPropertyCopyHelper;
 
 import java.util.Set;
@@ -30,15 +22,9 @@ import java.util.Set;
 public class UserService implements IUserService {
 
     private final UserRepository userRepository;
-    private final PasswordResetTokenRepository tokenRepository;
     private final PasswordEncoder passwordEncoder;
-    private final BCryptPasswordEncoder bCryptPasswordEncoder;
     private final UserMapper userMapper;
 
-    @ModelAttribute("passwordResetForm")
-    public PasswordResetDTO passwordReset() {
-        return new PasswordResetDTO();
-    }
     /**
      * Создание пользователя
      *
@@ -111,37 +97,5 @@ public class UserService implements IUserService {
             final Long job_request_id
     ) {
         return userRepository.isJobRequestOwner(userId, job_request_id);
-    }
-
-    @Override
-    public String displayResetPasswordPage(String token, Model model) {
-        PasswordResetToken resetToken = tokenRepository.findByToken(token);
-        if (resetToken == null) {
-            model.addAttribute("error", "Не удалось найти токен сброса пароля.");
-        } else if (resetToken.isExpired()) {
-            model.addAttribute("error", "Срок действия токена истек, запросите сброс нового пароля.");
-        } else {
-            model.addAttribute("token", resetToken.getToken());
-        }
-
-        return "reset-password";
-    }
-
-    @Override
-    @Transactional
-    public String handlePasswordReset(PasswordResetDTO form, BindingResult result, RedirectAttributes redirectAttributes) {
-        if (result.hasErrors()) {
-            redirectAttributes.addFlashAttribute(BindingResult.class.getName() + ".passwordResetForm", result);
-            redirectAttributes.addFlashAttribute("passwordResetForm", form);
-            return "redirect:/reset-password?token=" + form.getToken();
-        }
-
-        PasswordResetToken token = tokenRepository.findByToken(form.getToken());
-        User user = token.getUser();
-        String updatedPassword = bCryptPasswordEncoder.encode(form.getPassword());
-        userRepository.updatePassword(updatedPassword, user.getId());
-        tokenRepository.delete(token);
-
-        return "redirect:/login?resetSuccess";
     }
 }

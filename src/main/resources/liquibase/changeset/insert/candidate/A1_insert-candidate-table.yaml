@@ -14,7 +14,7 @@ databaseChangeLog:
                   value: Junior
               - column:
                   name: age
-                  valueNumeric: '22'
+                  valueNumeric: 22
               - column:
                   name: email
                   value: "john.jun@mail.com"

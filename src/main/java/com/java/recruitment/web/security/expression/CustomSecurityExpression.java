@@ -22,26 +22,26 @@ public class CustomSecurityExpression {
         return userId.equals(id) || hasAnyRole(Role.ADMIN);
     }
 
-    public boolean canAccessInterviewer(final Long id) {
-        JwtEntity user = this.getPrincipal();
-        Long userId = user.getId();
-
-        return (userId.equals(id) && hasAnyRole(Role.INTERVIEW_SPECIALIST)) || hasAnyRole(Role.ADMIN);
-    }
-
-    public boolean canAccessHr(final Long id) {
-        JwtEntity user = this.getPrincipal();
-        Long userId = user.getId();
-
-        return (userId.equals(id) && hasAnyRole(Role.HR)) || hasAnyRole(Role.ADMIN);
-    }
-
-    public boolean canAccessJobRequest(final Long jobRequestId) {
-        JwtEntity user = this.getPrincipal();
-        Long id = user.getId();
-
-        return userService.isJobRequestOwner(id, jobRequestId);
-    }
+//    public boolean canAccessInterviewer(final Long id) {
+//        JwtEntity user = this.getPrincipal();
+//        Long userId = user.getId();
+//
+//        return (userId.equals(id) && hasAnyRole(Role.INTERVIEW_SPECIALIST)) || hasAnyRole(Role.ADMIN);
+//    }
+//
+//    public boolean canAccessHr(final Long id) {
+//        JwtEntity user = this.getPrincipal();
+//        Long userId = user.getId();
+//
+//        return (userId.equals(id) && hasAnyRole(Role.HR)) || hasAnyRole(Role.ADMIN);
+//    }
+//
+//    public boolean canAccessJobRequest(final Long jobRequestId) {
+//        JwtEntity user = this.getPrincipal();
+//        Long id = user.getId();
+//
+//        return userService.isJobRequestOwner(id, jobRequestId) || hasAnyRole(Role.ADMIN);
+//    }
 
     private boolean hasAnyRole(final Role... roles) {
         Authentication authentication = SecurityContextHolder.getContext()

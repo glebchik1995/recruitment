@@ -14,6 +14,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -24,6 +25,8 @@ import java.nio.charset.StandardCharsets;
 import java.util.Set;
 
 import static com.java.recruitment.service.model.user.Role.ADMIN;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
@@ -39,7 +42,7 @@ class UserControllerTest extends BaseIntegrationTest {
     @Autowired
     private UserMapper userMapper;
 
-    @Autowired
+    @MockBean
     private CustomSecurityExpression expression;
 
 
@@ -48,13 +51,14 @@ class UserControllerTest extends BaseIntegrationTest {
     @Test
     @DisplayName("Изменение публичных данных пользователя")
     void shouldUpdatePublicDataInOneUser() throws Exception {
+
+        when(expression.canAccessUser(anyLong())).thenReturn(true);
+
         ShortUserDTO updatedUserDTO = ShortUserDTO.builder()
                 .id(1L)
                 .name("TEST_NAME")
                 .username("test@gmail.com")
                 .build();
-
-        // Ваш остальной код теста
         MockHttpServletResponse response = mvc.perform(
                         MockMvcRequestBuilders.put("/api/v1/users")
                                 .contentType(MediaType.APPLICATION_JSON)
@@ -63,13 +67,14 @@ class UserControllerTest extends BaseIntegrationTest {
                                 .accept(MediaType.APPLICATION_JSON))
                 .andExpect(status().isOk())
                 .andReturn().getResponse();
-
         response.setCharacterEncoding("UTF-8");
+
         User candidate = userRepository.findById(updatedUserDTO.getId()).orElse(null);
         Assertions.assertNotNull(candidate);
         candidate.setName(updatedUserDTO.getName());
         candidate.setUsername(updatedUserDTO.getUsername());
         userRepository.save(candidate);
+
         UserDTO userDTO = userMapper.toDto(candidate);
         Assertions.assertEquals(mapper.writeValueAsString(userDTO), response.getContentAsString());
     }

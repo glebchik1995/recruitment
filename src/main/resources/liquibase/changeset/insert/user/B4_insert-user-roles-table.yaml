@@ -8,7 +8,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: user_id
-                  value: '1'
+                  valueNumeric: 1
               - column:
                   name: role
                   value: 'USER'
@@ -17,7 +17,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: user_id
-                  value: '1'
+                  valueNumeric: 1
               - column:
                   name: role
                   value: 'HR'

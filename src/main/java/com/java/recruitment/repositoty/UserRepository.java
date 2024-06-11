@@ -2,7 +2,6 @@ package com.java.recruitment.repositoty;
 
 import com.java.recruitment.service.model.user.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
@@ -23,10 +22,6 @@ public interface UserRepository extends JpaRepository<User, Long> {
             @Param("userId") Long userId,
             @Param("job_request_id") Long job_request_id
     );
-
-    @Modifying
-    @Query("update User u set u.password = :password where u.id = :id")
-    void updatePassword(@Param("password") String password, @Param("id") Long id);
 
 //    @Query(value = """
 //            SELECT u.id as id,

@@ -8,7 +8,16 @@ databaseChangeLog:
             columns:
               - column:
                   name: user_id
-                  value: '2'
+                  valueNumeric: 2
+              - column:
+                  name: role
+                  value: 'USER'
+        - insert:
+            tableName: users_roles
+            columns:
+              - column:
+                  name: user_id
+                  valueNumeric: 2
               - column:
                   name: role
                   value: 'INTERVIEW_SPECIALIST'
