@@ -1,10 +1,12 @@
 package com.java.recruitment.web.controller.interviewer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.java.recruitment.repositoty.JobRequestRepository;
 import com.java.recruitment.service.IJobRequestService;
 import com.java.recruitment.service.filter.CriteriaModel;
 import com.java.recruitment.web.dto.hiring.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.hiring.JobResponseDTO;
+import com.java.recruitment.web.mapper.JobRequestMapper;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
@@ -28,6 +30,10 @@ public class InterviewerJobRequestController {
 
     private final IJobRequestService jobRequestService;
 
+    private final JobRequestRepository jobRequestRepository;
+
+    private final JobRequestMapper mapper;
+
     @GetMapping
     public Page<JobResponseDTO> getAllJobRequests(
             @RequestParam(required = false) String criteriaJson,
@@ -37,16 +43,25 @@ public class InterviewerJobRequestController {
         List<CriteriaModel> criteriaList;
 
         ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            criteriaList = Arrays.asList(objectMapper.readValue(criteriaJson, CriteriaModel[].class));
-        } catch (IOException ex) {
-            throw new BadRequestException("Не удалось проанализировать условия", ex);
+        if (criteriaJson != null) {
+            try {
+                criteriaList = Arrays.asList(
+                        objectMapper.readValue(
+                                criteriaJson,
+                                CriteriaModel[].class
+                        )
+                );
+
+                return jobRequestService.getAllJobRequests(criteriaList, pageable);
+            } catch (IOException ex) {
+                throw new BadRequestException("Не удалось проанализировать условия", ex);
+            }
+        } else {
+            return jobRequestRepository.findAll(pageable).map(mapper::toDto);
         }
-        return jobRequestService.getAllJobRequests(criteriaList, pageable);
     }
 
     @GetMapping("/{id}")
-//    @PreAuthorize("@cse.canAccessJobRequest(#id)")
     public JobResponseDTO getJobRequestById(@PathVariable Long id) {
         return jobRequestService.getJobRequestById(id);
     }

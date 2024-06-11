@@ -77,7 +77,12 @@ public class MailService implements IMailService {
         }
     }
 
-    private void prepareMailMessage(MimeMessageHelper mimeMessageHelper, User sender, User receiver, MailRequest mailRequest) throws MessagingException, IOException {
+    private void prepareMailMessage(
+            MimeMessageHelper mimeMessageHelper,
+            User sender,
+            User receiver,
+            MailRequest mailRequest
+    ) throws MessagingException, IOException {
         mimeMessageHelper.setFrom(sender.getUsername());
         mimeMessageHelper.setTo(receiver.getUsername());
         mimeMessageHelper.setSubject(mailRequest.getSubject());
@@ -90,7 +95,10 @@ public class MailService implements IMailService {
         }
     }
 
-    private void addAttachments(MimeMessageHelper mimeMessageHelper, MultipartFile[] files) throws MessagingException, IOException {
+    private void addAttachments(
+            MimeMessageHelper mimeMessageHelper,
+            MultipartFile[] files
+    ) throws MessagingException, IOException {
         for (MultipartFile file : files) {
             if (file != null && file.getOriginalFilename() != null) {
                 mimeMessageHelper.addAttachment(
@@ -109,5 +117,4 @@ public class MailService implements IMailService {
             return "";
         }
     }
-
 }

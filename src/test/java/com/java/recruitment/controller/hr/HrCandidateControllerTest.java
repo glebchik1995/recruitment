@@ -29,7 +29,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @WithMockUser(username = "admin", authorities = {"ADMIN"})
 class HrCandidateControllerTest extends BaseIntegrationTest {
 
-    @Autowired
+    @Autowired(required = false)
     private MockMvc mvc;
 
     @Autowired

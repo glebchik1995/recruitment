@@ -20,4 +20,10 @@ public class CriteriaModel implements Serializable {
     private Object value;
 
     private JoinType joinType;
+
+    public CriteriaModel(String field, Operation operation, Object value) {
+        this.field = field;
+        this.operation = operation;
+        this.value = value;
+    }
 }

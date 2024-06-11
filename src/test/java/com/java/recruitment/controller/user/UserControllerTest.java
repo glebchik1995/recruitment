@@ -30,10 +30,10 @@ import static org.mockito.Mockito.when;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @AutoConfigureMockMvc
-@WithMockUser(username = "bigmax1993@mail.com", authorities = "ADMIN")
+@WithMockUser(username = "admin", authorities = "ADMIN")
 class UserControllerTest extends BaseIntegrationTest {
 
-    @Autowired
+    @Autowired(required = false)
     private MockMvc mvc;
 
     @Autowired

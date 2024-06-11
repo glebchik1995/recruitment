@@ -32,7 +32,7 @@ import static com.java.recruitment.service.model.hiring.Status.NEW;
 @Service
 @RequiredArgsConstructor
 @Slf4j
-public class JobRequestService implements IJobRequestService {
+class JobRequestService implements IJobRequestService {
 
     private final JobRequestMapper jobRequestMapper;
 
@@ -109,18 +109,10 @@ public class JobRequestService implements IJobRequestService {
     }
 
     @Override
-    public Page<JobResponseDTO> getAllJobRequests(
-            List<CriteriaModel> criteriaModelList,
-            Pageable pageable
-    ) {
-        Page<JobRequest> rooms;
-        if (criteriaModelList.isEmpty()) {
-            rooms = jobRequestRepository.findAll(pageable);
-        } else {
-            Specification<JobRequest> specification
-                    = new GenericSpecification<>(criteriaModelList, JobRequest.class);
-            rooms = jobRequestRepository.findAll(specification, pageable);
-        }
+    public Page<JobResponseDTO> getAllJobRequests(List<CriteriaModel> criteriaModelList, Pageable pageable) {
+        Specification<JobRequest> specification
+                = new GenericSpecification<>(criteriaModelList, JobRequest.class);
+        Page<JobRequest> rooms = jobRequestRepository.findAll(specification, pageable);
         return rooms.map(jobRequestMapper::toDto);
     }
 }

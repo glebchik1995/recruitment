@@ -33,7 +33,7 @@ public class ControllerAdvice {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     public ResponseEntity<String> handleAuthException(DataAuthException ex) {
         log.error("ResponseStatus: FORBIDDEN. Status code: 403 {}", ex.getMessage());
-        return new ResponseEntity<>(ex.getMessage(), HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(DataNotFoundException.class)
