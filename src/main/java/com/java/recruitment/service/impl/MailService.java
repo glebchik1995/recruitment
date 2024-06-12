@@ -11,7 +11,6 @@ import com.java.recruitment.web.mapper.MailMapper;
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.mail.MailSendException;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -26,7 +25,6 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class MailService implements IMailService {
 
     private final MailMapper mailMapper;
@@ -69,10 +67,8 @@ public class MailService implements IMailService {
             return mailResponse;
 
         } catch (MessagingException e) {
-            log.error("Ошибка отправки письма", e);
             throw new MailSendException("Ошибка отправки письма", e);
         } catch (IOException e) {
-            log.error("Ошибка обработки файлов", e);
             throw new DataProcessingException("Ошибка обработки файлов");
         }
     }

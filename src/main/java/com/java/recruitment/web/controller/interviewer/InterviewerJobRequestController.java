@@ -1,31 +1,38 @@
 package com.java.recruitment.web.controller.interviewer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.java.recruitment.aspect.log.ToLog;
 import com.java.recruitment.repositoty.JobRequestRepository;
 import com.java.recruitment.service.IJobRequestService;
 import com.java.recruitment.service.filter.CriteriaModel;
 import com.java.recruitment.web.dto.hiring.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.hiring.JobResponseDTO;
 import com.java.recruitment.web.mapper.JobRequestMapper;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.apache.coyote.BadRequestException;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.List;
 
+@Tag(
+        name = "Interviewer Job Request Controller",
+        description = "CRUD OPERATIONS WITH JOB-REQUESTS"
+)
 @RestController
 @RequestMapping("/api/v1/interviewer/job-request")
 @RequiredArgsConstructor
-@Tag(
-        name = "INTERVIEWER - JOB_REQUESTS",
-        description = "CRUD OPERATIONS WITH JOB-REQUESTS"
-)
+@Validated
+@ToLog
 public class InterviewerJobRequestController {
 
     private final IJobRequestService jobRequestService;
@@ -35,6 +42,7 @@ public class InterviewerJobRequestController {
     private final JobRequestMapper mapper;
 
     @GetMapping
+    @Operation(summary = "Получить все заявки")
     public Page<JobResponseDTO> getAllJobRequests(
             @RequestParam(required = false) String criteriaJson,
             @ParameterObject Pageable pageable)
@@ -62,18 +70,14 @@ public class InterviewerJobRequestController {
     }
 
     @GetMapping("/{id}")
-    public JobResponseDTO getJobRequestById(@PathVariable Long id) {
+    @Operation(summary = "Получить заявку по ID")
+    public JobResponseDTO getJobRequestById(@PathVariable @Min(1) Long id) {
         return jobRequestService.getJobRequestById(id);
     }
 
-    @PutMapping("/{id}")
-//    @PreAuthorize("@cse.canAccessJobRequest(#jobRequestDto.id)")
-    public JobResponseDTO updateStatusJobRequest(@RequestBody ChangeJobRequestStatusDTO jobRequestDto) {
+    @PutMapping
+    @Operation(summary = "Изменить статус заявки")
+    public JobResponseDTO updateStatusJobRequest(@RequestBody @Valid ChangeJobRequestStatusDTO jobRequestDto) {
         return jobRequestService.updateJobRequest(jobRequestDto);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteJobRequest(@PathVariable Long id) {
-        jobRequestService.deleteJobRequest(id);
     }
 }

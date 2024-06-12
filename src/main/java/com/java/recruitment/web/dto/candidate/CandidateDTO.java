@@ -1,7 +1,7 @@
 package com.java.recruitment.web.dto.candidate;
 
-import com.java.recruitment.web.dto.validation.OnCreate;
-import com.java.recruitment.web.dto.validation.OnUpdate;
+import com.java.recruitment.validation.marker.OnCreate;
+import com.java.recruitment.validation.marker.OnUpdate;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.*;
 import lombok.*;

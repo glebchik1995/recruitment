@@ -18,7 +18,7 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import util.NullPropertyCopyHelper;
+import com.java.recruitment.util.NullPropertyCopyHelper;
 
 import java.nio.charset.StandardCharsets;
 

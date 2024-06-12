@@ -8,7 +8,7 @@ import com.java.recruitment.web.dto.candidate.CandidateDTO;
 import com.java.recruitment.web.mapper.CandidateMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import util.NullPropertyCopyHelper;
+import com.java.recruitment.util.NullPropertyCopyHelper;
 
 @Service
 @RequiredArgsConstructor

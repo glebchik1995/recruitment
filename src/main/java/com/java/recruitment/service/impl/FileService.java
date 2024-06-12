@@ -11,7 +11,6 @@ import io.minio.*;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -25,7 +24,6 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class FileService implements IFileService {
 
     private final MinioClient minioClient;
@@ -104,7 +102,7 @@ public class FileService implements IFileService {
                 throw new RuntimeException("Не удалось создать архив", e);
             }
         } else {
-            log.error("Файл {} не найден в запросе на работу {}", fileName, dto.getJobRequestId());
+            throw new DataNotFoundException("Файл не найден");
         }
     }
 

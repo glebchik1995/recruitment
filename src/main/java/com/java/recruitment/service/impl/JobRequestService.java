@@ -16,7 +16,6 @@ import com.java.recruitment.web.dto.hiring.JobResponseDTO;
 import com.java.recruitment.web.mapper.CandidateMapper;
 import com.java.recruitment.web.mapper.JobRequestMapper;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -31,7 +30,6 @@ import static com.java.recruitment.service.model.hiring.Status.NEW;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 class JobRequestService implements IJobRequestService {
 
     private final JobRequestMapper jobRequestMapper;
@@ -78,7 +76,6 @@ class JobRequestService implements IJobRequestService {
         }
 
         JobRequest savedJobRequest = jobRequestRepository.save(jobRequest);
-        log.info("Создана новая заявка на работу с ID: {}", savedJobRequest.getId());
 
         return jobRequestMapper.toDto(savedJobRequest);
     }

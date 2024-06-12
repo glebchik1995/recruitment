@@ -2,9 +2,9 @@ package com.java.recruitment.web.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.java.recruitment.service.model.user.Role;
-import com.java.recruitment.web.dto.validation.FieldMatch;
-import com.java.recruitment.web.dto.validation.OnCreate;
-import com.java.recruitment.web.dto.validation.OnUpdate;
+import com.java.recruitment.validation.match.FieldMatch;
+import com.java.recruitment.validation.marker.OnCreate;
+import com.java.recruitment.validation.marker.OnUpdate;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;

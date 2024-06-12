@@ -1,4 +1,4 @@
-package util;
+package com.java.recruitment.util;
 
 import lombok.experimental.UtilityClass;
 import org.springframework.beans.BeanUtils;

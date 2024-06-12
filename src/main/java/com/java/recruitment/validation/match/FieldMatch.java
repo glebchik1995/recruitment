@@ -1,4 +1,4 @@
-package com.java.recruitment.web.dto.validation;
+package com.java.recruitment.validation.match;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

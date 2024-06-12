@@ -1,14 +1,7 @@
 package com.java.recruitment.config;
 
-import com.java.recruitment.service.properties.MinioProperties;
 import com.java.recruitment.web.security.JwtTokenFilter;
 import com.java.recruitment.web.security.JwtTokenProvider;
-import io.minio.MinioClient;
-import io.swagger.v3.oas.models.Components;
-import io.swagger.v3.oas.models.OpenAPI;
-import io.swagger.v3.oas.models.info.Info;
-import io.swagger.v3.oas.models.security.SecurityRequirement;
-import io.swagger.v3.oas.models.security.SecurityScheme;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.context.annotation.Bean;
@@ -36,9 +29,13 @@ import static com.java.recruitment.service.model.user.Role.*;
 public class SecurityConfiguration {
 
     private final JwtTokenProvider tokenProvider;
-
-    private final MinioProperties minioProperties;
-
+//@Lazy - это аннотация, которая указывает Spring на то, что бин должен быть создан только при первом обращении к нему.
+//Это может быть полезно, если создание бина требует больших ресурсов или занимает много времени.
+//@RequiredArgsConstructor(onConstructor = @__(@Lazy)) - это аннотация Lombok, которая генерирует конструктор,
+//принимающий все final поля класса в качестве аргументов. Аннотация @Lazy указывает Spring на то, что бины,
+//переданные в качестве аргументов конструктора, должны быть созданы только при первом обращении к ним.
+//Таким образом, аннотация @Lazy используется здесь для того, чтобы отложить создание зависимостей до момента,
+//когда они действительно понадобятся. Это может ускорить запуск приложения и уменьшить потребление ресурсов.
     /**
      * Создает и возвращает экземпляр кодировщика паролей BCrypt.
      *
@@ -137,41 +134,5 @@ public class SecurityConfiguration {
                         UsernamePasswordAuthenticationFilter.class);
 
         return httpSecurity.build();
-    }
-
-    @Bean
-    public MinioClient minioClient() {
-        return MinioClient.builder()
-                .endpoint(minioProperties.getUrl())
-                .credentials(minioProperties.getAccessKey(),
-                        minioProperties.getSecretKey())
-                .build();
-    }
-
-    /**
-     * Создает и возвращает объект OpenAPI для документации API.
-     *
-     * @return Объект OpenAPI с настройками безопасности и информацией о API.
-     */
-
-    @Bean
-    public OpenAPI openAPI() {
-        return new OpenAPI()
-                .addSecurityItem(new SecurityRequirement()
-                        .addList("bearerAuth"))
-                .components(
-                        new Components()
-                                .addSecuritySchemes("bearerAuth",
-                                        new SecurityScheme()
-                                                .type(SecurityScheme.Type.HTTP)
-                                                .scheme("bearer")
-                                                .bearerFormat("JWT")
-                                )
-                )
-                .info(new Info()
-                        .title("Recruitment for job API")
-                        .description("Spring Boot Application")
-                        .version("1.0")
-                );
     }
 }
