@@ -9,6 +9,7 @@ import com.java.recruitment.service.filter.CriteriaModel;
 import com.java.recruitment.service.filter.GenericSpecification;
 import com.java.recruitment.service.model.candidate.Candidate;
 import com.java.recruitment.service.model.hiring.JobRequest;
+import com.java.recruitment.service.model.hiring.Status;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.web.dto.hiring.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.hiring.JobRequestDTO;
@@ -27,6 +28,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static com.java.recruitment.service.model.hiring.Status.NEW;
+import static com.java.recruitment.service.model.hiring.Status.fromValue;
 
 @Service
 @RequiredArgsConstructor
@@ -92,7 +94,8 @@ class JobRequestService implements IJobRequestService {
     public JobResponseDTO updateJobRequest(ChangeJobRequestStatusDTO jobRequestDto) {
         JobRequest jobRequest = jobRequestRepository.findById(jobRequestDto.getId())
                 .orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
-        jobRequest.setStatus(jobRequestDto.getStatus());
+        Status status = fromValue(jobRequestDto.getStatus());
+        jobRequest.setStatus(status);
         jobRequestRepository.save(jobRequest);
         return jobRequestMapper.toDto(jobRequest);
     }
