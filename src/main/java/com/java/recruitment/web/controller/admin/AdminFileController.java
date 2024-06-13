@@ -1,6 +1,6 @@
 package com.java.recruitment.web.controller.admin;
 
-import com.java.recruitment.aspect.log.ToLog;
+import com.java.recruitment.aspect.log.ToLogInfo;
 import com.java.recruitment.service.IFileService;
 import com.java.recruitment.web.dto.file.DeleteFileDTO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,14 +9,13 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(
         name = "Admin File Controller",
         description = "CRUD OPERATIONS WITH FILES"
 )
-@ToLog
+@ToLogInfo
 @RestController
 @RequestMapping("/api/v1/admin/file")
 @RequiredArgsConstructor

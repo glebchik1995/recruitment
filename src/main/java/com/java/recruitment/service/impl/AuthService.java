@@ -1,6 +1,7 @@
 package com.java.recruitment.service.impl;
 
 import com.java.recruitment.service.IAuthService;
+import com.java.recruitment.service.filter.UserService;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.web.dto.auth.JwtRequest;
 import com.java.recruitment.web.dto.auth.JwtResponse;

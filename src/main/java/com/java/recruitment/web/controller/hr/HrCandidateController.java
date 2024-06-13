@@ -1,6 +1,6 @@
 package com.java.recruitment.web.controller.hr;
 
-import com.java.recruitment.aspect.log.ToLog;
+import com.java.recruitment.aspect.log.ToLogInfo;
 import com.java.recruitment.service.impl.CandidateService;
 import com.java.recruitment.web.dto.candidate.CandidateDTO;
 import com.java.recruitment.validation.marker.OnUpdate;
@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/hr/candidate")
 @RequiredArgsConstructor
-@ToLog
+@ToLogInfo
 public class HrCandidateController {
 
     private final CandidateService candidateService;

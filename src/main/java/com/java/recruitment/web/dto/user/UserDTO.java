@@ -2,9 +2,9 @@ package com.java.recruitment.web.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.java.recruitment.service.model.user.Role;
-import com.java.recruitment.validation.match.FieldMatch;
 import com.java.recruitment.validation.marker.OnCreate;
 import com.java.recruitment.validation.marker.OnUpdate;
+import com.java.recruitment.validation.match.FieldMatch;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +18,7 @@ import java.util.Set;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Schema(description = "User DTO")
 @FieldMatch
         (
@@ -30,7 +30,6 @@ import java.util.Set;
 public class UserDTO {
 
     @Schema(description = "User id", example = "1")
-    @NotNull(message = "ID не должен быть null.", groups = OnUpdate.class)
     private Long id;
 
     @Schema(description = "User name", example = "John")
@@ -49,13 +48,17 @@ public class UserDTO {
     private String username;
 
     @Schema(description = "Зашифрованный пароль пользователя.")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotNull(message = "Пароль не должен быть null.", groups = {OnCreate.class})
+    @JsonProperty(
+            access = JsonProperty.Access.WRITE_ONLY
+    )
     private String password;
 
     @Schema(description = "Пароль подтверждение пользователя.")
-    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     @NotNull(message = "Подтверждение пароля не должно быть null.", groups = {OnCreate.class})
+    @JsonProperty(
+            access = JsonProperty.Access.WRITE_ONLY
+    )
     @Null(groups = {OnUpdate.class})
     private String passwordConfirmation;
 

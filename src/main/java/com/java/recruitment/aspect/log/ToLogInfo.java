@@ -9,5 +9,5 @@ import static java.lang.annotation.ElementType.METHOD;
 
 @Retention(RUNTIME)
 @Target({TYPE, METHOD})
-public @interface ToLog {
+public @interface ToLogInfo {
 }

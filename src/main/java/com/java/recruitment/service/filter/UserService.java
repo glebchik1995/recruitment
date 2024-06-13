@@ -1,6 +1,7 @@
-package com.java.recruitment.service.impl;
+package com.java.recruitment.service.filter;
 
 import com.java.recruitment.repositoty.UserRepository;
+import com.java.recruitment.repositoty.exception.DataAlreadyExistException;
 import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.IUserService;
 import com.java.recruitment.service.model.user.Role;
@@ -35,7 +36,7 @@ public class UserService implements IUserService {
     public UserDTO create(final UserDTO userDTO) {
         User user = userMapper.toEntity(userDTO);
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
-            throw new IllegalStateException("Пользователь уже существует.");
+            throw new DataAlreadyExistException("Пользователь уже существует.");
         }
         if (!user.getPassword().equals(user.getPasswordConfirmation())) {
             throw new IllegalStateException("Пароль и подтверждение пароля не совпадают.");

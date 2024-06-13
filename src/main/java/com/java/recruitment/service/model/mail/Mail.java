@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "mail")
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")

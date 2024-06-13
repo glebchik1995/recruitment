@@ -1,6 +1,6 @@
 package com.java.recruitment.web.controller;
 
-import com.java.recruitment.aspect.log.ToLog;
+import com.java.recruitment.aspect.log.ToLogInfo;
 import com.java.recruitment.service.IAuthService;
 import com.java.recruitment.service.IUserService;
 import com.java.recruitment.web.dto.auth.JwtRequest;
@@ -12,11 +12,10 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
 @Tag(
         name = "Auth Controller",
         description = "Auth API"
@@ -24,7 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-@ToLog
+@ToLogInfo
 public class AuthController {
 
     private final IAuthService authService;
@@ -37,6 +36,7 @@ public class AuthController {
     }
 
     @PostMapping("/registration")
+    @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Зарегистрироваться")
     public UserDTO registration(@Validated(OnCreate.class) @RequestBody final UserDTO userDto) {
         return userService.create(userDto);

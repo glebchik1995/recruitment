@@ -1,4 +1,4 @@
-package com.java.recruitment.validation;
+package com.java.recruitment.validation.enums;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

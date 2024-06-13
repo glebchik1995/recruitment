@@ -1,6 +1,6 @@
 package com.java.recruitment.web.controller.hr;
 
-import com.java.recruitment.aspect.log.ToLog;
+import com.java.recruitment.aspect.log.ToLogInfo;
 import com.java.recruitment.service.IJobRequestService;
 import com.java.recruitment.web.dto.hiring.JobRequestDTO;
 import com.java.recruitment.web.dto.hiring.JobResponseDTO;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping(value = "/hr/job-request")
 @RequiredArgsConstructor
-@ToLog
+@ToLogInfo
 public class HrJobRequestController {
 
     private final IJobRequestService jobRequestService;

@@ -9,7 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-@Builder
+@Builder(toBuilder = true)
 @Access(AccessType.FIELD)
 public class Candidate {
 

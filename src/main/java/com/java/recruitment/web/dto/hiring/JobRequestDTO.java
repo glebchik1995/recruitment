@@ -1,6 +1,8 @@
 package com.java.recruitment.web.dto.hiring;
 
 import com.java.recruitment.web.dto.candidate.CandidateDTO;
+import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
@@ -11,12 +13,13 @@ import org.springframework.web.multipart.MultipartFile;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Builder(toBuilder = true)
+@Schema(description = "Job Request DTO")
 public class JobRequestDTO {
 
     private Long id;
 
-    @NotNull
+    @Min(1)
     private Long hrId;
 
     @NotNull

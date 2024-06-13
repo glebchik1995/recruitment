@@ -1,4 +1,4 @@
-package com.java.recruitment.validation;
+package com.java.recruitment.validation.enums;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;
@@ -18,7 +18,7 @@ public @interface EnumAllowedConstraint {
 
     Class<? extends Enum<?>> enumClass();
 
-    String message() default "must be any of {allowed}";
+    String message() default "Должно быть любым из {allowed}";
 
     Class<?>[] groups() default {};
 

@@ -1,4 +1,4 @@
-package com.java.recruitment.controller.jobRequest;
+package com.java.recruitment.controller.interviewer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
@@ -25,7 +25,6 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
@@ -39,7 +38,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @WithMockUser(username = "admin", authorities = {"ADMIN"})
-class JobRequestTest extends BaseIntegrationTest {
+class InterviewerJobRequestControllerTest extends BaseIntegrationTest {
 
     @Autowired(required = false)
     private MockMvc mvc;
@@ -201,8 +200,7 @@ class JobRequestTest extends BaseIntegrationTest {
         MockHttpServletResponse response = mvc.perform(
                         MockMvcRequestBuilders.put
                                         (
-                                                "/api/v1/interviewer/job-request/{id}",
-                                                jobRequestDto.getId()
+                                                "/api/v1/interviewer/job-request"
                                         )
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(jobRequestDto))
@@ -220,25 +218,6 @@ class JobRequestTest extends BaseIntegrationTest {
 
         JobResponseDTO jobRequestDTO = jobRequestMapper.toDto(jobRequest);
         assertEquals(mapper.writeValueAsString(jobRequestDTO), response.getContentAsString());
-    }
-
-    @Test
-    @DisplayName("Удаление заявки на работу по ID")
-    @DirtiesContext(methodMode = DirtiesContext.MethodMode.AFTER_METHOD)
-    void shouldDeleteJobRequestById() throws Exception {
-
-        Long jobRequestID = 1L;
-
-        mvc.perform(MockMvcRequestBuilders.delete(
-                                "/api/v1/interviewer/job-request/{id}",
-                                jobRequestID
-                        )
-                )
-                .andExpect(status().isOk());
-
-        JobRequest jobRequest = jobRequestRepository.findById(jobRequestID).orElse(null);
-        Assertions.assertNull(jobRequest);
-
     }
 
 }

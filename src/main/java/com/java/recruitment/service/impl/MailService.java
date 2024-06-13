@@ -34,6 +34,7 @@ public class MailService implements IMailService {
     @Override
     @Transactional
     public MailResponse sendMail(MailRequest mailRequest) {
+
         User sender = userRepository.findByUsername(mailRequest.getSenderMail())
                 .orElseThrow(() -> new DataNotFoundException("Отправитель не найден"));
 

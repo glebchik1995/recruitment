@@ -63,22 +63,25 @@ public class FileService implements IFileService {
                 .orElseThrow(() -> new DataNotFoundException("Заявка не найдена!"));
 
         List<String> fileNames = jobRequest.getFiles();
-
-        // Создание ссылки на скачивание файлов
         List<String> downloadLinks = new ArrayList<>();
-        for (String fileName : fileNames) {
-            String downloadUrl = minioClient.getPresignedObjectUrl(
-                    GetPresignedObjectUrlArgs.builder()
-                            .method(Method.GET)
-                            .bucket(minioProperties.getBucket())
-                            .object(fileName)
-                            .expiry(60 * 60)
-                            .build()
-            );
-            downloadLinks.add(downloadUrl);
-        }
+        if (!fileNames.isEmpty()) {
+            // Создание ссылки на скачивание файлов
+            for (String fileName : fileNames) {
+                String downloadUrl = minioClient.getPresignedObjectUrl(
+                        GetPresignedObjectUrlArgs.builder()
+                                .method(Method.GET)
+                                .bucket(minioProperties.getBucket())
+                                .object(fileName)
+                                .expiry(60 * 60)
+                                .build()
+                );
+                downloadLinks.add(downloadUrl);
+            }
+            return formatDownloadLinks(downloadLinks);
 
-        return formatDownloadLinks(downloadLinks);
+        } else {
+            return "У заявки нет прикрепленных файлов";
+        }
     }
 
     @Transactional

@@ -12,14 +12,16 @@ import org.springframework.stereotype.Component;
 public class ExceptionLoggingAspect {
 
     @AfterThrowing(
-            pointcut = "execution(* com.java.recruitment..*.*(..))",
+            pointcut = "@within(com.java.recruitment.aspect.log.ToLogError)",
             throwing = "ex"
     )
     public void logException(JoinPoint joinPoint, Exception ex) {
         String methodName = joinPoint.getSignature().getName();
+        String className = joinPoint.getTarget().getClass().getSimpleName();
         log.error(
-                "Исключение, выброшенное в методе {}: {}",
+                "Исключение в методе {} класса {}: {}",
                 methodName,
+                className,
                 ex.getMessage()
         );
     }

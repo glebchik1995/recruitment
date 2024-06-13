@@ -13,7 +13,7 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
-@Builder
+@Builder(toBuilder = true)
 public class JobRequest {
 
     @Id

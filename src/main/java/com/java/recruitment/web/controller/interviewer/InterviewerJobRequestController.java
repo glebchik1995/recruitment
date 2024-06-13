@@ -1,7 +1,7 @@
 package com.java.recruitment.web.controller.interviewer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.java.recruitment.aspect.log.ToLog;
+import com.java.recruitment.aspect.log.ToLogInfo;
 import com.java.recruitment.repositoty.JobRequestRepository;
 import com.java.recruitment.service.IJobRequestService;
 import com.java.recruitment.service.filter.CriteriaModel;
@@ -30,9 +30,9 @@ import java.util.List;
 )
 @RestController
 @RequestMapping("/api/v1/interviewer/job-request")
-@RequiredArgsConstructor
+@ToLogInfo
 @Validated
-@ToLog
+@RequiredArgsConstructor
 public class InterviewerJobRequestController {
 
     private final IJobRequestService jobRequestService;

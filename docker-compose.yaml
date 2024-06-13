@@ -1,17 +1,18 @@
-version: '3'
-
 services:
   app:
     restart: always
-    build: .
-    container_name: app_recruitment
+    build:
+      context: .
+    container_name: recruitment_app
     ports:
       - '8080:8080'
     depends_on:
       - db
       - minio
+      - redis
     env_file:
       - .env
+
   db:
     image: postgres:latest
     container_name: postgres_db_recruitment
@@ -22,6 +23,17 @@ services:
       - POSTGRES_DB=${POSTGRES_DB_NAME}
       - POSTGRES_USER=${POSTGRES_USERNAME}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+    volumes:
+      - ./src/main/resources/liquibase:/docker-entrypoint-initdb.d
+
+  redis:
+    image: redis:7.2-rc-alpine
+    restart: always
+    container_name: redis
+    ports:
+      - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
+
 
   minio:
     image: minio/minio:latest
@@ -34,7 +46,7 @@ services:
       - '9090:9090'
       - '9000:9000'
     volumes:
-      - minio-data:/minio
+      - minio_data:/data
 
 volumes:
-  minio-data:
+  minio_data:

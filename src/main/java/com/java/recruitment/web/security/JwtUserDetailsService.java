@@ -1,6 +1,6 @@
 package com.java.recruitment.web.security;
 
-import com.java.recruitment.service.impl.UserService;
+import com.java.recruitment.service.filter.UserService;
 import com.java.recruitment.service.model.user.User;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;

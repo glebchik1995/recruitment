@@ -1,6 +1,6 @@
 package com.java.recruitment.web.controller.admin;
 
-import com.java.recruitment.aspect.log.ToLog;
+import com.java.recruitment.aspect.log.ToLogInfo;
 import com.java.recruitment.service.IJobRequestService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.*;
 )
 @RestController
 @RequestMapping("/api/v1/admin/job-request")
-@RequiredArgsConstructor
 @Validated
-@ToLog
+@ToLogInfo
+@RequiredArgsConstructor
 public class AdminJobRequestController {
 
     private final IJobRequestService jobRequestService;

@@ -11,11 +11,11 @@ import org.hibernate.validator.constraints.Length;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Schema(description = "Candidate DTO")
 public class CandidateDTO {
 
-    @NotNull(groups = OnUpdate.class)
+    @Min(groups = OnUpdate.class, value = 1)
     private Long id;
 
     @NotBlank(groups = {OnCreate.class})
@@ -26,9 +26,8 @@ public class CandidateDTO {
     @Length(max = 20, groups = {OnCreate.class, OnUpdate.class})
     private String surname;
 
-    @Min(groups = {OnCreate.class, OnUpdate.class}, value = 18)
-    @Max(groups = {OnCreate.class, OnUpdate.class}, value = 80)
-    @NotNull(groups = {OnCreate.class})
+    @Min(groups = {OnCreate.class, OnUpdate.class}, value = 18, message = "Возраст кандидата должен быть 18+")
+    @Max(groups = {OnCreate.class, OnUpdate.class}, value = 80, message = "Возраст кандидата должен меньше 80")
     private int age;
 
     @Email(groups = {OnCreate.class, OnUpdate.class})

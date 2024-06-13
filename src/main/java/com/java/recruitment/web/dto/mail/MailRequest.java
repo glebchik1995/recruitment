@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Builder
+@Builder(toBuilder = true)
 @Schema(description = "Mail DTO")
 public class MailRequest {
 

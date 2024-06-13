@@ -1,6 +1,6 @@
 package com.java.recruitment.web.controller.interviewer;
 
-import com.java.recruitment.aspect.log.ToLog;
+import com.java.recruitment.aspect.log.ToLogInfo;
 import com.java.recruitment.service.IFileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/api/v1/interviewer/files")
 @RequiredArgsConstructor
 @Validated
-@ToLog
+@ToLogInfo
 public class InterviewerFileController {
 
     private final IFileService fileService;

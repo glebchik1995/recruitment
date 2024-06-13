@@ -1,7 +1,7 @@
 package com.java.recruitment.web.security;
 
 import com.java.recruitment.repositoty.exception.DataAccessException;
-import com.java.recruitment.service.impl.UserService;
+import com.java.recruitment.service.IUserService;
 import com.java.recruitment.service.model.user.Role;
 import com.java.recruitment.service.properties.JwtProperties;
 import com.java.recruitment.web.dto.auth.JwtResponse;
@@ -34,7 +34,7 @@ public class JwtTokenProvider {
     private final JwtProperties jwtProperties;
 
     private final UserDetailsService userDetailsService;
-    private final UserService userService;
+    private final IUserService userService;
     private SecretKey key;
 
     @PostConstruct

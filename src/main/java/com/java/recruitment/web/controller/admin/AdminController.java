@@ -1,6 +1,6 @@
 package com.java.recruitment.web.controller.admin;
 
-import com.java.recruitment.aspect.log.ToLog;
+import com.java.recruitment.aspect.log.ToLogInfo;
 import com.java.recruitment.service.IUserService;
 import com.java.recruitment.web.dto.user.UserDTO;
 import com.java.recruitment.validation.marker.OnUpdate;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/v1/admin/users")
 @RequiredArgsConstructor
-@ToLog
+@ToLogInfo
 public class AdminController {
 
     private final IUserService userService;
