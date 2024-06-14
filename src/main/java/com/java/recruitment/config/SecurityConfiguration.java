@@ -112,21 +112,20 @@ public class SecurityConfiguration {
                                 )
                                 .requestMatchers("/api/v1/interviewer/**").hasAnyAuthority(
                                         String.valueOf(ADMIN),
-                                        String.valueOf(INTERVIEW_SPECIALIST)
+                                        String.valueOf(RECRUITER)
                                 )
                                 .requestMatchers("/api/v1/hr/**").hasAnyAuthority(
                                         String.valueOf(ADMIN),
                                         String.valueOf(HR)
                                 )
                                 .requestMatchers("/emails/**").hasAnyAuthority(
-                                        String.valueOf(INTERVIEW_SPECIALIST),
+                                        String.valueOf(RECRUITER),
                                         String.valueOf(HR)
                                 )
                                 .requestMatchers("/api/v1/users/**").hasAnyAuthority(
                                         String.valueOf(ADMIN),
                                         String.valueOf(HR),
-                                        String.valueOf(INTERVIEW_SPECIALIST),
-                                        String.valueOf(USER)
+                                        String.valueOf(RECRUITER)
                                 )
                                 .anyRequest().authenticated())
                 .anonymous(AbstractHttpConfigurer::disable)

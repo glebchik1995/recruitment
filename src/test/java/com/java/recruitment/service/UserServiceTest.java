@@ -2,7 +2,7 @@ package com.java.recruitment.service;
 
 import com.java.recruitment.repositoty.UserRepository;
 import com.java.recruitment.repositoty.exception.DataNotFoundException;
-import com.java.recruitment.service.filter.UserService;
+import com.java.recruitment.service.impl.UserService;
 import com.java.recruitment.service.model.user.Role;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.web.dto.user.UserDTO;

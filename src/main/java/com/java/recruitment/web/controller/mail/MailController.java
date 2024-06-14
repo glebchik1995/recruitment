@@ -1,6 +1,6 @@
 package com.java.recruitment.web.controller.mail;
 
-import com.java.recruitment.aspect.log.ToLogInfo;
+import com.java.recruitment.aspect.log.LogInfo;
 import com.java.recruitment.service.IMailService;
 import com.java.recruitment.web.dto.mail.MailRequest;
 import com.java.recruitment.web.dto.mail.MailResponse;
@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/emails")
 @RequiredArgsConstructor
-@ToLogInfo
+@LogInfo
 public class MailController {
 
     private final IMailService emailService;

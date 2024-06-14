@@ -1,7 +1,8 @@
 package com.java.recruitment.service.impl;
 
+import com.java.recruitment.aspect.log.LogError;
 import com.java.recruitment.service.IAuthService;
-import com.java.recruitment.service.filter.UserService;
+import com.java.recruitment.service.IUserService;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.web.dto.auth.JwtRequest;
 import com.java.recruitment.web.dto.auth.JwtResponse;
@@ -12,11 +13,12 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.stereotype.Service;
 
 @Service
+@LogError
 @RequiredArgsConstructor
 public class AuthService implements IAuthService {
 
     private final AuthenticationManager authenticationManager;
-    private final UserService userService;
+    private final IUserService userService;
     private final JwtTokenProvider jwtTokenProvider;
 
     @Override
@@ -30,7 +32,7 @@ public class AuthService implements IAuthService {
         jwtResponse.setId(user.getId());
         jwtResponse.setUsername(user.getUsername());
         jwtResponse.setAccessToken(jwtTokenProvider.createAccessToken(
-                user.getId(), user.getUsername(), user.getRoles())
+                user.getId(), user.getUsername(), user.getRole())
         );
         jwtResponse.setRefreshToken(jwtTokenProvider.createRefreshToken(
                 user.getId(), user.getUsername())

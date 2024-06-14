@@ -23,9 +23,6 @@ import java.security.SecureRandom;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import java.util.Date;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -52,12 +49,12 @@ public class JwtTokenProvider {
     public String createAccessToken(
             final Long userId,
             final String username,
-            final Set<Role> roles
+            final Role role
     ) {
         Claims claims = Jwts.claims()
                 .subject(username)
                 .add("id", userId)
-                .add("roles", resolveRoles(roles))
+                .add("role", role)
                 .build();
         Instant validity = Instant.now()
                 .plus(jwtProperties.getAccess(), ChronoUnit.HOURS);
@@ -66,12 +63,6 @@ public class JwtTokenProvider {
                 .expiration(Date.from(validity))
                 .signWith(key)
                 .compact();
-    }
-
-    private List<String> resolveRoles(final Set<Role> roles) {
-        return roles.stream()
-                .map(Enum::name)
-                .collect(Collectors.toList());
     }
 
     public String createRefreshToken(final Long userId, final String username) {
@@ -97,7 +88,7 @@ public class JwtTokenProvider {
         UserDTO user = userService.getById(userId);
         jwtResponse.setId(userId);
         jwtResponse.setUsername(user.getUsername());
-        jwtResponse.setAccessToken(createAccessToken(userId, user.getUsername(), user.getRoles()));
+        jwtResponse.setAccessToken(createAccessToken(userId, user.getUsername(), user.getRole()));
         jwtResponse.setRefreshToken(createRefreshToken(userId, user.getUsername()));
         return jwtResponse;
     }

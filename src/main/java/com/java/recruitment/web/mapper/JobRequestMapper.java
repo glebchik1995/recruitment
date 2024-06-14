@@ -1,6 +1,6 @@
 package com.java.recruitment.web.mapper;
 
-import com.java.recruitment.service.model.hiring.JobRequest;
+import com.java.recruitment.service.model.jobRequest.JobRequest;
 import com.java.recruitment.web.dto.hiring.JobResponseDTO;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

@@ -1,6 +1,6 @@
 package com.java.recruitment.web.controller;
 
-import com.java.recruitment.aspect.log.ToLogInfo;
+import com.java.recruitment.aspect.log.LogInfo;
 import com.java.recruitment.service.IAuthService;
 import com.java.recruitment.service.IUserService;
 import com.java.recruitment.web.dto.auth.JwtRequest;
@@ -23,7 +23,7 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-@ToLogInfo
+@LogInfo
 public class AuthController {
 
     private final IAuthService authService;

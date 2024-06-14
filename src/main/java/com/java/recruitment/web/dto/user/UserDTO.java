@@ -2,68 +2,57 @@ package com.java.recruitment.web.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.java.recruitment.service.model.user.Role;
-import com.java.recruitment.validation.marker.OnCreate;
-import com.java.recruitment.validation.marker.OnUpdate;
+import com.java.recruitment.validation.enums.EnumAllowedConstraint;
 import com.java.recruitment.validation.match.FieldMatch;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Null;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
-
-import java.util.Set;
 
 @Getter
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-@Schema(description = "User DTO")
 @FieldMatch
         (
                 first = "password",
                 second = "passwordConfirmation",
-                message = "Поля пароля должны совпадать",
-                groups = {OnCreate.class}
+                message = "Поля пароля должны совпадать"
         )
 public class UserDTO {
 
-    @Schema(description = "User id", example = "1")
     private Long id;
 
-    @Schema(description = "User name", example = "John")
-    @NotNull(message = "Имя должно быть не null.", groups = {OnCreate.class})
-    @Length(
-            max = 255, message = "Длина имени должна быть меньше 255 символов.",
-            groups = {OnCreate.class, OnUpdate.class}
-    )
+    @NotNull
+    @Length(max = 255)
     private String name;
 
     @Schema(description = "User email", example = "johndoe@gmail.com")
-    @Email(
-            message = "Email адрес должен быть в формате user@example.com.",
-            groups = {OnCreate.class, OnUpdate.class}
-    )
+    @Email
     private String username;
 
     @Schema(description = "Зашифрованный пароль пользователя.")
-    @NotNull(message = "Пароль не должен быть null.", groups = {OnCreate.class})
-    @JsonProperty(
-            access = JsonProperty.Access.WRITE_ONLY
-    )
+    @NotNull
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
     @Schema(description = "Пароль подтверждение пользователя.")
-    @NotNull(message = "Подтверждение пароля не должно быть null.", groups = {OnCreate.class})
-    @JsonProperty(
-            access = JsonProperty.Access.WRITE_ONLY
-    )
-    @Null(groups = {OnUpdate.class})
+    @NotNull
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String passwordConfirmation;
 
-    @Schema(description = "Роли пользователя.")
-    @Null(groups = {OnCreate.class})
-    private Set<Role> roles;
+    @NotNull
+    @EnumAllowedConstraint(
+            enumClass = Role.class,
+            allowed =
+                    {
+                            "HR",
+                            "INTERVIEW_SPECIALIST"
+                    }
+
+    )
+    private Role role;
 
 }

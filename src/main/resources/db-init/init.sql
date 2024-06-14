@@ -5,26 +5,21 @@ CREATE TABLE IF NOT EXISTS users
     id       BIGSERIAL PRIMARY KEY,
     name     varchar(255) not null,
     username VARCHAR(50)  NOT NULL UNIQUE,
-    password VARCHAR(255) NOT NULL
-);
-
-CREATE TABLE user_roles
-(
-    user_id BIGINT,
-    role    VARCHAR(255),
-    PRIMARY KEY (user_id, role),
-    FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
+    password VARCHAR(255) NOT NULL,
+    role     VARCHAR(50)
 );
 
 CREATE TABLE IF NOT EXISTS job_request
 (
     id           BIGSERIAL PRIMARY KEY,
     status       VARCHAR(50) NOT NULL,
-    hr_id        INT         NOT NULL,
-    candidate_id INT         NOT NULL,
-    description  varchar(1000),
-    FOREIGN KEY (hr_id) REFERENCES users (id) ON UPDATE CASCADE,
-    FOREIGN KEY (candidate_id) REFERENCES candidate (id) ON DELETE CASCADE ON UPDATE CASCADE
+    hr_id        BIGINT      NOT NULL,
+    candidate_id BIGINT      NOT NULL,
+    vacancy_id   BIGINT      NOT NULL,
+    description  VARCHAR(1000),
+    FOREIGN KEY (hr_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (candidate_id) REFERENCES candidate (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (vacancy_id) REFERENCES vacancy (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS candidate
@@ -37,6 +32,20 @@ CREATE TABLE IF NOT EXISTS candidate
     phone      VARCHAR(20)  NOT NULL,
     position   VARCHAR(255) NOT NULL,
     department VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS vacancy
+(
+    id                BIGSERIAL PRIMARY KEY,
+    requirement       VARCHAR(255) NOT NULL,
+    description       TEXT         NOT NULL,
+    start_working_day TIME         NOT NULL,
+    end_working_day   VARCHAR(50)  NOT NULL,
+    salary            VARCHAR(50)  NOT NULL,
+    created_date      DATE         NOT NULL,
+    created_time      TIMESTAMP    NOT NULL,
+    active            BOOLEAN      NOT NULL,
+    recruiter_id      BIGINT       NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS job_request_files

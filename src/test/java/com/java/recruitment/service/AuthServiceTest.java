@@ -1,8 +1,8 @@
 package com.java.recruitment.service;
 
 import com.java.recruitment.repositoty.exception.DataNotFoundException;
-import com.java.recruitment.service.filter.UserService;
 import com.java.recruitment.service.impl.AuthService;
+import com.java.recruitment.service.impl.UserService;
 import com.java.recruitment.service.model.user.Role;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.web.dto.auth.JwtRequest;
@@ -18,8 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 
-import java.util.Collections;
-import java.util.Set;
+import static com.java.recruitment.service.model.user.Role.HR;
 
 @ExtendWith(MockitoExtension.class)
 public class AuthServiceTest {
@@ -42,7 +41,7 @@ public class AuthServiceTest {
         Long userId = 1L;
         String username = "username";
         String password = "password";
-        Set<Role> roles = Collections.emptySet();
+        Role role = HR;
         String accessToken = "accessToken";
         String refreshToken = "refreshToken";
         JwtRequest request = new JwtRequest();
@@ -51,10 +50,10 @@ public class AuthServiceTest {
         User user = new User();
         user.setId(userId);
         user.setUsername(username);
-        user.setRoles(roles);
+        user.setRole(role);
         Mockito.when(userService.getByUsername(username))
                 .thenReturn(user);
-        Mockito.when(tokenProvider.createAccessToken(userId, username, roles))
+        Mockito.when(tokenProvider.createAccessToken(userId, username, role))
                 .thenReturn(accessToken);
         Mockito.when(tokenProvider.createRefreshToken(userId, username))
                 .thenReturn(refreshToken);

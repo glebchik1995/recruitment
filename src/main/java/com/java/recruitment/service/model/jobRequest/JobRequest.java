@@ -1,7 +1,9 @@
-package com.java.recruitment.service.model.hiring;
+package com.java.recruitment.service.model.jobRequest;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.java.recruitment.service.model.candidate.Candidate;
 import com.java.recruitment.service.model.user.User;
+import com.java.recruitment.service.model.vacancy.Vacancy;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -26,15 +28,19 @@ public class JobRequest {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "hr_id", referencedColumnName = "id", nullable = false)
+    @JsonManagedReference
     private User hr;
 
-    @OneToOne(fetch = FetchType.EAGER)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "candidate_id", referencedColumnName = "id", nullable = false)
+    @JsonManagedReference
     private Candidate candidate;
 
-//    FetchType.EAGER означает, что связанные сущности будут загружены немедленно вместе с основной сущностью.
-//    Это означает, что при запросе основной сущности JPA также автоматически будет загружать все связанные сущности.
-//    Это может привести к избыточной загрузке данных, особенно если связанные данные не нужны в данном контексте.
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "vacancy_id", referencedColumnName = "id", nullable = false)
+    @JsonManagedReference
+    private Vacancy vacancy;
+
     @Column(name = "file")
     @CollectionTable(name = "job_request_files")
     @ElementCollection(fetch = FetchType.EAGER)

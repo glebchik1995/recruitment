@@ -1,4 +1,4 @@
-package com.java.recruitment.service.model.hiring;
+package com.java.recruitment.service.model.jobRequest;
 
 import lombok.Getter;
 

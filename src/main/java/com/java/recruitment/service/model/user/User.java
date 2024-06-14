@@ -1,9 +1,12 @@
 package com.java.recruitment.service.model.user;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.java.recruitment.service.model.jobRequest.JobRequest;
+import com.java.recruitment.service.model.vacancy.Vacancy;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.Set;
+import java.util.List;
 
 @Entity
 @Builder(toBuilder = true)
@@ -32,8 +35,14 @@ public class User {
     private String passwordConfirmation;
 
     @Column(name = "role")
-    @ElementCollection(targetClass = Role.class, fetch = FetchType.EAGER)
-    @CollectionTable(name = "users_roles", joinColumns = @JoinColumn(name = "user_id"))
-    @Enumerated(value = EnumType.STRING)
-    private Set<Role> roles;
+    @Enumerated(EnumType.STRING)
+    private Role role;
+
+    @OneToMany(mappedBy = "user")
+    @JsonBackReference
+    private List<JobRequest> jobRequests;
+
+    @OneToMany(mappedBy = "user")
+    @JsonBackReference
+    private List<Vacancy> vacancies;
 }

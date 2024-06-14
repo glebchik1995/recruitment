@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 public class ExceptionLoggingAspect {
 
     @AfterThrowing(
-            pointcut = "@within(com.java.recruitment.aspect.log.ToLogError)",
+            pointcut = "@within(com.java.recruitment.aspect.log.LogError)",
             throwing = "ex"
     )
     public void logException(JoinPoint joinPoint, Exception ex) {

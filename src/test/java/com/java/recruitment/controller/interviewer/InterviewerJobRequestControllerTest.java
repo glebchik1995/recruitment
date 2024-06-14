@@ -8,7 +8,7 @@ import com.java.recruitment.service.filter.CriteriaModel;
 import com.java.recruitment.service.filter.GenericSpecification;
 import com.java.recruitment.service.filter.JoinType;
 import com.java.recruitment.service.filter.Operation;
-import com.java.recruitment.service.model.hiring.JobRequest;
+import com.java.recruitment.service.model.jobRequest.JobRequest;
 import com.java.recruitment.web.dto.hiring.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.hiring.JobResponseDTO;
 import com.java.recruitment.web.mapper.JobRequestMapper;
@@ -31,8 +31,8 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import java.nio.charset.StandardCharsets;
 import java.util.List;
 
-import static com.java.recruitment.service.model.hiring.Status.CANDIDATE_FOUND;
-import static com.java.recruitment.service.model.hiring.Status.NEW;
+import static com.java.recruitment.service.model.jobRequest.Status.CANDIDATE_FOUND;
+import static com.java.recruitment.service.model.jobRequest.Status.NEW;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 

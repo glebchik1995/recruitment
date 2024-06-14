@@ -12,7 +12,6 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-@Schema(description = "Candidate DTO")
 public class CandidateDTO {
 
     @Min(groups = OnUpdate.class, value = 1)
@@ -44,4 +43,16 @@ public class CandidateDTO {
 
     @NotBlank(groups = {OnCreate.class})
     private String department;
+
+    @NotBlank(groups = {OnCreate.class})
+    private String exp;
+
+    @NotBlank(groups = {OnCreate.class})
+    private String techSkill;
+
+    @NotBlank(groups = {OnCreate.class})
+    private String languageSkill;
+
+    @NotBlank(groups = {OnCreate.class})
+    private String expectedSalary;
 }

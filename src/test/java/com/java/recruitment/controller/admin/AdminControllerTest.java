@@ -19,7 +19,6 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Set;
 
 import static com.java.recruitment.service.model.user.Role.ADMIN;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -49,7 +48,7 @@ class AdminControllerTest extends BaseIntegrationTest {
                 .name("TEST_NAME")
                 .username("test@gmail.com")
                 .password("$2a$12$x9Rhx2BKVeNd/iV0tpm1AOwFVhm835KvYILXSu5UHT19qMkbG3MSQ")
-                .roles(Set.of(ADMIN))
+                .role(ADMIN)
                 .build();
 
         MockHttpServletResponse response = mvc.perform(
@@ -74,7 +73,7 @@ class AdminControllerTest extends BaseIntegrationTest {
         candidate.setName(updatedUserDTO.getName());
         candidate.setUsername(updatedUserDTO.getUsername());
         candidate.setPassword(updatedUserDTO.getPassword());
-        candidate.setRoles(updatedUserDTO.getRoles());
+        candidate.setRole(updatedUserDTO.getRole());
 
 
         userRepository.save(candidate);

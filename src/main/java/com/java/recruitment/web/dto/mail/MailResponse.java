@@ -11,7 +11,6 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-@Schema(description = "Mail Response DTO")
 public class MailResponse {
 
     @Schema(description = "Почта отправителя", example = "example@gmail.com")

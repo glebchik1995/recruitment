@@ -13,7 +13,7 @@ import java.util.Arrays;
 @Slf4j
 public class LoggingAspect {
 
-    @Around("@within(com.java.recruitment.aspect.log.ToLogInfo)")
+    @Around("@within(com.java.recruitment.aspect.log.LogInfo)")
     public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().getName();
         Object[] arguments = joinPoint.getArgs();

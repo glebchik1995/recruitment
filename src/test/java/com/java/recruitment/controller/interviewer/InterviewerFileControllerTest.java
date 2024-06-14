@@ -3,7 +3,7 @@ package com.java.recruitment.controller.interviewer;
 import com.java.recruitment.BaseIntegrationTest;
 import com.java.recruitment.repositoty.JobRequestRepository;
 import com.java.recruitment.service.impl.FileService;
-import com.java.recruitment.service.model.hiring.JobRequest;
+import com.java.recruitment.service.model.jobRequest.JobRequest;
 import com.java.recruitment.web.mapper.JobRequestMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;

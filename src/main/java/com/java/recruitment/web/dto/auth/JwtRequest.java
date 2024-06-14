@@ -11,7 +11,7 @@ import org.hibernate.validator.constraints.Length;
 @Builder(toBuilder = true)
 @AllArgsConstructor
 @NoArgsConstructor
-@Schema(description = "RЗапрос для авторизации")
+@Schema(description = "Запрос для авторизации")
 public class JwtRequest {
 
     @Schema(description = "email", example = "johndoe@gmail.com")

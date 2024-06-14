@@ -9,7 +9,6 @@ services:
     depends_on:
       - db
       - minio
-      - redis
     env_file:
       - .env
 
@@ -25,15 +24,6 @@ services:
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
     volumes:
       - ./src/main/resources/liquibase:/docker-entrypoint-initdb.d
-
-  redis:
-    image: redis:7.2-rc-alpine
-    restart: always
-    container_name: redis
-    ports:
-      - '6379:6379'
-    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD}
-
 
   minio:
     image: minio/minio:latest

@@ -1,5 +1,6 @@
 package com.java.recruitment.service.impl;
 
+import com.java.recruitment.aspect.log.LogError;
 import com.java.recruitment.repositoty.UserRepository;
 import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.repositoty.exception.DataProcessingException;
@@ -24,6 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 
 @Service
+@LogError
 @RequiredArgsConstructor
 public class MailService implements IMailService {
 

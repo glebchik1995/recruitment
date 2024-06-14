@@ -5,7 +5,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.java.recruitment.BaseIntegrationTest;
 import com.java.recruitment.repositoty.UserRepository;
 import com.java.recruitment.service.model.user.User;
-import com.java.recruitment.web.dto.user.ShortUserDTO;
+import com.java.recruitment.web.dto.user.UpdateUserDTO;
 import com.java.recruitment.web.dto.user.UserDTO;
 import com.java.recruitment.web.mapper.UserMapper;
 import com.java.recruitment.web.security.expression.CustomSecurityExpression;
@@ -52,7 +52,7 @@ class UserControllerTest extends BaseIntegrationTest {
 
         when(expression.canAccessUser(anyLong())).thenReturn(true);
 
-        ShortUserDTO updatedUserDTO = ShortUserDTO.builder()
+        UpdateUserDTO updatedUserDTO = UpdateUserDTO.builder()
                 .id(1L)
                 .name("TEST_NAME")
                 .username("test@gmail.com")

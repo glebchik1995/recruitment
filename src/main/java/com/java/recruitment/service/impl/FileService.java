@@ -1,10 +1,11 @@
 package com.java.recruitment.service.impl;
 
+import com.java.recruitment.aspect.log.LogError;
 import com.java.recruitment.repositoty.JobRequestRepository;
 import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.repositoty.exception.DataUploadException;
 import com.java.recruitment.service.IFileService;
-import com.java.recruitment.service.model.hiring.JobRequest;
+import com.java.recruitment.service.model.jobRequest.JobRequest;
 import com.java.recruitment.service.properties.MinioProperties;
 import com.java.recruitment.web.dto.file.DeleteFileDTO;
 import io.minio.*;
@@ -23,6 +24,7 @@ import java.util.UUID;
 
 
 @Service
+@LogError
 @RequiredArgsConstructor
 public class FileService implements IFileService {
 

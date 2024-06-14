@@ -1,8 +1,8 @@
 package com.java.recruitment.web.controller;
 
-import com.java.recruitment.aspect.log.ToLogInfo;
+import com.java.recruitment.aspect.log.LogInfo;
 import com.java.recruitment.service.IUserService;
-import com.java.recruitment.web.dto.user.ShortUserDTO;
+import com.java.recruitment.web.dto.user.UpdateUserDTO;
 import com.java.recruitment.web.dto.user.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -19,9 +19,9 @@ import org.springframework.web.bind.annotation.*;
 )
 @RestController
 @RequestMapping("/api/v1/users")
-@RequiredArgsConstructor
 @Validated
-@ToLogInfo
+@LogInfo
+@RequiredArgsConstructor
 public class UserController {
 
     private final IUserService userService;
@@ -29,8 +29,8 @@ public class UserController {
     @PutMapping
     @Operation(summary = "Изменить данные пользователя")
     @PreAuthorize("@cse.canAccessUser(#dto.id)")
-    public UserDTO update(@Valid @RequestBody final ShortUserDTO dto) {
-        return userService.updateWithRoleSimpleUser(dto);
+    public UserDTO update(@Valid @RequestBody final UpdateUserDTO dto) {
+        return userService.editUser(dto);
     }
 
     @GetMapping("/{id}")

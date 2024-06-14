@@ -3,8 +3,6 @@ package com.java.recruitment.service.filter;
 import jakarta.persistence.criteria.*;
 import org.apache.commons.lang3.StringUtils;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.lang.reflect.Field;
@@ -20,7 +18,6 @@ import static com.java.recruitment.service.filter.Operation.IS_NOT_NULL;
 import static com.java.recruitment.service.filter.Operation.IS_NULL;
 
 public class GenericSpecification<T> implements Specification<T> {
-    private static final Logger logger = LoggerFactory.getLogger(GenericSpecification.class);
 
     private static final EnumSet<Operation> NULL_OPERATIONS = EnumSet.of(IS_NULL, IS_NOT_NULL);
     private static final Set<String> PRIMITIVE_NUMBERS = Set.of("byte", "short", "int", "long", "float", "double");
@@ -66,20 +63,16 @@ public class GenericSpecification<T> implements Specification<T> {
     private void checkCriteria(List<CriteriaModel> criteriaModel) {
         for (CriteriaModel model : criteriaModel) {
             if (model == null) {
-                logger.error("CriteriaModel не должно быть нулевым.");
                 throw new IllegalArgumentException("CriteriaModel не должно быть нулевым.");
             }
             if (StringUtils.isBlank(model.getField())) {
-                logger.error("Поле не должно быть пустым.");
                 throw new IllegalArgumentException("Поле не должно быть пустым.");
             }
             Operation operation = model.getOperation();
             if (operation == null) {
-                logger.error("Операция не должна быть нулевой.");
                 throw new IllegalArgumentException("Операция не должна быть нулевой.");
             }
             if (!NULL_OPERATIONS.contains(operation) && model.getValue() == null) {
-                logger.error("Значение не должно быть нулевым");
                 throw new IllegalArgumentException("Значение не должно быть нулевым");
             }
         }
@@ -170,10 +163,7 @@ public class GenericSpecification<T> implements Specification<T> {
             case LocalDate date -> LocalDateTime.of(date, LocalTime.MIN);
             case Date date -> LocalDateTime.ofEpochSecond(date.getTime(), 0, ZoneOffset.UTC);
             case String s -> LocalDateTime.parse(s);
-            case null, default -> {
-                logger.error("Неподдерживаемое значение даты: {}", value);
-                throw new RuntimeException("Неподдерживаемое значение даты: " + value);
-            }
+            case null, default -> throw new RuntimeException("Неподдерживаемое значение даты: " + value);
         };
     }
 
@@ -209,7 +199,6 @@ public class GenericSpecification<T> implements Specification<T> {
                 return fieldType;
             }
         } catch (NoSuchFieldException e) {
-            logger.error("Ошибка получения типа поля: {}", e.getMessage());
             throw new RuntimeException(e);
         }
     }

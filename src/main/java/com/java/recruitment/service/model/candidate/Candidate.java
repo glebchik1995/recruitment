@@ -1,7 +1,11 @@
 package com.java.recruitment.service.model.candidate;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.java.recruitment.service.model.jobRequest.JobRequest;
 import jakarta.persistence.*;
 import lombok.*;
+
+import java.util.List;
 
 @Entity
 @Table(name = "candidate")
@@ -10,19 +14,11 @@ import lombok.*;
 @NoArgsConstructor
 @EqualsAndHashCode(of = "id")
 @Builder(toBuilder = true)
-@Access(AccessType.FIELD)
 public class Candidate {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-//    FetchType.LAZY означает, что связанные сущности будут загружены только по требованию.
-//    То есть, данные будут загружены только в тот момент, когда к ним будет обращение.
-//    Это помогает оптимизировать загрузку данных и уменьшить объем передаваемой информации.
-//    @OneToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name = "job_request_id", referencedColumnName = "id", nullable = false)
-//    private JobRequest jobRequest;
 
     @Column(name = "name", nullable = false)
     private String name;
@@ -44,5 +40,21 @@ public class Candidate {
 
     @Column(name = "department", nullable = false)
     private String department;
+
+    @Column(nullable = false)
+    private String exp;
+
+    @Column(name = "tech_skill", nullable = false)
+    private String techSkill;
+
+    @Column(name = "language_skill", nullable = false)
+    private String languageSkill;
+
+    @Column(name = "expected_salary", nullable = false)
+    private String expectedSalary;
+
+    @OneToMany(mappedBy = "user")
+    @JsonBackReference
+    private List<JobRequest> jobRequests;
 
 }

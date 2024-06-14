@@ -1,6 +1,6 @@
 package com.java.recruitment.web.dto.hiring;
 
-import com.java.recruitment.service.model.hiring.Status;
+import com.java.recruitment.service.model.jobRequest.Status;
 import com.java.recruitment.validation.enums.EnumAllowedConstraint;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
@@ -12,7 +12,6 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-@Schema(description = "Change Job Request Status DTO")
 public class ChangeJobRequestStatusDTO {
 
     @Min(1)
