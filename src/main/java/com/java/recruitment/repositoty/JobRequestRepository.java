@@ -45,8 +45,8 @@ public interface JobRequestRepository extends JpaRepository<JobRequest, Long>, J
             """)
     Page<JobRequest> findJobRequestsForRecruiter(
             @Param("recruiterId") Long recruiterId,
-            Pageable pageable,
-            Specification<JobRequest> specification
+            Specification<JobRequest> specification,
+            Pageable pageable
     );
 
     @Query(value = """

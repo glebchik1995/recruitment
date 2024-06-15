@@ -6,6 +6,7 @@ import com.java.recruitment.validation.enums.EnumAllowedConstraint;
 import com.java.recruitment.validation.match.FieldMatch;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.hibernate.validator.constraints.Length;
@@ -19,7 +20,7 @@ import org.hibernate.validator.constraints.Length;
         (
                 first = "password",
                 second = "passwordConfirmation",
-                message = "Поля пароля должны совпадать"
+                message = "Поля пароля и подтверждени пароля должны совпадать"
         )
 public class UserDTO {
 
@@ -29,16 +30,14 @@ public class UserDTO {
     @Length(max = 255)
     private String name;
 
-    @Schema(description = "User email", example = "johndoe@gmail.com")
     @Email
+    @NotBlank
     private String username;
 
-    @Schema(description = "Зашифрованный пароль пользователя.")
     @NotNull
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
-    @Schema(description = "Пароль подтверждение пользователя.")
     @NotNull
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String passwordConfirmation;

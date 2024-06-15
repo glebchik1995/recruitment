@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS users
     name     varchar(255) not null,
     username VARCHAR(50)  NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role     VARCHAR(50)
+    role     VARCHAR(50)  NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS job_request
@@ -22,16 +22,27 @@ CREATE TABLE IF NOT EXISTS job_request
     FOREIGN KEY (vacancy_id) REFERENCES vacancy (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
+CREATE TABLE IF NOT EXISTS job_request_files
+(
+    job_request_id BIGINT       NOT NULL,
+    file           VARCHAR(255) NOT NULL,
+    FOREIGN KEY (job_request_id) REFERENCES job_request (id) ON DELETE CASCADE
+);
+
 CREATE TABLE IF NOT EXISTS candidate
 (
-    id         BIGSERIAL PRIMARY KEY,
-    name       VARCHAR(255) NOT NULL,
-    surname    VARCHAR(255) NOT NULL,
-    age        INT          NOT NULL,
-    email      VARCHAR(255) NOT NULL,
-    phone      VARCHAR(20)  NOT NULL,
-    position   VARCHAR(255) NOT NULL,
-    department VARCHAR(255) NOT NULL
+    id              BIGSERIAL PRIMARY KEY,
+    name            VARCHAR(255)  NOT NULL,
+    surname         VARCHAR(255)  NOT NULL,
+    age             INT           NOT NULL,
+    email           VARCHAR(255)  NOT NULL,
+    phone           VARCHAR(20)   NOT NULL,
+    position        VARCHAR(255)  NOT NULL,
+    exp             VARCHAR(1000) NOT NULL,
+    tech_skill      VARCHAR(255)  NOT NULL,
+    language_skill  VARCHAR(255)  NOT NULL,
+    expected_salary INT           NOT NULL
+
 );
 
 CREATE TABLE IF NOT EXISTS vacancy
@@ -48,12 +59,19 @@ CREATE TABLE IF NOT EXISTS vacancy
     recruiter_id      BIGINT       NOT NULL
 );
 
-CREATE TABLE IF NOT EXISTS job_request_files
+
+CREATE TABLE IF NOT EXISTS chat_message
 (
-    job_request_id BIGINT       NOT NULL,
-    file           VARCHAR(255) NOT NULL,
-    FOREIGN KEY (job_request_id) REFERENCES job_request (id) ON DELETE CASCADE
+    id          BIGSERIAL PRIMARY KEY,
+    sender_id   BIGINT,
+    receiver_id BIGINT,
+    text        TEXT,
+    sent_date   DATE NOT NULL,
+    sent_time   TIME NOT NULL,
+    FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
+
 
 CREATE INDEX idx_status ON candidate (position);
 CREATE INDEX idx_status ON candidate (department);

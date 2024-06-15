@@ -44,7 +44,22 @@ databaseChangeLog:
                   constraints:
                     nullable: false
               - column:
-                  name: department
+                  name: exp
+                  type: VARCHAR(1000)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: tech_skill
                   type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: language_skill
+                  type: VARCHAR(255)
+                  constraints:
+                    nullable: false
+              - column:
+                  name: expected_salary
+                  type: INT
                   constraints:
                     nullable: false

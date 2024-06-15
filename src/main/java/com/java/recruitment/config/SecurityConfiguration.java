@@ -107,23 +107,24 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 .requestMatchers("/v3/api-docs/**")
                                 .permitAll()
-                                .requestMatchers("/api/v1/admin/**").hasAnyAuthority(
+                                .requestMatchers("/api/v1/**").hasAnyAuthority(
                                         String.valueOf(ADMIN)
                                 )
-                                .requestMatchers("/api/v1/interviewer/**").hasAnyAuthority(
-                                        String.valueOf(ADMIN),
+                                .requestMatchers("/api/v1/recruiter/**").hasAnyAuthority(
                                         String.valueOf(RECRUITER)
                                 )
                                 .requestMatchers("/api/v1/hr/**").hasAnyAuthority(
-                                        String.valueOf(ADMIN),
                                         String.valueOf(HR)
                                 )
                                 .requestMatchers("/emails/**").hasAnyAuthority(
                                         String.valueOf(RECRUITER),
                                         String.valueOf(HR)
                                 )
+                                .requestMatchers("/api/v1/vacancy/**").hasAnyAuthority(
+                                        String.valueOf(RECRUITER),
+                                        String.valueOf(HR)
+                                )
                                 .requestMatchers("/api/v1/users/**").hasAnyAuthority(
-                                        String.valueOf(ADMIN),
                                         String.valueOf(HR),
                                         String.valueOf(RECRUITER)
                                 )

@@ -1,12 +1,7 @@
 package com.java.recruitment.service.model.user;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.java.recruitment.service.model.jobRequest.JobRequest;
-import com.java.recruitment.service.model.vacancy.Vacancy;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
 
 @Entity
 @Builder(toBuilder = true)
@@ -37,12 +32,4 @@ public class User {
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    @OneToMany(mappedBy = "user")
-    @JsonBackReference
-    private List<JobRequest> jobRequests;
-
-    @OneToMany(mappedBy = "user")
-    @JsonBackReference
-    private List<Vacancy> vacancies;
 }

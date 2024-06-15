@@ -11,9 +11,9 @@ import java.util.List;
 public interface IVacancyService {
 
 
-    ResponseVacancyDTO postVacancy(RequestVacancyDTO dto, Long interview_specialist_id);
+    ResponseVacancyDTO postVacancy(RequestVacancyDTO dto, Long recruiter_id);
 
-    ResponseVacancyDTO getById(Long id);
+    ResponseVacancyDTO getVacancyById(Long id);
 
     Page<ResponseVacancyDTO> getAllVacancy(List<CriteriaModel> criteriaModelList, Pageable pageable);
 

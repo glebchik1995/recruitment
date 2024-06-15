@@ -1,20 +1,22 @@
-package com.java.recruitment.service.model.mail;
+package com.java.recruitment.service.model.chat;
 
 import com.java.recruitment.service.model.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 @Entity
-@Table(name = "mail")
+@Table(name = "chat_message")
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
 @Getter
 @Setter
 @EqualsAndHashCode(of = "id")
-public class Mail {
+public class ChatMessage {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,13 +30,13 @@ public class Mail {
     @JoinColumn(name = "receiver_id", referencedColumnName = "id", nullable = false)
     private User receiver;
 
-    @Column(name = "subject")
-    private String subject;
-
     @Column(name = "text")
     private String text;
 
     @Column(name = "sent_date")
-    private LocalDateTime sentDate;
+    private LocalDate sentDate;
+
+    @Column(name = "sent_time")
+    private LocalTime sentTime;
 
 }

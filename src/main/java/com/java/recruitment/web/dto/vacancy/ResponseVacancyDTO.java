@@ -1,6 +1,6 @@
 package com.java.recruitment.web.dto.vacancy;
 
-import com.java.recruitment.service.model.user.User;
+import com.java.recruitment.web.dto.user.UserDTO;
 import lombok.*;
 
 import java.time.LocalDate;
@@ -32,5 +32,5 @@ public class ResponseVacancyDTO {
 
     private boolean active;
 
-    private User interviewSpecialist;
+    private UserDTO recruiter;
 }

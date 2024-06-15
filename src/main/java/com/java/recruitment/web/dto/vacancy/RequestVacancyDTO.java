@@ -2,6 +2,7 @@ package com.java.recruitment.web.dto.vacancy;
 
 import com.java.recruitment.validation.marker.OnCreate;
 import com.java.recruitment.validation.marker.OnUpdate;
+import jakarta.persistence.Column;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -20,6 +21,12 @@ public class RequestVacancyDTO {
 
     @NotNull(groups = {OnCreate.class})
     private String requirement;
+
+    @NotNull(groups = {OnCreate.class})
+    private String title;
+
+    @NotNull(groups = {OnCreate.class})
+    private String position;
 
     @NotNull(groups = {OnCreate.class})
     private String description;

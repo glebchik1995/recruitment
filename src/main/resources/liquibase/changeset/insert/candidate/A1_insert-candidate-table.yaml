@@ -25,5 +25,14 @@ databaseChangeLog:
                   name: position
                   value: "Java Developer"
               - column:
-                  name: department
-                  value: "IT"
+                  name: exp
+                  value: "Пол года стажировался в компании Senla"
+              - column:
+                  name: tech_skill
+                  value: "Spring boot, Postgres"
+              - column:
+                  name: language_skill
+                  value: "B1"
+              - column:
+                  name: expected_salary
+                  valueNumeric: 50000

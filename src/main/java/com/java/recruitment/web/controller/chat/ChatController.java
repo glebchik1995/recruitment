@@ -1,13 +1,13 @@
-package com.java.recruitment.web.controller.jobRequest;
+package com.java.recruitment.web.controller.chat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.recruitment.aspect.log.LogInfo;
-import com.java.recruitment.repositoty.JobRequestRepository;
-import com.java.recruitment.service.IJobRequestService;
+import com.java.recruitment.repositoty.MailRepository;
+import com.java.recruitment.service.IChatMessageService;
 import com.java.recruitment.service.filter.CriteriaModel;
-import com.java.recruitment.web.dto.jobRequest.ChangeJobRequestStatusDTO;
-import com.java.recruitment.web.dto.jobRequest.JobResponseDTO;
-import com.java.recruitment.web.mapper.JobRequestMapper;
+import com.java.recruitment.web.dto.mail.MailRequestDTO;
+import com.java.recruitment.web.dto.mail.MailResponseDTO;
+import com.java.recruitment.web.mapper.MailMapper;
 import com.java.recruitment.web.security.expression.CustomSecurityExpression;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,8 +18,8 @@ import org.apache.coyote.BadRequestException;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -27,27 +27,33 @@ import java.util.Arrays;
 import java.util.List;
 
 @Tag(
-        name = "Interviewer Job Request Controller",
-        description = "CRUD OPERATIONS WITH JOB-REQUESTS"
+        name = "Mail Controller",
+        description = "CRUD OPERATIONS WITH MAIL"
 )
 @RestController
-@RequestMapping("/api/v1/recruiter/job-request")
-@LogInfo
-@Validated
+@RequestMapping("/emails")
 @RequiredArgsConstructor
-public class RecruiterJobRequestController {
+@LogInfo
+public class ChatController {
 
-    private final IJobRequestService jobRequestService;
+    private final IChatMessageService emailService;
 
-    private final JobRequestRepository jobRequestRepository;
+    private final MailMapper mapper;
 
     private final CustomSecurityExpression expression;
 
-    private final JobRequestMapper mapper;
+    private final MailRepository mailRepository;
+
+    @PostMapping
+    @Operation(summary = "Отправить сообщение")
+    @ResponseStatus(HttpStatus.CREATED)
+    public MailResponseDTO sendMessage(@RequestBody @Valid final MailRequestDTO mail) {
+        return emailService.sendMessage(mail);
+    }
 
     @GetMapping
     @Operation(summary = "Получить все заявки")
-    public Page<JobResponseDTO> getAllJobRequests(
+    public Page<MailResponseDTO> getAllMessages(
             @RequestParam(required = false) String criteriaJson,
             @ParameterObject Pageable pageable)
             throws BadRequestException {
@@ -66,7 +72,7 @@ public class RecruiterJobRequestController {
                         )
                 );
 
-                return jobRequestService.getAllJobRequests(
+                return emailService.getAllMessagesWithCriteria(
                         criteriaList,
                         recruiter_id,
                         pageable
@@ -75,7 +81,7 @@ public class RecruiterJobRequestController {
                 throw new BadRequestException("Не удалось проанализировать условия", ex);
             }
         } else {
-            return jobRequestRepository.findJobRequestsForRecruiter(
+            return mailRepository.getMessagesForRecruiter(
                             recruiter_id,
                             pageable
                     )
@@ -85,17 +91,8 @@ public class RecruiterJobRequestController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Получить заявку по ID")
-    @PreAuthorize("@cse.canAccessJobRequestForRecruiter(#id)")
-    public JobResponseDTO getJobRequestById(@PathVariable @Min(1) Long id) {
-        return jobRequestService.getJobRequestById(id);
-    }
-
-    @PutMapping
-    @Operation(summary = "Изменить статус заявки")
-    @PreAuthorize("@cse.canAccessJobRequestForRecruiter(#jobRequestDto.id)")
-    public JobResponseDTO updateStatusJobRequest(
-            @RequestBody @Valid ChangeJobRequestStatusDTO jobRequestDto
-    ) {
-        return jobRequestService.updateJobRequest(jobRequestDto);
+    @PreAuthorize("@cse.canAccessMessageForRecruiter(#id) || @cse.canAccessMessageForHr(#id)")
+    public MailResponseDTO getMessageById(@PathVariable @Min(1) Long id) {
+        return emailService.getMessageById(id);
     }
 }

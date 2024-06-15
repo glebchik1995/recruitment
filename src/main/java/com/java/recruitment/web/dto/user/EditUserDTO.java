@@ -9,7 +9,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder(toBuilder = true)
-public class UpdateUserDTO {
+public class EditUserDTO {
 
     @Min(1)
     private Long id;

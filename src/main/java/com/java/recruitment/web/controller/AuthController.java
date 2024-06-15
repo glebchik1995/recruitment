@@ -38,7 +38,7 @@ public class AuthController {
     @PostMapping("/registration")
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Зарегистрироваться")
-    public UserDTO registration(@Validated(OnCreate.class) @RequestBody final UserDTO userDto) {
+    public UserDTO registration(@Valid @RequestBody final UserDTO userDto) {
         return userService.create(userDto);
     }
 

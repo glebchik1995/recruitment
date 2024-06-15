@@ -48,13 +48,16 @@ public class VacancyService implements IVacancyService {
     }
 
     @Override
-    public ResponseVacancyDTO getById(final Long id) {
+    public ResponseVacancyDTO getVacancyById(final Long id) {
         return vacancyMapper.toDTO(vacancyRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Вакансия не найдена")));
     }
 
     @Override
-    public Page<ResponseVacancyDTO> getAllVacancy(List<CriteriaModel> criteriaModelList, Pageable pageable) {
+    public Page<ResponseVacancyDTO> getAllVacancy(
+            List<CriteriaModel> criteriaModelList,
+            Pageable pageable
+    ) {
         Specification<Vacancy> specification
                 = new GenericSpecification<>(criteriaModelList, Vacancy.class);
         Page<Vacancy> rooms = vacancyRepository.findAll(specification, pageable);

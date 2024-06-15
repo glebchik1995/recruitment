@@ -1,14 +1,12 @@
 package com.java.recruitment.service.model.vacancy;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.java.recruitment.service.model.jobRequest.JobRequest;
 import com.java.recruitment.service.model.user.User;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.List;
 
 @Entity
 @Table(name = "vacancy")
@@ -17,7 +15,7 @@ import java.util.List;
 @Builder(toBuilder = true)
 @NoArgsConstructor
 @AllArgsConstructor
-public class Vacancy {
+public class Vacancy implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,6 +23,12 @@ public class Vacancy {
 
     @Column(nullable = false)
     private String requirement;
+
+    @Column(nullable = false)
+    private String title;
+
+    @Column(nullable = false)
+    private String position;
 
     @Column(nullable = false)
     private String description;
@@ -50,9 +54,5 @@ public class Vacancy {
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "recruiter_id", referencedColumnName = "id", nullable = false)
     private User recruiter;
-
-    @OneToMany(mappedBy = "user")
-    @JsonBackReference
-    private List<JobRequest> jobRequests;
 
 }

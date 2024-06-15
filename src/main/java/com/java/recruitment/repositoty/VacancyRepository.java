@@ -6,7 +6,9 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface VacancyRepository extends JpaRepository<Vacancy, Long> , JpaSpecificationExecutor<Vacancy> {
+public interface VacancyRepository extends
+        JpaRepository<Vacancy, Long>,
+        JpaSpecificationExecutor<Vacancy> {
 
     @Query(value = """
              SELECT exists(

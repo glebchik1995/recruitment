@@ -8,12 +8,15 @@ databaseChangeLog:
             columns:
               - column:
                   name: status
-                  value: CANDIDATE_FOUND
+                  value: NEW
               - column:
                   name: hr_id
                   valueNumeric: 1
               - column:
                   name: candidate_id
+                  valueNumeric: 1
+              - column:
+                  name: vacancy_id
                   valueNumeric: 1
               - column:
                   name: description

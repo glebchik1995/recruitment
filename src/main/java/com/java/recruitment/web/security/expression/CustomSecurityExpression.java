@@ -2,6 +2,7 @@ package com.java.recruitment.web.security.expression;
 
 import com.java.recruitment.repositoty.exception.DataAccessException;
 import com.java.recruitment.service.IJobRequestService;
+import com.java.recruitment.service.IChatMessageService;
 import com.java.recruitment.service.IVacancyService;
 import com.java.recruitment.service.model.user.Role;
 import com.java.recruitment.web.security.JwtEntity;
@@ -19,6 +20,9 @@ public class CustomSecurityExpression {
     private final IVacancyService vacancyService;
 
     private final IJobRequestService jobRequestService;
+
+    private final IChatMessageService mailService;
+
 
     public boolean canAccessUser(@NotNull final Long id) {
         JwtEntity user = this.getPrincipal();
@@ -46,6 +50,20 @@ public class CustomSecurityExpression {
         Long id = user.getId();
 
         return jobRequestService.isRecruiterForJobRequest(id, jobRequestId) || hasAnyRole(Role.ADMIN);
+    }
+
+    public boolean canAccessMessageForRecruiter(@NotNull final Long messageId) {
+        JwtEntity user = this.getPrincipal();
+        Long id = user.getId();
+
+        return mailService.isRecruiterForMessage(id, messageId) || hasAnyRole(Role.ADMIN);
+    }
+
+    public boolean canAccessMessageForHr(@NotNull final Long messageId) {
+        JwtEntity user = this.getPrincipal();
+        Long id = user.getId();
+
+        return mailService.isHrForMessage(id, messageId) || hasAnyRole(Role.ADMIN);
     }
 
     public boolean canAccessVacancy(@NotNull final Long vacancyId) {

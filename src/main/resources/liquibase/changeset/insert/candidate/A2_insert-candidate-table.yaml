@@ -25,5 +25,14 @@ databaseChangeLog:
                   name: position
                   value: "Engineer"
               - column:
-                  name: department
-                  value: "Radio Electronics"
+                  name: exp
+                  value: "3 года отработал на заводе"
+              - column:
+                  name: tech_skill
+                  value: "Читаю влет электрические схемы"
+              - column:
+                  name: language_skill
+                  value: "А1"
+              - column:
+                  name: expected_salary
+                  valueNumeric: 40000

@@ -7,7 +7,6 @@ import com.java.recruitment.repositoty.exception.DataUploadException;
 import com.java.recruitment.service.IFileService;
 import com.java.recruitment.service.model.jobRequest.JobRequest;
 import com.java.recruitment.service.properties.MinioProperties;
-import com.java.recruitment.web.dto.file.DeleteFileDTO;
 import io.minio.*;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-
 
 @Service
 @LogError
@@ -59,6 +57,7 @@ public class FileService implements IFileService {
 
     @SneakyThrows
     @Transactional
+    @Override
     public String download(final Long id) {
 
         JobRequest jobRequest = jobRequestRepository.findById(id)
@@ -86,28 +85,21 @@ public class FileService implements IFileService {
         }
     }
 
-    @Transactional
-    public void delete(final DeleteFileDTO dto) {
-        JobRequest jobRequest = jobRequestRepository.findById(dto.getJobRequestId())
-                .orElseThrow(() -> new DataNotFoundException("Заявка не найдена!"));
-
-        String fileName = dto.getFileName();
-        List<String> files = jobRequest.getFiles();
-        if (files.contains(fileName)) {
-            try {
-                minioClient.removeObject(
-                        RemoveObjectArgs.builder()
-                                .bucket(minioProperties.getBucket())
-                                .object(fileName)
-                                .build()
-                );
-                files.remove(fileName);
-                jobRequestRepository.save(jobRequest);
-            } catch (Exception e) {
-                throw new RuntimeException("Не удалось создать архив", e);
+    @Override
+    public void delete(final List<String> filesNames) {
+        if (!filesNames.isEmpty()) {
+            for (String fileName : filesNames) {
+                try {
+                    minioClient.removeObject(
+                            RemoveObjectArgs.builder()
+                                    .bucket(minioProperties.getBucket())
+                                    .object(fileName)
+                                    .build()
+                    );
+                } catch (Exception e) {
+                    throw new RuntimeException("Не удалось удалить файл из хранилища", e);
+                }
             }
-        } else {
-            throw new DataNotFoundException("Файл не найден");
         }
     }
 

@@ -1,9 +1,9 @@
 package com.java.recruitment.service;
 
 import com.java.recruitment.service.filter.CriteriaModel;
-import com.java.recruitment.web.dto.hiring.ChangeJobRequestStatusDTO;
-import com.java.recruitment.web.dto.hiring.JobRequestDTO;
-import com.java.recruitment.web.dto.hiring.JobResponseDTO;
+import com.java.recruitment.web.dto.jobRequest.ChangeJobRequestStatusDTO;
+import com.java.recruitment.web.dto.jobRequest.JobRequestDTO;
+import com.java.recruitment.web.dto.jobRequest.JobResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 

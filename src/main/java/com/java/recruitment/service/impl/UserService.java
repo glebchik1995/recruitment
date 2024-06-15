@@ -6,7 +6,7 @@ import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.IUserService;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.util.NullPropertyCopyHelper;
-import com.java.recruitment.web.dto.user.UpdateUserDTO;
+import com.java.recruitment.web.dto.user.EditUserDTO;
 import com.java.recruitment.web.dto.user.UserDTO;
 import com.java.recruitment.web.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -35,9 +35,9 @@ public class UserService implements IUserService {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new DataAlreadyExistException("Пользователь уже существует.");
         }
-        if (!user.getPassword().equals(user.getPasswordConfirmation())) {
-            throw new IllegalStateException("Пароль и подтверждение пароля не совпадают.");
-        }
+//        if (!user.getPassword().equals(user.getPasswordConfirmation())) {
+//            throw new IllegalStateException("Пароль и подтверждение пароля не совпадают.");
+//        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(userDTO.getRole());
         return userMapper.toDto(userRepository.save(user));
@@ -45,7 +45,7 @@ public class UserService implements IUserService {
 
     @Override
     @Transactional
-    public UserDTO editUser(final UpdateUserDTO userDTO) {
+    public UserDTO editUser(final EditUserDTO userDTO) {
         User user = userRepository.findById(userDTO.getId())
                 .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
         NullPropertyCopyHelper.copyNonNullProperties(userDTO, user);

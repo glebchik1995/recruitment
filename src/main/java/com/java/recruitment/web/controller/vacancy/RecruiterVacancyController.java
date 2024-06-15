@@ -17,7 +17,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(
-        name = "VACANCY Controller",
+        name = "RECRUITER VACANCY Controller",
         description = "CRUD OPERATIONS WITH VACANCY"
 )
 @RestController

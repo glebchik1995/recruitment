@@ -30,7 +30,6 @@ public class CandidateDTO {
     private int age;
 
     @Email(groups = {OnCreate.class, OnUpdate.class})
-    @Schema(description = "email", example = "ivan1977@mail.com")
     private String email;
 
     @Pattern(groups = {OnCreate.class, OnUpdate.class}, regexp = "^\\+7\\s\\(\\d{3}\\)\\s\\d{3}-\\d{2}-\\d{2}$")
@@ -40,9 +39,6 @@ public class CandidateDTO {
 
     @NotBlank(groups = {OnCreate.class})
     private String position;
-
-    @NotBlank(groups = {OnCreate.class})
-    private String department;
 
     @NotBlank(groups = {OnCreate.class})
     private String exp;

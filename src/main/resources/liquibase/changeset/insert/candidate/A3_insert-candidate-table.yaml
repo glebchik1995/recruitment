@@ -25,5 +25,14 @@ databaseChangeLog:
                   name: position
                   value: "Manager"
               - column:
-                  name: department
-                  value: "Sales"
+                  name: exp
+                  value: "10 лет в T-Bank"
+              - column:
+                  name: tech_skill
+                  value: "Продавал кредитные и дебетовые карты по 100 шт./день"
+              - column:
+                  name: language_skill
+                  value: "C1"
+              - column:
+                  name: expected_salary
+                  valueNumeric: 250000

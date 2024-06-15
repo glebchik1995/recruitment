@@ -2,8 +2,8 @@ package com.java.recruitment.web.controller.jobRequest;
 
 import com.java.recruitment.aspect.log.LogInfo;
 import com.java.recruitment.service.IJobRequestService;
-import com.java.recruitment.web.dto.hiring.JobRequestDTO;
-import com.java.recruitment.web.dto.hiring.JobResponseDTO;
+import com.java.recruitment.web.dto.jobRequest.JobRequestDTO;
+import com.java.recruitment.web.dto.jobRequest.JobResponseDTO;
 import com.java.recruitment.web.security.expression.CustomSecurityExpression;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

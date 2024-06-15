@@ -1,4 +1,4 @@
-package com.java.recruitment.web.dto.hiring;
+package com.java.recruitment.web.dto.jobRequest;
 
 import jakarta.validation.constraints.Min;
 import lombok.*;
@@ -19,7 +19,7 @@ public class JobRequestDTO {
     private Long candidateId;
 
     @Min(1)
-    private Long vacancy_id;
+    private Long vacancyId;
 
     @Nullable
     private MultipartFile[] files;

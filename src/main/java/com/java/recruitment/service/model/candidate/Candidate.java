@@ -1,11 +1,7 @@
 package com.java.recruitment.service.model.candidate;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
-import com.java.recruitment.service.model.jobRequest.JobRequest;
 import jakarta.persistence.*;
 import lombok.*;
-
-import java.util.List;
 
 @Entity
 @Table(name = "candidate")
@@ -20,26 +16,23 @@ public class Candidate {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "name", nullable = false)
+    @Column(nullable = false)
     private String name;
 
-    @Column(name = "surname", nullable = false)
+    @Column(nullable = false)
     private String surname;
 
-    @Column(name = "age", nullable = false)
+    @Column(nullable = false)
     private int age;
 
-    @Column(name = "email", nullable = false)
+    @Column(nullable = false)
     private String email;
 
-    @Column(name = "phone", nullable = false)
+    @Column(nullable = false)
     private String phone;
 
-    @Column(name = "position", nullable = false)
+    @Column(nullable = false)
     private String position;
-
-    @Column(name = "department", nullable = false)
-    private String department;
 
     @Column(nullable = false)
     private String exp;
@@ -51,10 +44,6 @@ public class Candidate {
     private String languageSkill;
 
     @Column(name = "expected_salary", nullable = false)
-    private String expectedSalary;
-
-    @OneToMany(mappedBy = "user")
-    @JsonBackReference
-    private List<JobRequest> jobRequests;
+    private int expectedSalary;
 
 }

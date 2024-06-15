@@ -21,13 +21,13 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/v1/candidate")
 @RequiredArgsConstructor
 @LogInfo
-public class CandidateController {
+public class AdminCandidateController {
 
     private final ICandidateService candidateService;
 
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    @Operation(summary = "Изменить данные пользователя")
+    @Operation(summary = "Создать кандидата")
     public CandidateDTO createCandidate(
             @Validated(OnCreate.class) @RequestBody CandidateDTO candidate
     ) {
@@ -36,7 +36,7 @@ public class CandidateController {
 
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
-    @Operation(summary = "Изменить данные пользователя")
+    @Operation(summary = "Изменить данные кандидата")
     public CandidateDTO editingDataCandidate(
             @Validated(OnUpdate.class) @RequestBody CandidateDTO candidate
     ) {
@@ -45,9 +45,8 @@ public class CandidateController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @Operation(summary = "Изменить данные пользователя")
+    @Operation(summary = "Удалить кандидата")
     public void deleteCandidate(@PathVariable @Min(1) final Long id) {
         candidateService.deleteCandidate(id);
     }
-
 }

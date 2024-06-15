@@ -1,7 +1,7 @@
 package com.java.recruitment.service;
 
 import com.java.recruitment.service.model.user.User;
-import com.java.recruitment.web.dto.user.UpdateUserDTO;
+import com.java.recruitment.web.dto.user.EditUserDTO;
 import com.java.recruitment.web.dto.user.UserDTO;
 
 public interface IUserService {
@@ -10,7 +10,7 @@ public interface IUserService {
 
     User getByUsername(String username);
 
-    UserDTO editUser(UpdateUserDTO user);
+    UserDTO editUser(EditUserDTO user);
 
     UserDTO getById(Long id);
 

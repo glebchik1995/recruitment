@@ -1,3 +1,11 @@
+    version: '3.8'
+
+    volumes:
+      db-data:
+        driver: local
+      minio-data:
+        driver: local
+
 services:
   app:
     restart: always

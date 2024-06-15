@@ -1,6 +1,8 @@
 package com.java.recruitment.web.dto.mail;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.java.recruitment.service.model.chat.NotificationType;
+import com.java.recruitment.web.dto.user.UserDTO;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.*;
 
@@ -11,18 +13,16 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class MailResponse {
+public class MailResponseDTO {
 
-    @Schema(description = "Почта отправителя", example = "example@gmail.com")
-    private String senderMail;
+    private UserDTO sender;
 
-    @Schema(description = "Почта получателя", example = "example@gmail.com")
-    private String receiverMail;
+    private UserDTO receiver;
 
-    @Schema(description = "Тема письма")
     private String subject;
 
-    @Schema(description = "Текст письма")
+    private NotificationType type;
+
     private String text;
 
     @Schema(description = "Дата отправления")

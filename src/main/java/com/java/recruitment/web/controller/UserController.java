@@ -2,7 +2,7 @@ package com.java.recruitment.web.controller;
 
 import com.java.recruitment.aspect.log.LogInfo;
 import com.java.recruitment.service.IUserService;
-import com.java.recruitment.web.dto.user.UpdateUserDTO;
+import com.java.recruitment.web.dto.user.EditUserDTO;
 import com.java.recruitment.web.dto.user.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,7 +29,7 @@ public class UserController {
     @PutMapping
     @Operation(summary = "Изменить данные пользователя")
     @PreAuthorize("@cse.canAccessUser(#dto.id)")
-    public UserDTO update(@Valid @RequestBody final UpdateUserDTO dto) {
+    public UserDTO update(@Valid @RequestBody final EditUserDTO dto) {
         return userService.editUser(dto);
     }
 
