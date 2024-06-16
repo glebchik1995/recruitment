@@ -25,9 +25,9 @@ public class NotificationService implements INotificationService {
     private final JavaMailSender mailSender;
 
     public void sendNotification(
-            User receiver,
-            NotificationType type,
-            Properties params
+            final User receiver,
+            final NotificationType type,
+            final Properties params
 
     ) {
         switch (type) {

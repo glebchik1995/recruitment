@@ -15,7 +15,7 @@ public class ExceptionLoggingAspect {
             pointcut = "@within(com.java.recruitment.aspect.log.LogError)",
             throwing = "ex"
     )
-    public void logException(JoinPoint joinPoint, Exception ex) {
+    public void logException(final JoinPoint joinPoint, final Exception ex) {
         String methodName = joinPoint.getSignature().getName();
         String className = joinPoint.getTarget().getClass().getSimpleName();
         log.error(

@@ -29,8 +29,8 @@ public class RecruiterFileController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Получить ссылку на скачивание файлов по ID заявки на работу")
-    @PreAuthorize("@cse.canAccessJobRequestForRecruiter(#id)")
-    public ResponseEntity<String> downloadFiles(@PathVariable @Min(1) Long id) {
+    @PreAuthorize("@cse.isJobRequestConsumer(#id)")
+    public ResponseEntity<String> downloadFiles(@PathVariable @Min(1) final Long id) {
         String downloadLinks = fileService.download(id);
         return ResponseEntity.ok(downloadLinks);
     }

@@ -5,6 +5,7 @@ import com.java.recruitment.repositoty.CandidateRepository;
 import com.java.recruitment.repositoty.JobRequestRepository;
 import com.java.recruitment.repositoty.UserRepository;
 import com.java.recruitment.repositoty.VacancyRepository;
+import com.java.recruitment.repositoty.exception.DataAccessException;
 import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.IFileService;
 import com.java.recruitment.service.IJobRequestService;
@@ -37,6 +38,7 @@ import static com.java.recruitment.service.model.jobRequest.Status.NEW;
 @Service
 @RequiredArgsConstructor
 @LogError
+@Transactional(readOnly = true)
 public class JobRequestService implements IJobRequestService {
 
     private final JobRequestMapper jobRequestMapper;
@@ -56,17 +58,21 @@ public class JobRequestService implements IJobRequestService {
     @Override
     @Transactional
     public JobResponseDTO createJobRequest(
-            JobRequestDTO jobRequestDto,
-            Long hrId) {
+            final JobRequestDTO jobRequestDto,
+            final Long hrId) {
+
+        Vacancy vacancy = vacancyRepository.findById(jobRequestDto.getVacancyId())
+                .orElseThrow(() -> new DataNotFoundException("Вакансия не найдена"));
+
+        if (!vacancy.isActive()) {
+            throw new DataAccessException("Вакансия закрыта");
+        }
 
         Candidate candidate = candidateRepository.findById(jobRequestDto.getCandidateId())
                 .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
 
         User hr = userRepository.findById(hrId)
                 .orElseThrow(() -> new DataNotFoundException("HR не найден"));
-
-        Vacancy vacancy = vacancyRepository.findById(jobRequestDto.getVacancyId())
-                .orElseThrow(() -> new DataNotFoundException("Вакансия не найдена"));
 
         User recruiter = userRepository.findById(vacancy.getRecruiter().getId())
                 .orElseThrow(() -> new DataNotFoundException("Рекрутер не найден"));
@@ -109,7 +115,7 @@ public class JobRequestService implements IJobRequestService {
     }
 
     @Override
-    public JobResponseDTO getJobRequestById(Long id) {
+    public JobResponseDTO getJobRequestById(final Long id) {
         JobRequest jobRequest = jobRequestRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
         return jobRequestMapper.toDto(jobRequest);
@@ -117,7 +123,7 @@ public class JobRequestService implements IJobRequestService {
 
     @Override
     @Transactional
-    public JobResponseDTO updateJobRequest(ChangeJobRequestStatusDTO jobRequestDto) {
+    public JobResponseDTO updateJobRequest(final ChangeJobRequestStatusDTO jobRequestDto) {
         JobRequest jobRequest = jobRequestRepository.findById(jobRequestDto.getId())
                 .orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
         jobRequest.setStatus(jobRequestDto.getStatus());
@@ -127,7 +133,7 @@ public class JobRequestService implements IJobRequestService {
 
     @Override
     @Transactional
-    public void deleteJobRequest(Long id) {
+    public void deleteJobRequest(final Long id) {
 
         JobRequest jobRequest = jobRequestRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
@@ -139,13 +145,13 @@ public class JobRequestService implements IJobRequestService {
 
     @Override
     public Page<JobResponseDTO> getAllJobRequests(
-            List<CriteriaModel> criteriaModelList,
-            Long recruiter_id,
+            final List<CriteriaModel> criteriaModelList,
+            final Long recruiter_id,
             Pageable pageable
     ) {
         Specification<JobRequest> specification
                 = new GenericSpecification<>(criteriaModelList, JobRequest.class);
-        Page<JobRequest> jobRequests = jobRequestRepository.findJobRequestsForRecruiter(
+        Page<JobRequest> jobRequests = jobRequestRepository.findAllJobRequestsByRecruiterIdAndCriteria(
                 recruiter_id,
                 specification,
                 pageable
@@ -162,9 +168,9 @@ public class JobRequestService implements IJobRequestService {
     }
 
     @Override
-    public boolean isRecruiterForJobRequest(
+    public boolean isJobRequestConsumer(
             final Long userId,
             final Long job_request_id) {
-        return jobRequestRepository.isRecruiterForJobRequest(userId, job_request_id);
+        return jobRequestRepository.isJobRequestConsumer(userId, job_request_id);
     }
 }

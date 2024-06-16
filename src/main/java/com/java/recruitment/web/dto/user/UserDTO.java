@@ -4,7 +4,6 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import com.java.recruitment.service.model.user.Role;
 import com.java.recruitment.validation.enums.EnumAllowedConstraint;
 import com.java.recruitment.validation.match.FieldMatch;
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
@@ -26,15 +25,17 @@ public class UserDTO {
 
     private Long id;
 
-    @NotNull
+    @NotBlank
     @Length(max = 255)
     private String name;
 
     @Email
     @NotBlank
+    @Length(max = 255)
     private String username;
 
-    @NotNull
+    @NotBlank
+    @Length(max = 255)
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 

@@ -28,13 +28,13 @@ public class Candidate {
     @Column(nullable = false)
     private String email;
 
-    @Column(nullable = false)
+    @Column(length = 20, nullable = false)
     private String phone;
 
     @Column(nullable = false)
     private String position;
 
-    @Column(nullable = false)
+    @Column(length = 1000, nullable = false)
     private String exp;
 
     @Column(name = "tech_skill", nullable = false)

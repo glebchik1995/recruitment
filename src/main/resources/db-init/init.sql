@@ -3,20 +3,20 @@ DROP TABLE IF EXISTS users;
 CREATE TABLE IF NOT EXISTS users
 (
     id       BIGSERIAL PRIMARY KEY,
-    name     varchar(255) not null,
-    username VARCHAR(50)  NOT NULL UNIQUE,
+    name     varchar(255) NOT NULL,
+    username VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    role     VARCHAR(50)  NOT NULL
+    role     VARCHAR      NOT NULL
 );
 
 CREATE TABLE IF NOT EXISTS job_request
 (
     id           BIGSERIAL PRIMARY KEY,
-    status       VARCHAR(50) NOT NULL,
-    hr_id        BIGINT      NOT NULL,
-    candidate_id BIGINT      NOT NULL,
-    vacancy_id   BIGINT      NOT NULL,
-    description  VARCHAR(1000),
+    status       VARCHAR NOT NULL,
+    hr_id        BIGINT  NOT NULL,
+    candidate_id BIGINT  NOT NULL,
+    vacancy_id   BIGINT  NOT NULL,
+    description  TEXT,
     FOREIGN KEY (hr_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (candidate_id) REFERENCES candidate (id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (vacancy_id) REFERENCES vacancy (id) ON DELETE CASCADE ON UPDATE CASCADE
@@ -24,8 +24,8 @@ CREATE TABLE IF NOT EXISTS job_request
 
 CREATE TABLE IF NOT EXISTS job_request_files
 (
-    job_request_id BIGINT       NOT NULL,
-    file           VARCHAR(255) NOT NULL,
+    job_request_id BIGINT  NOT NULL,
+    file           VARCHAR NOT NULL,
     FOREIGN KEY (job_request_id) REFERENCES job_request (id) ON DELETE CASCADE
 );
 
@@ -42,21 +42,23 @@ CREATE TABLE IF NOT EXISTS candidate
     tech_skill      VARCHAR(255)  NOT NULL,
     language_skill  VARCHAR(255)  NOT NULL,
     expected_salary INT           NOT NULL
-
 );
 
 CREATE TABLE IF NOT EXISTS vacancy
 (
     id                BIGSERIAL PRIMARY KEY,
-    requirement       VARCHAR(255) NOT NULL,
+    requirement       TEXT         NOT NULL,
+    title             VARCHAR(255) NOT NULL,
+    position          VARCHAR(255) NOT NULL,
     description       TEXT         NOT NULL,
     start_working_day TIME         NOT NULL,
-    end_working_day   VARCHAR(50)  NOT NULL,
-    salary            VARCHAR(50)  NOT NULL,
+    end_working_day   TIME         NOT NULL,
+    salary            INT          NOT NULL,
     created_date      DATE         NOT NULL,
-    created_time      TIMESTAMP    NOT NULL,
+    created_time      TIME         NOT NULL,
     active            BOOLEAN      NOT NULL,
-    recruiter_id      BIGINT       NOT NULL
+    recruiter_id      BIGINT       NOT NULL,
+    FOREIGN KEY (recruiter_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 
@@ -64,12 +66,12 @@ CREATE TABLE IF NOT EXISTS chat_message
 (
     id          BIGSERIAL PRIMARY KEY,
     sender_id   BIGINT,
-    receiver_id BIGINT,
+    recipient_id BIGINT,
     text        TEXT,
     sent_date   DATE NOT NULL,
     sent_time   TIME NOT NULL,
     FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (receiver_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (recipient_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 

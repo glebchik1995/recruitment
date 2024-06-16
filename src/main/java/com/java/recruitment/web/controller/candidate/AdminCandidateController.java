@@ -29,7 +29,7 @@ public class AdminCandidateController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Создать кандидата")
     public CandidateDTO createCandidate(
-            @Validated(OnCreate.class) @RequestBody CandidateDTO candidate
+            @Validated(OnCreate.class) @RequestBody final CandidateDTO candidate
     ) {
         return candidateService.createCandidate(candidate);
     }
@@ -38,7 +38,7 @@ public class AdminCandidateController {
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Изменить данные кандидата")
     public CandidateDTO editingDataCandidate(
-            @Validated(OnUpdate.class) @RequestBody CandidateDTO candidate
+            @Validated(OnUpdate.class) @RequestBody final CandidateDTO candidate
     ) {
         return candidateService.updateCandidate(candidate);
     }

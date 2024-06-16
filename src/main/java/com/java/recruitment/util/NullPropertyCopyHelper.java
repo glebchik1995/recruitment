@@ -21,7 +21,7 @@ public class NullPropertyCopyHelper {
      * @param source объект для анализа
      * @return массив имен свойств с null-значениями
      */
-    public String[] getNullPropertyNames(Object source) {
+    public String[] getNullPropertyNames(final Object source) {
         final BeanWrapper src = new BeanWrapperImpl(source);
         PropertyDescriptor[] pds = src.getPropertyDescriptors();
 
@@ -42,7 +42,7 @@ public class NullPropertyCopyHelper {
      * @param src исходный объект
      * @param target целевой объект
      */
-    public void copyNonNullProperties(Object src, Object target) {
+    public void copyNonNullProperties(final Object src, final Object target) {
         BeanUtils.copyProperties(src, target, getNullPropertyNames(src));
     }
 }

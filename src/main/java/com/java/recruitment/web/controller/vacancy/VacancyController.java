@@ -40,7 +40,7 @@ public class VacancyController {
     @GetMapping
     @Operation(summary = "Получить всех вакансии")
     public Page<ResponseVacancyDTO> getAllVacancy(
-            @RequestParam(required = false) String criteriaJson,
+            @RequestParam(required = false) final String criteriaJson,
             @ParameterObject Pageable pageable)
             throws BadRequestException {
 
@@ -67,7 +67,7 @@ public class VacancyController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Получить вакансию по ID")
-    public ResponseVacancyDTO getVacancyById(@PathVariable @Min(1) Long id) {
+    public ResponseVacancyDTO getVacancyById(@PathVariable @Min(1) final Long id) {
         return vacancyService.getVacancyById(id);
     }
 }

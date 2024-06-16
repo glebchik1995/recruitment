@@ -5,7 +5,6 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Entity
@@ -27,8 +26,8 @@ public class ChatMessage {
     private User sender;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "receiver_id", referencedColumnName = "id", nullable = false)
-    private User receiver;
+    @JoinColumn(name = "recipient_id", referencedColumnName = "id", nullable = false)
+    private User recipient;
 
     @Column(name = "text")
     private String text;

@@ -14,7 +14,7 @@ import java.util.Arrays;
 public class LoggingAspect {
 
     @Around("@within(com.java.recruitment.aspect.log.LogInfo)")
-    public Object log(ProceedingJoinPoint joinPoint) throws Throwable {
+    public Object log(final ProceedingJoinPoint joinPoint) throws Throwable {
         String methodName = joinPoint.getSignature().getName();
         Object[] arguments = joinPoint.getArgs();
 

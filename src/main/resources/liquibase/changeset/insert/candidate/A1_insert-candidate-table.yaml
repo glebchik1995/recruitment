@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: insert_data_into_candidate_table
+      id: insert_data_into_candidate_table_1
       author: Gleb
       changes:
         - insert:
@@ -8,31 +8,31 @@ databaseChangeLog:
             columns:
               - column:
                   name: name
-                  value: John
+                  value: 'Андрей'
               - column:
                   name: surname
-                  value: Junior
+                  value: 'Зажмилин'
               - column:
                   name: age
-                  valueNumeric: 22
+                  valueNumeric: 28
               - column:
                   name: email
-                  value: "john.jun@mail.com"
+                  value: 'john@mail.com'
               - column:
                   name: phone
-                  value: "+7 (953) 454-66-22"
+                  value: '+7 (953) 454-66-22'
               - column:
                   name: position
-                  value: "Java Developer"
+                  value: 'Java Developer'
               - column:
                   name: exp
-                  value: "Пол года стажировался в компании Senla"
+                  value: 'Опыт работы от 3 лет в Сбербанке'
               - column:
                   name: tech_skill
-                  value: "Spring boot, Postgres"
+                  value: 'Spring boot, Postgres, Hibernate'
               - column:
                   name: language_skill
-                  value: "B1"
+                  value: 'B1'
               - column:
                   name: expected_salary
-                  valueNumeric: 50000
+                  valueNumeric: 100000

@@ -1,62 +1,55 @@
 databaseChangeLog:
   - changeSet:
-      id: create_job_request_table
+      id: create_chat_message_table
       author: Gleb
       changes:
         - createTable:
-            tableName: job_request
+            tableName: chat_message
             columns:
               - column:
                   name: id
-                  type: BIGSERIAL
+                  type: BIGINT
+                  autoIncrement: true
                   constraints:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: status
-                  type: VARCHAR(50)
-                  constraints:
-                    nullable: false
-              - column:
-                  name: hr_id
+                  name: sender_id
                   type: BIGINT
                   constraints:
                     nullable: false
               - column:
-                  name: candidate_id
+                  name: recipient_id
                   type: BIGINT
                   constraints:
                     nullable: false
               - column:
-                  name: vacancy_id
-                  type: BIGINT
-                  constraints:
-                    nullable: false
-              - column:
-                  name: description
+                  name: text
                   type: TEXT
-
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sent_date
+                  type: DATE
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sent_time
+                  type: TIME
+                  constraints:
+                    nullable: false
             constraints:
               - foreignKeyConstraint:
-                  foreignKeyName: fk_job_request_hr_id
+                  foreignKeyName: fk_chat_message_sender_id
                   referencedTableName: users
                   referencedColumnNames: id
-                  baseColumnNames: hr_id
+                  baseColumnNames: sender_id
                   onDelete: CASCADE
                   onUpdate: CASCADE
-
               - foreignKeyConstraint:
-                  foreignKeyName: fk_job_request_candidate_id
-                  referencedTableName: candidate
+                  foreignKeyName: fk_chat_message_receiver_id
+                  referencedTableName: users
                   referencedColumnNames: id
-                  baseColumnNames: candidate_id
-                  onDelete: CASCADE
-                  onUpdate: CASCADE
-
-              - foreignKeyConstraint:
-                  foreignKeyName: fk_job_request_vacancy_id
-                  referencedTableName: vacancy
-                  referencedColumnNames: id
-                  baseColumnNames: vacancy_id
+                  baseColumnNames: receiver_id
                   onDelete: CASCADE
                   onUpdate: CASCADE

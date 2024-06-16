@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_data_into_vacancy_table_1
+      author: Gleb
+      changes:
+        - insert:
+            tableName: vacancy
+            columns:
+              - column:
+                  name: requirement
+                  value: "Опыт работы от 3 лет"
+              - column:
+                  name: title
+                  value: "Java разработчик"
+              - column:
+                  name: position
+                  value: "Middle Java Developer"
+              - column:
+                  name: description
+                  value: "Разработка и поддержка backend системы"
+              - column:
+                  name: start_working_day
+                  value: "09:00:00"
+              - column:
+                  name: end_working_day
+                  value: "18:00:00"
+              - column:
+                  name: salary
+                  valueNumeric: 150000
+              - column:
+                  name: created_date
+                  value: "2024-06-15"
+              - column:
+                  name: created_time
+                  value: "10:00:00"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: recruiter_id
+                  valueNumeric: 1

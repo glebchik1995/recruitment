@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -24,6 +25,7 @@ import java.util.List;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class VacancyService implements IVacancyService {
 
     private final VacancyMapper vacancyMapper;
@@ -33,9 +35,10 @@ public class VacancyService implements IVacancyService {
     private final UserRepository userRepository;
 
     @Override
+    @Transactional
     public ResponseVacancyDTO postVacancy(
-            RequestVacancyDTO dto,
-            Long recruiter_id
+            final RequestVacancyDTO dto,
+            final Long recruiter_id
     ) {
         User user = userRepository.findById(recruiter_id)
                 .orElseThrow(() -> new DataNotFoundException("Специалист не найден"));
@@ -55,7 +58,7 @@ public class VacancyService implements IVacancyService {
 
     @Override
     public Page<ResponseVacancyDTO> getAllVacancy(
-            List<CriteriaModel> criteriaModelList,
+            final List<CriteriaModel> criteriaModelList,
             Pageable pageable
     ) {
         Specification<Vacancy> specification
@@ -65,7 +68,8 @@ public class VacancyService implements IVacancyService {
     }
 
     @Override
-    public ResponseVacancyDTO updateVacancy(RequestVacancyDTO dto) {
+    @Transactional
+    public ResponseVacancyDTO updateVacancy(final RequestVacancyDTO dto) {
         Vacancy vacancy = vacancyRepository.findById(dto.getId())
                 .orElseThrow(() -> new DataNotFoundException("Вакансия не найден"));
         NullPropertyCopyHelper.copyNonNullProperties(dto, vacancy);
@@ -74,7 +78,8 @@ public class VacancyService implements IVacancyService {
     }
 
     @Override
-    public void deleteVacancy(Long id) {
+    @Transactional
+    public void deleteVacancy(final Long id) {
         Vacancy vacancy = vacancyRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Вакансия не найден"));
         vacancyRepository.delete(vacancy);

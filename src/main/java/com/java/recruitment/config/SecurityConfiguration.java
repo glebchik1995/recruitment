@@ -89,7 +89,7 @@ public class SecurityConfiguration {
                                                             .value()
                                             );
                                             response.getWriter()
-                                                    .write("Unauthorized.");
+                                                    .write("UNAUTHORIZED.");
                                         })
                                 .accessDeniedHandler(
                                         (request, response, exception) -> {
@@ -98,7 +98,7 @@ public class SecurityConfiguration {
                                                             .value()
                                             );
                                             response.getWriter()
-                                                    .write("Unauthorized.");
+                                                    .write("FORBIDDEN.");
                                         }))
                 .authorizeHttpRequests(configurer ->
                         configurer.requestMatchers("/api/v1/auth/**")

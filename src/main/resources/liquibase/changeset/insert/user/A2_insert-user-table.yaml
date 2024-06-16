@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: insert_users_data
+      id: insert_users_data_2
       author: Gleb
       changes:
         - insert:

@@ -18,11 +18,11 @@ public class CandidateDTO {
     private Long id;
 
     @NotBlank(groups = {OnCreate.class})
-    @Length(max = 20, groups = {OnCreate.class, OnUpdate.class})
+    @Length(max = 255, groups = {OnCreate.class, OnUpdate.class})
     private String name;
 
     @NotBlank(groups = {OnCreate.class})
-    @Length(max = 20, groups = {OnCreate.class, OnUpdate.class})
+    @Length(max = 255, groups = {OnCreate.class, OnUpdate.class})
     private String surname;
 
     @Min(groups = {OnCreate.class, OnUpdate.class}, value = 18, message = "Возраст кандидата должен быть 18+")
@@ -30,23 +30,29 @@ public class CandidateDTO {
     private int age;
 
     @Email(groups = {OnCreate.class, OnUpdate.class})
+    @Length(max = 255, groups = {OnCreate.class, OnUpdate.class})
     private String email;
 
     @Pattern(groups = {OnCreate.class, OnUpdate.class}, regexp = "^\\+7\\s\\(\\d{3}\\)\\s\\d{3}-\\d{2}-\\d{2}$")
     @NotBlank(groups = {OnCreate.class})
     @Schema(description = "phone", example = "+7 (XXX) XXX-XX-XX")
+    @Length(max = 20, groups = {OnCreate.class, OnUpdate.class})
     private String phone;
 
     @NotBlank(groups = {OnCreate.class})
+    @Length(max = 255, groups = {OnCreate.class, OnUpdate.class})
     private String position;
 
     @NotBlank(groups = {OnCreate.class})
+    @Length(max = 1000, groups = {OnCreate.class, OnUpdate.class})
     private String exp;
 
     @NotBlank(groups = {OnCreate.class})
+    @Length(max = 255, groups = {OnCreate.class, OnUpdate.class})
     private String techSkill;
 
     @NotBlank(groups = {OnCreate.class})
+    @Length(max = 255, groups = {OnCreate.class, OnUpdate.class})
     private String languageSkill;
 
     @NotBlank(groups = {OnCreate.class})

@@ -17,24 +17,23 @@ public interface JobRequestRepository extends JpaRepository<JobRequest, Long>, J
                            SELECT 1
                            FROM job_request
                            WHERE hr_id = :userId
-                             AND id = :job_request_id)
+                           AND id = :jobRequestId)
             """, nativeQuery = true)
     boolean isJobRequestOwner(
             @Param("userId") Long userId,
-            @Param("job_request_id") Long job_request_id
+            @Param("jobRequestId") Long jobRequestId
     );
 
     @Query(value = """
              SELECT exists(
                            SELECT 1
-                           FROM job_request jr
-                           JOIN vacancy v ON jr.vacancy_id = v.id
-                           WHERE v.recruiter_id = :userId
-                             AND jr.id = :job_request_id)
+                           FROM job_request
+                           WHERE recruiter_id = :userId
+                           AND id = :jobRequestId)
             """, nativeQuery = true)
-    boolean isRecruiterForJobRequest(
+    boolean isJobRequestConsumer(
             @Param("userId") Long userId,
-            @Param("job_request_id") Long job_request_id
+            @Param("jobRequestId") Long jobRequestId
     );
 
     @Query(value = """
@@ -43,7 +42,7 @@ public interface JobRequestRepository extends JpaRepository<JobRequest, Long>, J
              JOIN jr.vacancy v
              WHERE v.recruiterId = :recruiterId
             """)
-    Page<JobRequest> findJobRequestsForRecruiter(
+    Page<JobRequest> findAllJobRequestsByRecruiterIdAndCriteria(
             @Param("recruiterId") Long recruiterId,
             Specification<JobRequest> specification,
             Pageable pageable
@@ -55,7 +54,7 @@ public interface JobRequestRepository extends JpaRepository<JobRequest, Long>, J
              JOIN jr.vacancy v
              WHERE v.recruiterId = :recruiterId
             """)
-    Page<JobRequest> findJobRequestsForRecruiter(
+    Page<JobRequest> findAllJobRequestsByRecruiterId(
             @Param("recruiterId") Long recruiterId,
             Pageable pageable
     );

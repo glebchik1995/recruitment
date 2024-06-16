@@ -39,8 +39,8 @@ public class Vacancy implements Serializable {
     @Column(name = "end_working_day", nullable = false)
     private LocalTime endWorkingDay;
 
-    @Column(length = 50, nullable = false)
-    private String salary;
+    @Column(nullable = false)
+    private int salary;
 
     @Column(name = "created_date", nullable = false)
     private LocalDate createdDate;

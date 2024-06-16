@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_data_into_vacancy_table_2
+      author: Gleb
+      changes:
+        - insert:
+            tableName: vacancy
+            columns:
+              - column:
+                  name: requirement
+                  value: "Знание Python"
+              - column:
+                  name: title
+                  value: "Data Scientist"
+              - column:
+                  name: position
+                  value: "Junior Data Scientist"
+              - column:
+                  name: description
+                  value: "Работа с большими данными"
+              - column:
+                  name: start_working_day
+                  value: "10:00:00"
+              - column:
+                  name: end_working_day
+                  value: "19:00:00"
+              - column:
+                  name: salary
+                  valueNumeric: 90000
+              - column:
+                  name: created_date
+                  value: "2024-06-15"
+              - column:
+                  name: created_time
+                  value: "12:30:00"
+              - column:
+                  name: active
+                  valueBoolean: false
+              - column:
+                  name: recruiter_id
+                  valueNumeric: 1

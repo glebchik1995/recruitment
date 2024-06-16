@@ -1,0 +1,23 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_chat_message_1
+      author: Gleb
+      changes:
+        - insert:
+            tableName: chat_message
+            columns:
+              - column:
+                  name: sender_id
+                  valueNumeric: 2
+              - column:
+                  name: recipient_id
+                  valueNumeric: 1
+              - column:
+                  name: text
+                  value: 'Привет! Как дела?'
+              - column:
+                  name: sent_date
+                  value: '2024-06-16'
+              - column:
+                  name: sent_time
+                  value: '10:00:00'

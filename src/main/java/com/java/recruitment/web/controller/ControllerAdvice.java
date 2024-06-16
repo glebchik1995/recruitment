@@ -24,28 +24,28 @@ public class ControllerAdvice {
             }
     )
     @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleCustomExceptions(Exception ex) {
+    public ResponseEntity<String> handleCustomExceptions(final Exception ex) {
         log.error("ResponseStatus: {}. Status code: {} {}", HttpStatus.BAD_REQUEST, HttpStatus.BAD_REQUEST.value(), ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.BAD_REQUEST);
     }
 
     @ExceptionHandler(DataAuthException.class)
     @ResponseStatus(HttpStatus.FORBIDDEN)
-    public ResponseEntity<String> handleAuthException(DataAuthException ex) {
+    public ResponseEntity<String> handleAuthException(final DataAuthException ex) {
         log.error("ResponseStatus: FORBIDDEN. Status code: 403 {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.FORBIDDEN);
     }
 
     @ExceptionHandler(DataNotFoundException.class)
     @ResponseStatus(HttpStatus.NOT_FOUND)
-    public ResponseEntity<String> handleNotFoundException(DataNotFoundException ex) {
+    public ResponseEntity<String> handleNotFoundException(final DataNotFoundException ex) {
         log.error("ResponseStatus: NOT_FOUND. Status code: 404 {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public ResponseEntity<String> handleOtherExceptions(Exception ex) {
+    public ResponseEntity<String> handleOtherExceptions(final Exception ex) {
         log.error("ResponseStatus: INTERNAL_SERVER_ERROR. Status code: 500 {}", ex.getMessage());
         return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }

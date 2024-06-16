@@ -1,0 +1,41 @@
+databaseChangeLog:
+  - changeSet:
+      id: insert_data_into_vacancy_table_3
+      author: Gleb
+      changes:
+        - insert:
+            tableName: vacancy
+            columns:
+              - column:
+                  name: requirement
+                  value: "Умение работать в команде"
+              - column:
+                  name: title
+                  value: "QA Engineer"
+              - column:
+                  name: position
+                  value: "Manual QA"
+              - column:
+                  name: description
+                  value: "Тестирование мобильного приложения"
+              - column:
+                  name: start_working_day
+                  value: "08:00:00"
+              - column:
+                  name: end_working_day
+                  value: "17:00:00"
+              - column:
+                  name: salary
+                  valueNumeric: 90000
+              - column:
+                  name: created_date
+                  value: "2024-06-15"
+              - column:
+                  name: created_time
+                  value: "15:45:00"
+              - column:
+                  name: active
+                  valueBoolean: true
+              - column:
+                  name: recruiter_id
+                  valueNumeric: 1

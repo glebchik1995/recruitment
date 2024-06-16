@@ -30,7 +30,7 @@ public interface IJobRequestService {
             Long job_request_id
     );
 
-    boolean isRecruiterForJobRequest(
+    boolean isJobRequestConsumer(
             Long userId,
             Long job_request_id
     );

@@ -1,23 +1,20 @@
 package com.java.recruitment.service;
 
 import com.java.recruitment.service.filter.CriteriaModel;
-import com.java.recruitment.service.model.chat.NotificationType;
-import com.java.recruitment.service.model.user.User;
-import com.java.recruitment.web.dto.mail.MailRequestDTO;
-import com.java.recruitment.web.dto.mail.MailResponseDTO;
+import com.java.recruitment.web.dto.chat.ChatMessageRequestDTO;
+import com.java.recruitment.web.dto.chat.ChatMessageResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
 import java.util.List;
-import java.util.Properties;
 
 public interface IChatMessageService {
 
-    MailResponseDTO sendMessage(MailRequestDTO request);
+    ChatMessageResponseDTO sendMessage(ChatMessageRequestDTO request, Long senderId);
 
-    MailResponseDTO getMessageById(Long id);
+    ChatMessageResponseDTO getMessageById(Long id);
 
-    Page<MailResponseDTO> getAllMessagesWithCriteria(
+    Page<ChatMessageResponseDTO> getAllMessagesWithCriteria(
             List<CriteriaModel> criteriaModelList,
             Long recruiter_id,
             Pageable pageable);

@@ -4,7 +4,6 @@ import com.java.recruitment.web.dto.user.UserDTO;
 import lombok.*;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 @Getter
@@ -28,7 +27,7 @@ public class ResponseVacancyDTO {
 
     private LocalDate createdDate;
 
-    private LocalDateTime createdTime;
+    private LocalTime createdTime;
 
     private boolean active;
 

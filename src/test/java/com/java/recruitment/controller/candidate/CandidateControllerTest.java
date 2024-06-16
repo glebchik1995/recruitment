@@ -1,4 +1,4 @@
-package com.java.recruitment.controller.hr;
+package com.java.recruitment.controller.candidate;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @AutoConfigureMockMvc
 @WithMockUser(username = "admin", authorities = {"ADMIN"})
-class HrCandidateControllerTest extends BaseIntegrationTest {
+class CandidateControllerTest extends BaseIntegrationTest {
 
     @Autowired(required = false)
     private MockMvc mvc;
@@ -52,7 +52,6 @@ class HrCandidateControllerTest extends BaseIntegrationTest {
                 .phone("+7 (999) 999-99-99")
                 .email("test@mail.com")
                 .position("TEST POSITION")
-                .department("TEST DEPARTMENT")
                 .build();
 
         MockHttpServletResponse response = mvc.perform(
@@ -80,7 +79,6 @@ class HrCandidateControllerTest extends BaseIntegrationTest {
         candidate.setEmail(updatedCandidateDTO.getEmail());
         candidate.setPhone(updatedCandidateDTO.getPhone());
         candidate.setPosition(updatedCandidateDTO.getPosition());
-        candidate.setDepartment(updatedCandidateDTO.getDepartment());
 
         candidateRepository.save(candidate);
 
@@ -102,7 +100,6 @@ class HrCandidateControllerTest extends BaseIntegrationTest {
                 .phone(null)
                 .email(null)
                 .position(null)
-                .department(null)
                 .build();
 
         MockHttpServletResponse response = mvc.perform(
@@ -134,7 +131,6 @@ class HrCandidateControllerTest extends BaseIntegrationTest {
         Assertions.assertNotNull(candidateDTO.getEmail());
         Assertions.assertNotNull(candidateDTO.getPhone());
         Assertions.assertNotNull(candidateDTO.getPosition());
-        Assertions.assertNotNull(candidateDTO.getDepartment());
 
         Assertions.assertEquals(mapper.writeValueAsString(candidateDTO), response.getContentAsString());
 

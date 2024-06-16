@@ -2,7 +2,7 @@ package com.java.recruitment.service;
 
 import com.java.recruitment.repositoty.UserRepository;
 import com.java.recruitment.service.impl.ChatMessageService;
-import com.java.recruitment.web.mapper.MailMapper;
+import com.java.recruitment.web.mapper.ChatMapper;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -16,7 +16,7 @@ class MailServiceTest {
     private UserRepository userRepository;
 
     @Mock
-    private MailMapper mailMapper;
+    private ChatMapper mailMapper;
 
     @InjectMocks
     private ChatMessageService mailService;

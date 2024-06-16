@@ -15,10 +15,10 @@ public interface VacancyRepository extends
                            SELECT 1
                            FROM vacancy
                            WHERE recruiter_id = :userId
-                             AND id = :recruiter_id)
+                             AND id = :recruiterId)
             """, nativeQuery = true)
     boolean isVacancyOwner(
             @Param("userId") Long userId,
-            @Param("job_request_id") Long recruiter_id
+            @Param("recruiterId") Long recruiterId
     );
 }

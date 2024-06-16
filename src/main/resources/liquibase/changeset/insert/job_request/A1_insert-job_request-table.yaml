@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: insert_data_into_job_request_table
+      id: insert_data_into_job_request_table_1
       author: Gleb
       changes:
         - insert:
@@ -8,7 +8,7 @@ databaseChangeLog:
             columns:
               - column:
                   name: status
-                  value: NEW
+                  value: 'NEW'
               - column:
                   name: hr_id
                   valueNumeric: 1
@@ -20,4 +20,4 @@ databaseChangeLog:
                   valueNumeric: 1
               - column:
                   name: description
-                  value: "Job request description"
+                  value: 'Job request description'

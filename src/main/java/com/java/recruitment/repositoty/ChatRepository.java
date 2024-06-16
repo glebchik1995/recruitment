@@ -10,7 +10,17 @@ import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface MailRepository extends JpaRepository<ChatMessage, Long>, JpaSpecificationExecutor<JobRequest> {
+public interface ChatRepository extends JpaRepository<ChatMessage, Long>, JpaSpecificationExecutor<JobRequest> {
+
+    @Query(value = """
+             SELECT cm
+             FROM chat_message cm
+             WHERE cm.recruiterId = :recruiterId
+            """)
+    Page<ChatMessage> findAllMessageForRecruiter(
+            @Param("recruiterId") Long recruiterId,
+            Pageable pageable
+    );
 
     @Query(value = """
              SELECT jr
@@ -18,9 +28,9 @@ public interface MailRepository extends JpaRepository<ChatMessage, Long>, JpaSpe
              JOIN jr.vacancy v
              WHERE v.recruiterId = :recruiterId
             """)
-    Page<JobRequest> getMessagesForRecruiter(
+    Page<ChatMessage> findAllMessageForRecruiterByCriteria(
             @Param("recruiterId") Long recruiterId,
-            Specification<JobRequest> specification,
+            Specification<ChatMessage> specification,
             Pageable pageable
     );
 }

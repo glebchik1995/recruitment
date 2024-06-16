@@ -22,7 +22,7 @@ public class JobRequest {
     private Long id;
 
     @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(nullable = false)
     private Status status;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -42,6 +42,5 @@ public class JobRequest {
     @ElementCollection(fetch = FetchType.EAGER)
     private List<String> files;
 
-    @Column(name = "description")
     private String description;
 }

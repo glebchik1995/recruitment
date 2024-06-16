@@ -6,7 +6,6 @@ import com.java.recruitment.service.IChatMessageService;
 import com.java.recruitment.service.IVacancyService;
 import com.java.recruitment.service.model.user.Role;
 import com.java.recruitment.web.security.JwtEntity;
-import jakarta.validation.constraints.NotNull;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -24,51 +23,51 @@ public class CustomSecurityExpression {
     private final IChatMessageService mailService;
 
 
-    public boolean canAccessUser(@NotNull final Long id) {
+    public boolean canAccessUser(final Long id) {
         JwtEntity user = this.getPrincipal();
-        Long userId = user.getId();
+        Long userId = user.id();
         return userId.equals(id) || hasAnyRole(Role.ADMIN);
     }
 
     public Long getIdFromContext() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         if (authentication != null && authentication.getPrincipal() instanceof JwtEntity) {
-            return ((JwtEntity) authentication.getPrincipal()).getId();
+            return ((JwtEntity) authentication.getPrincipal()).id();
         }
         throw new DataAccessException("Пользователь не аутентифицирован или неверные данные аутентификации");
     }
 
-    public boolean canAccessJobRequest(@NotNull final Long jobRequestId) {
+    public boolean isJobRequestOwner(final Long jobRequestId) {
         JwtEntity user = this.getPrincipal();
-        Long id = user.getId();
+        Long id = user.id();
 
         return jobRequestService.isJobRequestOwner(id, jobRequestId) || hasAnyRole(Role.ADMIN);
     }
 
-    public boolean canAccessJobRequestForRecruiter(@NotNull final Long jobRequestId) {
+    public boolean isJobRequestConsumer(final Long jobRequestId) {
         JwtEntity user = this.getPrincipal();
-        Long id = user.getId();
+        Long id = user.id();
 
-        return jobRequestService.isRecruiterForJobRequest(id, jobRequestId) || hasAnyRole(Role.ADMIN);
+        return jobRequestService.isJobRequestConsumer(id, jobRequestId) || hasAnyRole(Role.ADMIN);
     }
 
-    public boolean canAccessMessageForRecruiter(@NotNull final Long messageId) {
+    public boolean canAccessMessageForRecruiter(final Long messageId) {
         JwtEntity user = this.getPrincipal();
-        Long id = user.getId();
+        Long id = user.id();
 
         return mailService.isRecruiterForMessage(id, messageId) || hasAnyRole(Role.ADMIN);
     }
 
-    public boolean canAccessMessageForHr(@NotNull final Long messageId) {
+    public boolean canAccessMessageForHr(final Long messageId) {
         JwtEntity user = this.getPrincipal();
-        Long id = user.getId();
+        Long id = user.id();
 
         return mailService.isHrForMessage(id, messageId) || hasAnyRole(Role.ADMIN);
     }
 
-    public boolean canAccessVacancy(@NotNull final Long vacancyId) {
+    public boolean isVacancyOwner(final Long vacancyId) {
         JwtEntity user = this.getPrincipal();
-        Long id = user.getId();
+        Long id = user.id();
 
         return vacancyService.isVacancyOwner(id, vacancyId) || hasAnyRole(Role.ADMIN);
     }

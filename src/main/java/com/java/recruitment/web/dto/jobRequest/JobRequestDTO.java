@@ -24,7 +24,7 @@ public class JobRequestDTO {
     @Nullable
     private MultipartFile[] files;
 
-    @Length(max = 255)
+    @Length(max = 1000)
     @Nullable
     private String description;
 }

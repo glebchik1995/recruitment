@@ -40,7 +40,7 @@ public class HrCandidateController {
     @GetMapping
     @Operation(summary = "Получить всех кандидатов")
     public Page<CandidateDTO> getAllCandidates(
-            @RequestParam(required = false) String criteriaJson,
+            @RequestParam(required = false) final String criteriaJson,
             @ParameterObject Pageable pageable)
             throws BadRequestException {
 
@@ -67,7 +67,7 @@ public class HrCandidateController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Получить кндидата по ID")
-    public CandidateDTO getCandidateById(@PathVariable @Min(1) Long id) {
+    public CandidateDTO getCandidateById(@PathVariable @Min(1) final Long id) {
         return candidateService.getCandidateById(id);
     }
 }

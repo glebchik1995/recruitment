@@ -25,7 +25,10 @@ public class GenericSpecification<T> implements Specification<T> {
     private final List<CriteriaModel> criteriaModelList;
     private final Class<T> entityClass;
 
-    public GenericSpecification(List<CriteriaModel> criteriaModelList, Class<T> entityClass) {
+    public GenericSpecification(
+            final List<CriteriaModel> criteriaModelList,
+            final Class<T> entityClass
+    ) {
         this.criteriaModelList = criteriaModelList;
         this.entityClass = entityClass;
         checkCriteria(criteriaModelList);
@@ -33,9 +36,9 @@ public class GenericSpecification<T> implements Specification<T> {
 
     @Override
     public Predicate toPredicate(
-            @NotNull Root<T> root,
-            @NotNull CriteriaQuery<?> query,
-            @NotNull CriteriaBuilder cb
+            @NotNull final Root<T> root,
+            @NotNull final CriteriaQuery<?> query,
+            @NotNull final CriteriaBuilder cb
     ) {
         List<Predicate> predicates = new ArrayList<>();
         for (CriteriaModel criteria : criteriaModelList) {
@@ -60,7 +63,7 @@ public class GenericSpecification<T> implements Specification<T> {
         }
     }
 
-    private void checkCriteria(List<CriteriaModel> criteriaModel) {
+    private void checkCriteria(final List<CriteriaModel> criteriaModel) {
         for (CriteriaModel model : criteriaModel) {
             if (model == null) {
                 throw new IllegalArgumentException("CriteriaModel не должно быть нулевым.");
@@ -78,7 +81,11 @@ public class GenericSpecification<T> implements Specification<T> {
         }
     }
 
-    private Predicate createPredicate(CriteriaModel criteria, Root<T> root, CriteriaBuilder cb) {
+    private Predicate createPredicate(
+            final CriteriaModel criteria,
+            final Root<T> root,
+            final CriteriaBuilder cb
+    ) {
         Operation operation = criteria.getOperation();
         String fieldName = criteria.getField();
         Path<Object> expression = getExpression(root, fieldName);
@@ -147,7 +154,7 @@ public class GenericSpecification<T> implements Specification<T> {
         return null;
     }
 
-    private Path<Object> getExpression(Root<T> root, String fieldName) {
+    private Path<Object> getExpression(final Root<T> root, final String fieldName) {
         if (fieldName.contains(".")) {
             String[] fieldParts = fieldName.split("\\.");
             Join<Object, Object> join = root.join(fieldParts[0], jakarta.persistence.criteria.JoinType.INNER);
@@ -157,7 +164,7 @@ public class GenericSpecification<T> implements Specification<T> {
         }
     }
 
-    private LocalDateTime toDate(Object value) {
+    private LocalDateTime toDate(final Object value) {
         return switch (value) {
             case LocalDateTime localDateTime -> localDateTime;
             case LocalDate date -> LocalDateTime.of(date, LocalTime.MIN);
@@ -167,7 +174,7 @@ public class GenericSpecification<T> implements Specification<T> {
         };
     }
 
-    private boolean isNumber(String fieldName) {
+    private boolean isNumber(final String fieldName) {
         Class<?> fieldType = getFieldType(fieldName);
         if (fieldType.isPrimitive()) {
             return PRIMITIVE_NUMBERS.contains(fieldType.getName());
@@ -175,12 +182,12 @@ public class GenericSpecification<T> implements Specification<T> {
         return Number.class.isAssignableFrom(fieldType);
     }
 
-    private boolean isString(String fieldName) {
+    private boolean isString(final String fieldName) {
         Class<?> fieldType = getFieldType(fieldName);
         return fieldType.isEnum() || String.class.equals(fieldType);
     }
 
-    private boolean isDate(String fieldName) {
+    private boolean isDate(final String fieldName) {
         Class<?> fieldType = getFieldType(fieldName);
         if (LocalDate.class.equals(fieldType) || LocalDateTime.class.equals(fieldType)) {
             return true;
@@ -188,7 +195,7 @@ public class GenericSpecification<T> implements Specification<T> {
         return Date.class.isAssignableFrom(fieldType);
     }
 
-    private Class<?> getFieldType(String fieldName) {
+    private Class<?> getFieldType(final String fieldName) {
         try {
             Field field = getFieldByFieldName(fieldName);
             Class<?> fieldType = field.getType();
@@ -203,7 +210,7 @@ public class GenericSpecification<T> implements Specification<T> {
         }
     }
 
-    private Field getFieldByFieldName(String fieldName) throws NoSuchFieldException {
+    private Field getFieldByFieldName(final String fieldName) throws NoSuchFieldException {
         if (fieldName.contains(".")) {
             String[] fieldParts = fieldName.split("\\.");
             Field field = entityClass.getDeclaredField(fieldParts[0]);

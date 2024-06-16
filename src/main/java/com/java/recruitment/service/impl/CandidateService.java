@@ -15,12 +15,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
 @Service
 @LogError
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class CandidateService implements ICandidateService {
 
     private final CandidateMapper candidateMapper;
@@ -28,7 +30,8 @@ public class CandidateService implements ICandidateService {
     private final CandidateRepository candidateRepository;
 
     @Override
-    public CandidateDTO createCandidate(CandidateDTO candidateDTO) {
+    @Transactional
+    public CandidateDTO createCandidate(final CandidateDTO candidateDTO) {
         return candidateMapper.toDto(
                 candidateRepository.save(
                         candidateMapper.toEntity(
@@ -39,7 +42,8 @@ public class CandidateService implements ICandidateService {
     }
 
     @Override
-    public CandidateDTO updateCandidate(CandidateDTO candidateDTO) {
+    @Transactional
+    public CandidateDTO updateCandidate(final CandidateDTO candidateDTO) {
         Candidate candidate = candidateRepository.findById(candidateDTO.getId())
                 .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
         NullPropertyCopyHelper.copyNonNullProperties(candidateDTO, candidate);
@@ -50,7 +54,7 @@ public class CandidateService implements ICandidateService {
     @Override
     public Page<CandidateDTO> getAllCandidates
             (
-                    List<CriteriaModel> criteriaList,
+                    final List<CriteriaModel> criteriaList,
                     Pageable pageable
             ) {
 
@@ -65,14 +69,15 @@ public class CandidateService implements ICandidateService {
     }
 
     @Override
-    public CandidateDTO getCandidateById(Long id) {
+    public CandidateDTO getCandidateById(final Long id) {
         Candidate candidate = candidateRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
         return candidateMapper.toDto(candidate);
     }
 
     @Override
-    public void deleteCandidate(Long id) {
+    @Transactional
+    public void deleteCandidate(final Long id) {
         Candidate candidate = candidateRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
         candidateRepository.delete(candidate);

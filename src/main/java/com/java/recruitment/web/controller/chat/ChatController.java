@@ -2,12 +2,12 @@ package com.java.recruitment.web.controller.chat;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.recruitment.aspect.log.LogInfo;
-import com.java.recruitment.repositoty.MailRepository;
+import com.java.recruitment.repositoty.ChatRepository;
 import com.java.recruitment.service.IChatMessageService;
 import com.java.recruitment.service.filter.CriteriaModel;
-import com.java.recruitment.web.dto.mail.MailRequestDTO;
-import com.java.recruitment.web.dto.mail.MailResponseDTO;
-import com.java.recruitment.web.mapper.MailMapper;
+import com.java.recruitment.web.dto.chat.ChatMessageRequestDTO;
+import com.java.recruitment.web.dto.chat.ChatMessageResponseDTO;
+import com.java.recruitment.web.mapper.ChatMapper;
 import com.java.recruitment.web.security.expression.CustomSecurityExpression;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -27,7 +27,7 @@ import java.util.Arrays;
 import java.util.List;
 
 @Tag(
-        name = "Mail Controller",
+        name = "Chat Controller",
         description = "CRUD OPERATIONS WITH MAIL"
 )
 @RestController
@@ -38,23 +38,27 @@ public class ChatController {
 
     private final IChatMessageService emailService;
 
-    private final MailMapper mapper;
+    private final ChatMapper mapper;
 
     private final CustomSecurityExpression expression;
 
-    private final MailRepository mailRepository;
+    private final ChatRepository mailRepository;
 
     @PostMapping
     @Operation(summary = "Отправить сообщение")
     @ResponseStatus(HttpStatus.CREATED)
-    public MailResponseDTO sendMessage(@RequestBody @Valid final MailRequestDTO mail) {
-        return emailService.sendMessage(mail);
+    public ChatMessageResponseDTO sendMessage(
+            @RequestBody @Valid final ChatMessageRequestDTO dto
+    ) {
+        Long senderId = expression.getIdFromContext();
+
+        return emailService.sendMessage(dto, senderId);
     }
 
     @GetMapping
     @Operation(summary = "Получить все заявки")
-    public Page<MailResponseDTO> getAllMessages(
-            @RequestParam(required = false) String criteriaJson,
+    public Page<ChatMessageResponseDTO> getAllMessages(
+            @RequestParam(required = false) final String criteriaJson,
             @ParameterObject Pageable pageable)
             throws BadRequestException {
 
@@ -81,18 +85,18 @@ public class ChatController {
                 throw new BadRequestException("Не удалось проанализировать условия", ex);
             }
         } else {
-            return mailRepository.getMessagesForRecruiter(
+            return mailRepository.findAllMessageForRecruiter(
                             recruiter_id,
                             pageable
                     )
-                    .map(mapper::toDto);
+                    .map(mapper::toDTO);
         }
     }
 
     @GetMapping("/{id}")
     @Operation(summary = "Получить заявку по ID")
     @PreAuthorize("@cse.canAccessMessageForRecruiter(#id) || @cse.canAccessMessageForHr(#id)")
-    public MailResponseDTO getMessageById(@PathVariable @Min(1) Long id) {
+    public ChatMessageResponseDTO getMessageById(@PathVariable @Min(1) final Long id) {
         return emailService.getMessageById(id);
     }
 }

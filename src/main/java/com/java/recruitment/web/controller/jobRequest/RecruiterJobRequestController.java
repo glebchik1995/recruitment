@@ -48,7 +48,7 @@ public class RecruiterJobRequestController {
     @GetMapping
     @Operation(summary = "Получить все заявки")
     public Page<JobResponseDTO> getAllJobRequests(
-            @RequestParam(required = false) String criteriaJson,
+            @RequestParam(required = false) final String criteriaJson,
             @ParameterObject Pageable pageable)
             throws BadRequestException {
 
@@ -75,7 +75,7 @@ public class RecruiterJobRequestController {
                 throw new BadRequestException("Не удалось проанализировать условия", ex);
             }
         } else {
-            return jobRequestRepository.findJobRequestsForRecruiter(
+            return jobRequestRepository.findAllJobRequestsByRecruiterId(
                             recruiter_id,
                             pageable
                     )
@@ -85,14 +85,14 @@ public class RecruiterJobRequestController {
 
     @GetMapping("/{id}")
     @Operation(summary = "Получить заявку по ID")
-    @PreAuthorize("@cse.canAccessJobRequestForRecruiter(#id)")
+    @PreAuthorize("@cse.isJobRequestConsumer(#id)")
     public JobResponseDTO getJobRequestById(@PathVariable @Min(1) Long id) {
         return jobRequestService.getJobRequestById(id);
     }
 
     @PutMapping
     @Operation(summary = "Изменить статус заявки")
-    @PreAuthorize("@cse.canAccessJobRequestForRecruiter(#jobRequestDto.id)")
+    @PreAuthorize("@cse.isJobRequestConsumer(#jobRequestDto.id)")
     public JobResponseDTO updateStatusJobRequest(
             @RequestBody @Valid ChangeJobRequestStatusDTO jobRequestDto
     ) {

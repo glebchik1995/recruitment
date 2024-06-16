@@ -34,7 +34,7 @@ public class RecruiterVacancyController {
     @ResponseStatus(HttpStatus.CREATED)
     @Operation(summary = "Опубликовать вакансию")
     public ResponseVacancyDTO postVacancy(
-            @Validated(OnCreate.class) @RequestBody RequestVacancyDTO vacancyDTO
+            @Validated(OnCreate.class) @RequestBody final RequestVacancyDTO vacancyDTO
     ) {
         Long recruiter_id = expression.getIdFromContext();
         return vacancyService.postVacancy(vacancyDTO, recruiter_id);
@@ -43,9 +43,9 @@ public class RecruiterVacancyController {
     @PutMapping
     @ResponseStatus(HttpStatus.OK)
     @Operation(summary = "Редактировать вакансию")
-    @PreAuthorize("@cse.canAccessVacancy(#vacancyDTO.id)")
+    @PreAuthorize("@cse.isVacancyOwner(#vacancyDTO.id)")
     public ResponseVacancyDTO updateVacancy(
-            @Validated(OnUpdate.class) @RequestBody RequestVacancyDTO vacancyDTO
+            @Validated(OnUpdate.class) @RequestBody final RequestVacancyDTO vacancyDTO
     ) {
         return vacancyService.updateVacancy(vacancyDTO);
     }
@@ -53,7 +53,7 @@ public class RecruiterVacancyController {
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @Operation(summary = "Удалить вакансию")
-    @PreAuthorize("@cse.canAccessVacancy(#id)")
+    @PreAuthorize("@cse.isVacancyOwner(#id)")
     public void deleteVacancy(@PathVariable @Min(1) final Long id) {
         vacancyService.deleteVacancy(id);
     }

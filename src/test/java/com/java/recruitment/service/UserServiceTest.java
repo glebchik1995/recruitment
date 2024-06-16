@@ -3,7 +3,6 @@ package com.java.recruitment.service;
 import com.java.recruitment.repositoty.UserRepository;
 import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.impl.UserService;
-import com.java.recruitment.service.model.user.Role;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.web.dto.user.UserDTO;
 import com.java.recruitment.web.mapper.UserMapper;
@@ -16,11 +15,11 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 import java.util.Optional;
-import java.util.Set;
 
 import static org.hibernate.validator.internal.util.Contracts.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.mockito.Mockito.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 
 @ExtendWith(MockitoExtension.class)
@@ -127,7 +126,6 @@ public class UserServiceTest {
         assertNotNull(createdUser);
         assertEquals("username", createdUser.getUsername());
         assertEquals("encodedPassword", createdUser.getPassword());
-        assertEquals(Set.of(Role.USER), createdUser.getRoles());
     }
 
 

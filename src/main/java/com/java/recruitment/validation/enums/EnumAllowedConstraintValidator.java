@@ -13,7 +13,7 @@ public class EnumAllowedConstraintValidator implements ConstraintValidator<EnumA
     private Set<String> enumValues;
 
     @Override
-    public void initialize(EnumAllowedConstraint constraint) {
+    public void initialize(final EnumAllowedConstraint constraint) {
         this.allowedValues = Arrays.stream(constraint.allowed()).collect(Collectors.toSet());
         this.enumValues = Stream.of(constraint.enumClass().getEnumConstants())
                 .map(Enum::name)
@@ -21,7 +21,7 @@ public class EnumAllowedConstraintValidator implements ConstraintValidator<EnumA
     }
 
     @Override
-    public boolean isValid(Enum<?> value, ConstraintValidatorContext context) {
+    public boolean isValid(final Enum<?> value, final ConstraintValidatorContext context) {
         return value == null || enumValues.contains(value.toString()) && allowedValues.contains(value.toString());
     }
 }
