@@ -21,9 +21,9 @@ import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
 
-@Service
 @LogError
 @RequiredArgsConstructor
+@Service
 public class FileService implements IFileService {
 
     private final MinioClient minioClient;

@@ -1,7 +1,7 @@
 package com.java.recruitment.web.dto.jobRequest;
 
 import com.java.recruitment.service.model.jobRequest.Status;
-import com.java.recruitment.web.dto.candidate.CandidateDTO;
+import com.java.recruitment.web.dto.candidate.RequestCandidateDTO;
 import com.java.recruitment.web.dto.user.UserDTO;
 import com.java.recruitment.web.dto.vacancy.ResponseVacancyDTO;
 import lombok.Builder;
@@ -21,9 +21,9 @@ public class JobResponseDTO {
 
     private UserDTO hr;
 
-    private CandidateDTO candidate;
+    private RequestCandidateDTO candidate;
 
-    private ResponseVacancyDTO recruiter;
+    private ResponseVacancyDTO vacancyDTO;
 
     private List<String> files;
 

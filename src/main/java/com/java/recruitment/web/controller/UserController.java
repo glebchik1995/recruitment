@@ -10,7 +10,6 @@ import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(
@@ -18,8 +17,7 @@ import org.springframework.web.bind.annotation.*;
         description = "User API"
 )
 @RestController
-@RequestMapping("/api/v1/users")
-@Validated
+@RequestMapping("/users")
 @LogInfo
 @RequiredArgsConstructor
 public class UserController {

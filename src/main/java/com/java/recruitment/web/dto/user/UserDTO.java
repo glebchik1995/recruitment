@@ -15,11 +15,12 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
+@EqualsAndHashCode(of = "id")
 @FieldMatch
         (
                 first = "password",
                 second = "passwordConfirmation",
-                message = "Поля пароля и подтверждени пароля должны совпадать"
+                message = "Поле пароля и поле подтверждения пароля должны совпадать"
         )
 public class UserDTO {
 
@@ -49,7 +50,7 @@ public class UserDTO {
             allowed =
                     {
                             "HR",
-                            "INTERVIEW_SPECIALIST"
+                            "RECRUITER"
                     }
 
     )

@@ -1,5 +1,6 @@
 package com.java.recruitment.service.model.chat;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.java.recruitment.service.model.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -23,10 +24,12 @@ public class ChatMessage {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "sender_id", referencedColumnName = "id", nullable = false)
+    @JsonManagedReference
     private User sender;
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "recipient_id", referencedColumnName = "id", nullable = false)
+    @JsonManagedReference
     private User recipient;
 
     @Column(name = "text")

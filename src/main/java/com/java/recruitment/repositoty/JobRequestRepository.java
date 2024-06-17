@@ -12,48 +12,43 @@ import org.springframework.data.repository.query.Param;
 
 public interface JobRequestRepository extends JpaRepository<JobRequest, Long>, JpaSpecificationExecutor<JobRequest> {
 
-    @Query(value = """
-             SELECT exists(
-                           SELECT 1
-                           FROM job_request
-                           WHERE hr_id = :userId
-                           AND id = :jobRequestId)
-            """, nativeQuery = true)
+    @Query(value = "SELECT EXISTS(" +
+            "                     SELECT 1 " +
+            "                     FROM job_request " +
+            "                     WHERE hr_id = :userId " +
+            "                     AND id = :jobRequestId)", nativeQuery = true)
     boolean isJobRequestOwner(
             @Param("userId") Long userId,
             @Param("jobRequestId") Long jobRequestId
     );
 
-    @Query(value = """
-             SELECT exists(
-                           SELECT 1
-                           FROM job_request
-                           WHERE recruiter_id = :userId
-                           AND id = :jobRequestId)
-            """, nativeQuery = true)
+    @Query(value = "SELECT EXISTS(" +
+            "                     SELECT 1 " +
+            "                     FROM job_request jr " +
+            "                     JOIN vacancy v ON jr.vacancy_id = v.id " +
+            "                     WHERE jr.id = :jobRequestId " +
+            "                     AND v.recruiter_id = :userId)", nativeQuery = true)
     boolean isJobRequestConsumer(
             @Param("userId") Long userId,
             @Param("jobRequestId") Long jobRequestId
     );
 
-    @Query(value = """
-             SELECT jr
-             FROM job_request jr
-             JOIN jr.vacancy v
-             WHERE v.recruiterId = :recruiterId
-            """)
+    @Query(value = "SELECT EXISTS(" +
+            "                     SELECT 1 " +
+            "                     FROM job_request jr " +
+            "                     JOIN vacancy v ON jr.vacancy_id = v.id " +
+            "                     WHERE v.recruiter_id = :recruiterId AND :specification)", nativeQuery = true)
     Page<JobRequest> findAllJobRequestsByRecruiterIdAndCriteria(
             @Param("recruiterId") Long recruiterId,
-            Specification<JobRequest> specification,
+            @Param("specification") Specification<JobRequest> specification,
             Pageable pageable
     );
 
-    @Query(value = """
-             SELECT jr
-             FROM job_request jr
-             JOIN jr.vacancy v
-             WHERE v.recruiterId = :recruiterId
-            """)
+    @Query(value = "SELECT EXISTS(" +
+            "                     SELECT 1 " +
+            "                     FROM job_request jr " +
+            "                     JOIN vacancy v ON jr.vacancy_id = v.id " +
+            "                     WHERE v.recruiter_id = :recruiterId)", nativeQuery = true)
     Page<JobRequest> findAllJobRequestsByRecruiterId(
             @Param("recruiterId") Long recruiterId,
             Pageable pageable

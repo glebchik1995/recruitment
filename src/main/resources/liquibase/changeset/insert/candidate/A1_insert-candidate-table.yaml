@@ -36,3 +36,6 @@ databaseChangeLog:
               - column:
                   name: expected_salary
                   valueNumeric: 100000
+              - column:
+                  name: hr_id
+                  valueNumeric: 1

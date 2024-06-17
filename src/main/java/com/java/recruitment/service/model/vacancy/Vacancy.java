@@ -1,5 +1,8 @@
 package com.java.recruitment.service.model.vacancy;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.java.recruitment.service.model.jobRequest.JobRequest;
 import com.java.recruitment.service.model.user.User;
 import jakarta.persistence.*;
 import lombok.*;
@@ -7,6 +10,7 @@ import lombok.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.List;
 
 @Entity
 @Table(name = "vacancy")
@@ -53,6 +57,11 @@ public class Vacancy implements Serializable {
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "recruiter_id", referencedColumnName = "id", nullable = false)
+    @JsonManagedReference
     private User recruiter;
+
+    @OneToMany(mappedBy = "vacancy", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonBackReference
+    private List<JobRequest> jobRequests;
 
 }

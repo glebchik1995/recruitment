@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
+@EqualsAndHashCode(of = "recipientId")
 public class ChatMessageRequestDTO {
 
     @Min(1)

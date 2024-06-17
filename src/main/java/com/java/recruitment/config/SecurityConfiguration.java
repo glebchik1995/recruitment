@@ -89,7 +89,7 @@ public class SecurityConfiguration {
                                                             .value()
                                             );
                                             response.getWriter()
-                                                    .write("UNAUTHORIZED.");
+                                                    .write("Unauthorized.");
                                         })
                                 .accessDeniedHandler(
                                         (request, response, exception) -> {
@@ -98,7 +98,7 @@ public class SecurityConfiguration {
                                                             .value()
                                             );
                                             response.getWriter()
-                                                    .write("FORBIDDEN.");
+                                                    .write("Unauthorized.");
                                         }))
                 .authorizeHttpRequests(configurer ->
                         configurer.requestMatchers("/api/v1/auth/**")
@@ -107,26 +107,32 @@ public class SecurityConfiguration {
                                 .permitAll()
                                 .requestMatchers("/v3/api-docs/**")
                                 .permitAll()
-                                .requestMatchers("/api/v1/**").hasAnyAuthority(
+                                .requestMatchers("/recruiter/**").hasAnyAuthority(
+                                        String.valueOf(RECRUITER),
                                         String.valueOf(ADMIN)
                                 )
-                                .requestMatchers("/api/v1/recruiter/**").hasAnyAuthority(
-                                        String.valueOf(RECRUITER)
-                                )
                                 .requestMatchers("/api/v1/hr/**").hasAnyAuthority(
-                                        String.valueOf(HR)
+                                        String.valueOf(HR),
+                                        String.valueOf(ADMIN)
                                 )
                                 .requestMatchers("/emails/**").hasAnyAuthority(
                                         String.valueOf(RECRUITER),
-                                        String.valueOf(HR)
-                                )
-                                .requestMatchers("/api/v1/vacancy/**").hasAnyAuthority(
-                                        String.valueOf(RECRUITER),
-                                        String.valueOf(HR)
-                                )
-                                .requestMatchers("/api/v1/users/**").hasAnyAuthority(
                                         String.valueOf(HR),
-                                        String.valueOf(RECRUITER)
+                                        String.valueOf(ADMIN)
+                                )
+                                .requestMatchers("/vacancy/**").hasAnyAuthority(
+                                        String.valueOf(RECRUITER),
+                                        String.valueOf(HR),
+                                        String.valueOf(ADMIN)
+                                )
+                                .requestMatchers("/users/**").hasAnyAuthority(
+                                        String.valueOf(HR),
+                                        String.valueOf(RECRUITER),
+                                        String.valueOf(ADMIN)
+                                )
+                                .requestMatchers("/candidate/**").hasAnyAuthority(
+                                        String.valueOf(HR),
+                                        String.valueOf(ADMIN)
                                 )
                                 .anyRequest().authenticated())
                 .anonymous(AbstractHttpConfigurer::disable)

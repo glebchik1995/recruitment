@@ -3,12 +3,14 @@ package com.java.recruitment.service.impl;
 import com.java.recruitment.aspect.log.LogError;
 import com.java.recruitment.repositoty.ChatRepository;
 import com.java.recruitment.repositoty.UserRepository;
+import com.java.recruitment.repositoty.exception.DataAccessException;
 import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.IChatMessageService;
 import com.java.recruitment.service.INotificationService;
 import com.java.recruitment.service.filter.CriteriaModel;
 import com.java.recruitment.service.filter.GenericSpecification;
 import com.java.recruitment.service.model.chat.ChatMessage;
+import com.java.recruitment.service.model.user.Role;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.web.dto.chat.ChatMessageRequestDTO;
 import com.java.recruitment.web.dto.chat.ChatMessageResponseDTO;
@@ -45,14 +47,15 @@ public class ChatMessageService implements IChatMessageService {
     @Transactional
     public ChatMessageResponseDTO sendMessage(
             final ChatMessageRequestDTO request,
-            final Long senderId
+            final User sender
     ) {
-
-        User sender = userRepository.findById(senderId)
-                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
 
         User recipient = userRepository.findById(request.getRecipientId())
                 .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
+
+        if (recipient.getRole().equals(sender.getRole()) || recipient.getRole().equals(Role.ADMIN)) {
+            throw new DataAccessException("Вы не можете отправить сообщение этому пользователю");
+        }
 
         Properties properties = new Properties();
 
@@ -74,32 +77,43 @@ public class ChatMessageService implements IChatMessageService {
     }
 
     @Override
-    public ChatMessageResponseDTO getMessageById(final Long id) {
-        return null;
+    public ChatMessageResponseDTO getChatMessageById(
+            final User currentUser,
+            final Long chatMessageId
+    ) {
+        ChatMessage chatMessage =
+                switch (currentUser.getRole()) {
+            case HR -> chatRepository.findChatMessageByIdAndUserHrId(chatMessageId, chatMessageId);
+            case RECRUITER -> chatRepository.findChatMessageByIdAndUserRecruiterId(chatMessageId, chatMessageId);
+            default -> chatRepository.findById(chatMessageId)
+                    .orElseThrow(() -> new DataNotFoundException("Сообщение в чате не найдено"));
+        };
+        if (chatMessage != null) {
+            return chatMapper.toDTO(chatMessage);
+        } else {
+            throw new DataNotFoundException("Сообщение в чате не найдено");
+        }
     }
 
     @Override
-    public Page<ChatMessageResponseDTO> getAllMessagesWithCriteria(
+    public Page<ChatMessageResponseDTO> getFilteredChatMessages(
             final List<CriteriaModel> criteriaModelList,
-            final Long recruiter_id,
-            Pageable pageable) {
-        Specification<ChatMessage> specification
-                = new GenericSpecification<>(criteriaModelList, ChatMessage.class);
-        Page<ChatMessage> jobRequests = chatRepository.findAllMessageForRecruiterByCriteria(
-                recruiter_id,
-                specification,
-                pageable
+            final Long currentUserId,
+            final Long otherUserId,
+            final Pageable pageable
+    ) {
+
+        Specification<ChatMessage> specification =
+                new GenericSpecification<>(criteriaModelList, ChatMessage.class);
+
+        Page<ChatMessage> jobRequests = chatRepository.findAllBySenderIdAndRecipientIdOrRecipientIdAndSenderId(
+                currentUserId,
+                otherUserId,
+                currentUserId,
+                otherUserId,
+                pageable,
+                specification
         );
         return jobRequests.map(chatMapper::toDTO);
-    }
-
-    @Override
-    public boolean isRecruiterForMessage(final Long userId, final Long messageId) {
-        return false;
-    }
-
-    @Override
-    public boolean isHrForMessage(final Long userId, final Long messageId) {
-        return false;
     }
 }

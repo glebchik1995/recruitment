@@ -1,11 +1,13 @@
 package com.java.recruitment.web.security;
 
+import com.java.recruitment.aspect.log.LogError;
+import com.java.recruitment.repositoty.UserRepository;
 import com.java.recruitment.repositoty.exception.DataAccessException;
-import com.java.recruitment.service.IUserService;
+import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.model.user.Role;
+import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.service.properties.JwtProperties;
 import com.java.recruitment.web.dto.auth.JwtResponse;
-import com.java.recruitment.web.dto.user.UserDTO;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
@@ -25,13 +27,13 @@ import java.time.temporal.ChronoUnit;
 import java.util.Date;
 
 @Service
-@RequiredArgsConstructor
+@RequiredArgsConstructor@LogError
 public class JwtTokenProvider {
 
     private final JwtProperties jwtProperties;
 
     private final UserDetailsService userDetailsService;
-    private final IUserService userService;
+    private final UserRepository userRepository;
     private SecretKey key;
 
     @PostConstruct
@@ -65,7 +67,10 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String createRefreshToken(final Long userId, final String username) {
+    public String createRefreshToken(
+            final Long userId,
+            final String username
+    ) {
         Claims claims = Jwts.claims()
                 .subject(username)
                 .add("id", userId)
@@ -85,7 +90,7 @@ public class JwtTokenProvider {
             throw new DataAccessException("Отказано в доступе");
         }
         Long userId = Long.valueOf(getId(refreshToken));
-        UserDTO user = userService.getById(userId);
+        User user = userRepository.findById(userId).orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
         jwtResponse.setId(userId);
         jwtResponse.setUsername(user.getUsername());
         jwtResponse.setAccessToken(createAccessToken(userId, user.getUsername(), user.getRole()));

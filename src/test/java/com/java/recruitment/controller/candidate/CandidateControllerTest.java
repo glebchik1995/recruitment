@@ -6,7 +6,8 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.java.recruitment.BaseIntegrationTest;
 import com.java.recruitment.repositoty.CandidateRepository;
 import com.java.recruitment.service.model.candidate.Candidate;
-import com.java.recruitment.web.dto.candidate.CandidateDTO;
+import com.java.recruitment.web.dto.candidate.RequestCandidateDTO;
+import com.java.recruitment.web.dto.candidate.ResponseCandidateDTO;
 import com.java.recruitment.web.mapper.CandidateMapper;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
@@ -44,7 +45,7 @@ class CandidateControllerTest extends BaseIntegrationTest {
     @DisplayName("Редактирование всех полей у одного кандидата")
     void shouldEditingAllDataOneCandidate() throws Exception {
 
-        CandidateDTO updatedCandidateDTO = CandidateDTO.builder()
+        RequestCandidateDTO updatedCandidateDTO = RequestCandidateDTO.builder()
                 .id(1L)
                 .age(55)
                 .name("TEST_NAME")
@@ -82,7 +83,7 @@ class CandidateControllerTest extends BaseIntegrationTest {
 
         candidateRepository.save(candidate);
 
-        CandidateDTO candidateDTO = candidateMapper.toDto(candidate);
+        ResponseCandidateDTO candidateDTO = candidateMapper.toDto(candidate);
 
         Assertions.assertEquals(mapper.writeValueAsString(candidateDTO), response.getContentAsString());
 
@@ -92,7 +93,7 @@ class CandidateControllerTest extends BaseIntegrationTest {
     @DisplayName("Редактирование всех полей у одного кандидата")
     void shouldEditingDataOneCandidateExceptFieldsEqualsToNull() throws Exception {
 
-        CandidateDTO updatedCandidateDTO = CandidateDTO.builder()
+        RequestCandidateDTO updatedCandidateDTO = RequestCandidateDTO.builder()
                 .id(1L)
                 .age(55)
                 .name(null)
@@ -125,7 +126,7 @@ class CandidateControllerTest extends BaseIntegrationTest {
 
         candidateRepository.save(candidate);
 
-        CandidateDTO candidateDTO = candidateMapper.toDto(candidate);
+        ResponseCandidateDTO candidateDTO = candidateMapper.toDto(candidate);
 
         Assertions.assertNotNull(candidateDTO.getSurname());
         Assertions.assertNotNull(candidateDTO.getEmail());

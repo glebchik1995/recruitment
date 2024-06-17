@@ -12,7 +12,8 @@ import org.hibernate.validator.constraints.Length;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
-public class CandidateDTO {
+@EqualsAndHashCode(of = "id")
+public class RequestCandidateDTO {
 
     @Min(groups = OnUpdate.class, value = 1)
     private Long id;
@@ -55,6 +56,6 @@ public class CandidateDTO {
     @Length(max = 255, groups = {OnCreate.class, OnUpdate.class})
     private String languageSkill;
 
-    @NotBlank(groups = {OnCreate.class})
-    private String expectedSalary;
+    @NotNull(groups = {OnCreate.class})
+    private int expectedSalary;
 }

@@ -26,7 +26,7 @@ databaseChangeLog:
                   value: "19:00:00"
               - column:
                   name: salary
-                  valueNumeric: 90000
+                  valueNumeric: 80000
               - column:
                   name: created_date
                   value: "2024-06-15"
@@ -35,7 +35,7 @@ databaseChangeLog:
                   value: "12:30:00"
               - column:
                   name: active
-                  valueBoolean: false
+                  valueBoolean: true
               - column:
                   name: recruiter_id
-                  valueNumeric: 1
+                  valueNumeric: 3

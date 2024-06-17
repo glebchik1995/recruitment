@@ -8,6 +8,7 @@ import com.java.recruitment.service.filter.CriteriaModel;
 import com.java.recruitment.service.filter.GenericSpecification;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.service.model.vacancy.Vacancy;
+import com.java.recruitment.util.AccessChecker;
 import com.java.recruitment.util.NullPropertyCopyHelper;
 import com.java.recruitment.web.dto.vacancy.RequestVacancyDTO;
 import com.java.recruitment.web.dto.vacancy.ResponseVacancyDTO;
@@ -38,10 +39,12 @@ public class VacancyService implements IVacancyService {
     @Transactional
     public ResponseVacancyDTO postVacancy(
             final RequestVacancyDTO dto,
-            final Long recruiter_id
+            final Long recruiterId
     ) {
-        User user = userRepository.findById(recruiter_id)
-                .orElseThrow(() -> new DataNotFoundException("Специалист не найден"));
+
+        User user = userRepository.findById(recruiterId)
+                .orElseThrow(() -> new DataNotFoundException("Рекрутер не найден не найдена"));
+
         Vacancy vacancy = vacancyMapper.toEntity(dto);
         vacancy.setCreatedDate(LocalDate.now());
         vacancy.setCreatedTime(LocalTime.now());
@@ -52,26 +55,39 @@ public class VacancyService implements IVacancyService {
 
     @Override
     public ResponseVacancyDTO getVacancyById(final Long id) {
-        return vacancyMapper.toDTO(vacancyRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("Вакансия не найдена")));
+        Vacancy vacancy = vacancyRepository.findById(id)
+                .orElseThrow(() -> new DataNotFoundException("Вакансия не найдена"));
+        return vacancyMapper.toDTO(vacancy);
     }
 
     @Override
-    public Page<ResponseVacancyDTO> getAllVacancy(
+    public Page<ResponseVacancyDTO> getFilteredVacancy(
             final List<CriteriaModel> criteriaModelList,
-            Pageable pageable
+            final Pageable pageable
     ) {
-        Specification<Vacancy> specification
-                = new GenericSpecification<>(criteriaModelList, Vacancy.class);
-        Page<Vacancy> rooms = vacancyRepository.findAll(specification, pageable);
+        Specification<Vacancy> sp
+                = new GenericSpecification<>(
+                criteriaModelList, Vacancy.class
+        );
+        Page<Vacancy> rooms = vacancyRepository.findAll(
+                sp,
+                pageable
+        );
         return rooms.map(vacancyMapper::toDTO);
     }
 
     @Override
     @Transactional
-    public ResponseVacancyDTO updateVacancy(final RequestVacancyDTO dto) {
+    public ResponseVacancyDTO updateVacancy(
+            final Long recruiterId,
+            final RequestVacancyDTO dto
+    ) {
         Vacancy vacancy = vacancyRepository.findById(dto.getId())
                 .orElseThrow(() -> new DataNotFoundException("Вакансия не найден"));
+        AccessChecker.checkAccess(
+                vacancy.getRecruiter().getId(),
+                recruiterId
+        );
         NullPropertyCopyHelper.copyNonNullProperties(dto, vacancy);
         Vacancy updatedVacancy = vacancyRepository.save(vacancy);
         return vacancyMapper.toDTO(updatedVacancy);
@@ -79,9 +95,17 @@ public class VacancyService implements IVacancyService {
 
     @Override
     @Transactional
-    public void deleteVacancy(final Long id) {
+    public void deleteVacancy(
+            final Long recruiterId,
+            final Long id
+    ) {
         Vacancy vacancy = vacancyRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Вакансия не найден"));
+
+        AccessChecker.checkAccess(
+                vacancy.getRecruiter().getId(),
+                recruiterId
+        );
         vacancyRepository.delete(vacancy);
     }
 

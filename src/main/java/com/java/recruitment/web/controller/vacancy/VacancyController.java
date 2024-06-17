@@ -1,10 +1,10 @@
 package com.java.recruitment.web.controller.vacancy;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.java.recruitment.aspect.log.LogInfo;
 import com.java.recruitment.repositoty.VacancyRepository;
 import com.java.recruitment.service.IVacancyService;
 import com.java.recruitment.service.filter.CriteriaModel;
+import com.java.recruitment.util.FilterParser;
 import com.java.recruitment.web.dto.vacancy.ResponseVacancyDTO;
 import com.java.recruitment.web.mapper.VacancyMapper;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,8 +17,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 @Tag(
@@ -26,7 +24,7 @@ import java.util.List;
         description = "CRUD OPERATIONS WITH VACANCY"
 )
 @RestController
-@RequestMapping("/api/v1/vacancy")
+@RequestMapping("/vacancy")
 @RequiredArgsConstructor
 @LogInfo
 public class VacancyController {
@@ -41,25 +39,15 @@ public class VacancyController {
     @Operation(summary = "Получить всех вакансии")
     public Page<ResponseVacancyDTO> getAllVacancy(
             @RequestParam(required = false) final String criteriaJson,
-            @ParameterObject Pageable pageable)
+            @ParameterObject Pageable pageable
+    )
             throws BadRequestException {
 
         List<CriteriaModel> criteriaList;
 
-        ObjectMapper objectMapper = new ObjectMapper();
         if (criteriaJson != null) {
-            try {
-                criteriaList = Arrays.asList(
-                        objectMapper.readValue(
-                                criteriaJson,
-                                CriteriaModel[].class
-                        )
-                );
-
-                return vacancyService.getAllVacancy(criteriaList, pageable);
-            } catch (IOException ex) {
-                throw new BadRequestException("Не удалось проанализировать условия", ex);
-            }
+            criteriaList = FilterParser.parseCriteriaJson(criteriaJson);
+            return vacancyService.getFilteredVacancy(criteriaList, pageable);
         } else {
             return vacancyRepository.findAll(pageable).map(mapper::toDTO);
         }

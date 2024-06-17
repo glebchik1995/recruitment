@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: insert_data_into_candidate_table_2
+      id: insert_data_into_candidate_table_4
       author: Gleb
       changes:
         - insert:
@@ -8,34 +8,34 @@ databaseChangeLog:
             columns:
               - column:
                   name: name
-                  value: 'Иван'
+                  value: 'Екатерина'
               - column:
                   name: surname
-                  value: 'Иванов'
+                  value: 'Иванова'
               - column:
                   name: age
-                  valueNumeric: 25
+                  valueNumeric: 30
               - column:
                   name: email
-                  value: 'ivan1999@mail.com'
+                  value: 'ekaterina.ivanova@mail.com'
               - column:
                   name: phone
-                  value: '+7 (977) 555-33-11'
+                  value: '+7 (910) 111-22-33'
               - column:
                   name: position
-                  value: 'Python Developer'
+                  value: 'Frontend Developer'
               - column:
                   name: exp
-                  value: '3 года отработал на заводе и прошел курсы по Python'
+                  value: '5 лет опыта в веб-разработке'
               - column:
                   name: tech_skill
-                  value: 'Читаю влет электрические схемы и пишу код на Python'
+                  value: 'JavaScript, React, HTML, CSS'
               - column:
                   name: language_skill
-                  value: 'А1'
+                  value: 'B2'
               - column:
                   name: expected_salary
-                  valueNumeric: 60000
+                  valueNumeric: 150000
               - column:
                   name: hr_id
-                  valueNumeric: 1
+                  valueNumeric: 2

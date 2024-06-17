@@ -9,7 +9,6 @@ import com.java.recruitment.web.dto.user.UserDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import jakarta.validation.constraints.NotBlank;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.validation.annotation.Validated;
@@ -44,7 +43,7 @@ public class AuthController {
 
     @PostMapping("/refresh")
     @Operation(summary = "Обновить токен")
-    public JwtResponse refresh(@RequestBody @NotBlank final String refreshToken) {
+    public JwtResponse refresh(@RequestBody final String refreshToken) {
         return authService.refresh(refreshToken);
     }
 

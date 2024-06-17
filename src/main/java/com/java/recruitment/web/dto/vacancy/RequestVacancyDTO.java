@@ -16,6 +16,7 @@ import java.time.LocalTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
+@EqualsAndHashCode(of = "id")
 public class RequestVacancyDTO {
 
     @Min(value = 1, groups = {OnUpdate.class})
@@ -36,14 +37,14 @@ public class RequestVacancyDTO {
     private String description;
 
     @NotNull(groups = {OnCreate.class})
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime startWorkingDay;
 
     @NotNull(groups = {OnCreate.class})
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm:ss")
     private LocalTime endWorkingDay;
 
     @NotNull(groups = {OnCreate.class})
-    private String salary;
+    private int salary;
 
 }

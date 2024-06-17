@@ -23,7 +23,7 @@ public class ResponseVacancyDTO {
 
     private String endWorkingDay;
 
-    private String salary;
+    private int salary;
 
     private LocalDate createdDate;
 

@@ -11,15 +11,15 @@ import java.util.List;
 public interface IVacancyService {
 
 
-    ResponseVacancyDTO postVacancy(RequestVacancyDTO dto, Long recruiter_id);
+    ResponseVacancyDTO postVacancy(RequestVacancyDTO dto, Long recruiterId);
 
     ResponseVacancyDTO getVacancyById(Long id);
 
-    Page<ResponseVacancyDTO> getAllVacancy(List<CriteriaModel> criteriaModelList, Pageable pageable);
+    Page<ResponseVacancyDTO> getFilteredVacancy(List<CriteriaModel> criteriaModelList, Pageable pageable);
 
-    ResponseVacancyDTO updateVacancy(RequestVacancyDTO dto);
+    ResponseVacancyDTO updateVacancy(Long recruiterId, RequestVacancyDTO dto);
 
-    void deleteVacancy(Long id);
+    void deleteVacancy(Long recruiterId, Long id);
 
     boolean isVacancyOwner(
             Long userId,

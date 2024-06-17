@@ -2,7 +2,6 @@ package com.java.recruitment.web.dto.jobRequest;
 
 import jakarta.validation.constraints.Min;
 import lombok.*;
-import org.hibernate.validator.constraints.Length;
 import org.springframework.lang.Nullable;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -11,6 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder(toBuilder = true)
+@EqualsAndHashCode(of = "id")
 public class JobRequestDTO {
 
     private Long id;
@@ -24,7 +24,6 @@ public class JobRequestDTO {
     @Nullable
     private MultipartFile[] files;
 
-    @Length(max = 1000)
     @Nullable
     private String description;
 }

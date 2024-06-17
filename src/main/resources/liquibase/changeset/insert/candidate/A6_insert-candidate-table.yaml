@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: insert_data_into_candidate_table_2
+      id: insert_data_into_candidate_table_6
       author: Gleb
       changes:
         - insert:
@@ -8,34 +8,36 @@ databaseChangeLog:
             columns:
               - column:
                   name: name
-                  value: 'Иван'
+                  value: 'Мария'
               - column:
                   name: surname
-                  value: 'Иванов'
+                  value: 'Сидорова'
               - column:
                   name: age
-                  valueNumeric: 25
+                  valueNumeric: 35
               - column:
                   name: email
-                  value: 'ivan1999@mail.com'
+                  value: 'maria.sidorova@mail.com'
               - column:
                   name: phone
-                  value: '+7 (977) 555-33-11'
+                  value: '+7 (930) 444-55-66'
               - column:
                   name: position
-                  value: 'Python Developer'
+                  value: 'Project Manager'
               - column:
                   name: exp
-                  value: '3 года отработал на заводе и прошел курсы по Python'
+                  value: '7 лет опыта в управлении проектами'
               - column:
                   name: tech_skill
-                  value: 'Читаю влет электрические схемы и пишу код на Python'
+                  value: 'Agile, Scrum, Team Leadership'
               - column:
                   name: language_skill
-                  value: 'А1'
+                  value: 'C1'
               - column:
                   name: expected_salary
-                  valueNumeric: 60000
+                  valueNumeric: 180000
               - column:
                   name: hr_id
-                  valueNumeric: 1
+                  valueNumeric: 2
+
+

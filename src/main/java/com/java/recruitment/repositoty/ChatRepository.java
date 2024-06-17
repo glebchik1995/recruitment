@@ -1,7 +1,7 @@
 package com.java.recruitment.repositoty;
 
-import com.java.recruitment.service.model.jobRequest.JobRequest;
 import com.java.recruitment.service.model.chat.ChatMessage;
+import com.java.recruitment.service.model.jobRequest.JobRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
@@ -12,25 +12,43 @@ import org.springframework.data.repository.query.Param;
 
 public interface ChatRepository extends JpaRepository<ChatMessage, Long>, JpaSpecificationExecutor<JobRequest> {
 
-    @Query(value = """
-             SELECT cm
-             FROM chat_message cm
-             WHERE cm.recruiterId = :recruiterId
-            """)
-    Page<ChatMessage> findAllMessageForRecruiter(
-            @Param("recruiterId") Long recruiterId,
+    Page<ChatMessage> findAllBySenderIdAndRecipientIdOrRecipientIdAndSenderId(
+            Long sender_id,
+            Long recipient_id,
+            Long recipient_id2,
+            Long sender_id2,
             Pageable pageable
     );
 
-    @Query(value = """
-             SELECT jr
-             FROM job_request jr
-             JOIN jr.vacancy v
-             WHERE v.recruiterId = :recruiterId
-            """)
-    Page<ChatMessage> findAllMessageForRecruiterByCriteria(
-            @Param("recruiterId") Long recruiterId,
-            Specification<ChatMessage> specification,
-            Pageable pageable
+    Page<ChatMessage> findAllBySenderIdAndRecipientIdOrRecipientIdAndSenderId(
+            Long sender_id,
+            Long recipient_id,
+            Long recipient_id2,
+            Long sender_id2,
+            Pageable pageable,
+            Specification<ChatMessage> specification
     );
+
+    @Query(value = """
+             SELECT cm
+             FROM ChatMessage cm
+             JOIN User u
+             WHERE cm.id = :chatMessageId AND u.id = :userHrId AND u.role = 'HR'
+            """)
+    ChatMessage findChatMessageByIdAndUserHrId(
+            @Param("chatMessageId") Long chatMessageId,
+            @Param("userHrId") Long userHrId
+    );
+
+    @Query(value = """
+             SELECT cm
+             FROM ChatMessage cm
+             JOIN User u
+             WHERE cm.id = :chatMessageId AND u.id = :userRecruiterId AND u.role = 'RECRUITER'
+            """)
+    ChatMessage findChatMessageByIdAndUserRecruiterId(
+            @Param("chatMessageId") Long chatMessageId,
+            @Param("userRecruiterId") Long userRecruiterId
+    );
+
 }

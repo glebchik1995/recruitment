@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: insert_users_data_3
+      id: insert_users_data_2
       author: Gleb
       changes:
         - insert:
@@ -8,13 +8,13 @@ databaseChangeLog:
             columns:
               - column:
                   name: name
-                  value: 'Max'
+                  value: 'John'
               - column:
                   name: username
-                  value: 'bigmax1993@mail.com'
+                  value: 'gleb.verbickiy@yandex.ru'
               - column:
                   name: password
                   value: '$2a$12$x9Rhx2BKVeNd/iV0tpm1AOwFVhm835KvYILXSu5UHT19qMkbG3MSS'
               - column:
                   name: role
-                  value: 'ADMIN'
+                  value: 'RECRUITER'
