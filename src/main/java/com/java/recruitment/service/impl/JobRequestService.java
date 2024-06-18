@@ -12,18 +12,21 @@ import com.java.recruitment.service.IJobRequestService;
 import com.java.recruitment.service.INotificationService;
 import com.java.recruitment.service.filter.CriteriaModel;
 import com.java.recruitment.service.filter.GenericSpecification;
+import com.java.recruitment.service.filter.JoinType;
 import com.java.recruitment.service.model.candidate.Candidate;
 import com.java.recruitment.service.model.jobRequest.JobRequest;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.service.model.vacancy.Vacancy;
+import com.java.recruitment.util.AccessChecker;
+import com.java.recruitment.util.FilterParser;
 import com.java.recruitment.web.dto.jobRequest.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.jobRequest.JobRequestDTO;
 import com.java.recruitment.web.dto.jobRequest.JobResponseDTO;
 import com.java.recruitment.web.mapper.JobRequestMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -32,6 +35,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
+import static com.java.recruitment.service.filter.Operation.EQUALS;
 import static com.java.recruitment.service.model.chat.NotificationType.NEW_JOB_REQUEST;
 import static com.java.recruitment.service.model.jobRequest.Status.NEW;
 
@@ -115,9 +119,30 @@ public class JobRequestService implements IJobRequestService {
     }
 
     @Override
-    public JobResponseDTO getJobRequestById(final Long id) {
-        JobRequest jobRequest = jobRequestRepository.findById(id)
+    public JobResponseDTO getJobRequestById(
+            final Long userId,
+            final Long jobRequestId
+    ) {
+        JobRequest jobRequest = jobRequestRepository.findById(jobRequestId)
                 .orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
+
+        switch (user.getRole()) {
+            case RECRUITER -> AccessChecker.checkAccess(
+                    jobRequest.getHr().getId(),
+                    userId
+            );
+            case HR -> AccessChecker.checkAccess(
+                    jobRequest.getVacancy().getRecruiter().getId(),
+                    userId
+            );
+            default -> {
+
+            }
+        }
+
         return jobRequestMapper.toDto(jobRequest);
     }
 
@@ -144,19 +169,66 @@ public class JobRequestService implements IJobRequestService {
     }
 
     @Override
-    public Page<JobResponseDTO> getAllJobRequests(
-            final List<CriteriaModel> criteriaModelList,
-            final Long recruiter_id,
-            Pageable pageable
+    public Page<JobResponseDTO> getFilteredJobRequests(
+            final Long userId,
+            final String criteriaJson,
+            final Pageable pageable
     ) {
-        Specification<JobRequest> specification
-                = new GenericSpecification<>(criteriaModelList, JobRequest.class);
-        Page<JobRequest> jobRequests = jobRequestRepository.findAllJobRequestsByRecruiterIdAndCriteria(
-                recruiter_id,
-                specification,
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
+
+        List<CriteriaModel> criteriaList = buildCriteriaList(
+                user,
+                criteriaJson
+        );
+
+        Page<JobRequest> jobRequests = criteriaList.isEmpty()
+                ? jobRequestRepository.findAll(pageable)
+                : jobRequestRepository.findAll(
+                new GenericSpecification<>(
+                        criteriaList,
+                        JobRequest.class
+                ),
                 pageable
         );
+
         return jobRequests.map(jobRequestMapper::toDto);
+    }
+
+    private List<CriteriaModel> buildCriteriaList(
+            final User user,
+            final String criteriaJson
+    ) {
+        List<CriteriaModel> criteriaList = new ArrayList<>();
+
+        switch (user.getRole()) {
+            case RECRUITER -> criteriaList.add(
+                    CriteriaModel.builder()
+                            .field("vacancy.recruiter.id")
+                            .operation(EQUALS)
+                            .value(user.getId())
+                            .joinType(JoinType.AND)
+                            .build()
+            );
+            case HR -> criteriaList.add(
+                    CriteriaModel.builder()
+                            .field("hr.id")
+                            .operation(EQUALS)
+                            .value(user.getId())
+                            .joinType(JoinType.AND)
+                            .build()
+            );
+        }
+
+        if (criteriaJson != null) {
+            try {
+                criteriaList.addAll(FilterParser.parseCriteriaJson(criteriaJson));
+            } catch (BadRequestException e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+        return criteriaList;
     }
 
     @Override

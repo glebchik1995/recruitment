@@ -38,13 +38,6 @@ public class HrJobRequestController {
         return jobRequestService.createJobRequest(jobRequestDto, hrId);
     }
 
-    @GetMapping("/{id}")
-    @Operation(summary = "Получить заявку по ID")
-    @PreAuthorize("@cse.isJobRequestOwner(#id)")
-    public JobResponseDTO getJobRequestById(@PathVariable @Min(1) final Long id) {
-        return jobRequestService.getJobRequestById(id);
-    }
-
     @DeleteMapping("/{id}")
     @Operation(summary = "Удалить заявку на работу по ID")
     @ResponseStatus(HttpStatus.NO_CONTENT)

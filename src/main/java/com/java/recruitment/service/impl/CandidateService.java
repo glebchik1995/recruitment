@@ -7,21 +7,27 @@ import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.ICandidateService;
 import com.java.recruitment.service.filter.CriteriaModel;
 import com.java.recruitment.service.filter.GenericSpecification;
+import com.java.recruitment.service.filter.JoinType;
 import com.java.recruitment.service.model.candidate.Candidate;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.util.AccessChecker;
+import com.java.recruitment.util.FilterParser;
 import com.java.recruitment.util.NullPropertyCopyHelper;
 import com.java.recruitment.web.dto.candidate.RequestCandidateDTO;
 import com.java.recruitment.web.dto.candidate.ResponseCandidateDTO;
 import com.java.recruitment.web.mapper.CandidateMapper;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
+
+import static com.java.recruitment.service.filter.Operation.EQUALS;
 
 @Service
 @LogError
@@ -72,9 +78,31 @@ public class CandidateService implements ICandidateService {
 
     @Override
     public Page<ResponseCandidateDTO> getFilteredCandidates(
-            final List<CriteriaModel> criteriaList,
+            final Long userId,
+            final String criteriaJson,
             final Pageable pageable
     ) {
+
+        List<CriteriaModel> criteriaList = new ArrayList<>();
+
+        CriteriaModel model = CriteriaModel.builder()
+                .field("hr.id")
+                .operation(EQUALS)
+                .value(userId)
+                .joinType(JoinType.AND)
+                .build();
+
+        criteriaList.add(model);
+
+        if (criteriaJson != null) {
+            List<CriteriaModel> parsedCriteria;
+            try {
+                parsedCriteria = FilterParser.parseCriteriaJson(criteriaJson);
+            } catch (BadRequestException e) {
+                throw new RuntimeException(e);
+            }
+            criteriaList.addAll(parsedCriteria);
+        }
         Specification<Candidate> sp
                 = new GenericSpecification<>(criteriaList, Candidate.class);
 
@@ -109,7 +137,10 @@ public class CandidateService implements ICandidateService {
     ) {
         Candidate candidate = candidateRepository.findById(id)
                 .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
-        AccessChecker.checkAccess(candidate.getHr().getId(), hrId);
+        AccessChecker.checkAccess(
+                candidate.getHr().getId(),
+                hrId
+        );
         candidateRepository.delete(candidate);
     }
 }

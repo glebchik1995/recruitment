@@ -39,9 +39,8 @@ public class VacancyController {
     @Operation(summary = "Получить всех вакансии")
     public Page<ResponseVacancyDTO> getAllVacancy(
             @RequestParam(required = false) final String criteriaJson,
-            @ParameterObject Pageable pageable
-    )
-            throws BadRequestException {
+            @ParameterObject final Pageable pageable
+    ) throws BadRequestException {
 
         List<CriteriaModel> criteriaList;
 

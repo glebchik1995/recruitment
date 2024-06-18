@@ -2,7 +2,6 @@ package com.java.recruitment.web.security.expression;
 
 import com.java.recruitment.repositoty.exception.DataAccessException;
 import com.java.recruitment.service.IJobRequestService;
-import com.java.recruitment.service.IVacancyService;
 import com.java.recruitment.service.model.user.Role;
 import com.java.recruitment.web.security.JwtEntity;
 import lombok.RequiredArgsConstructor;
@@ -14,8 +13,6 @@ import org.springframework.stereotype.Component;
 @Component("cse")
 @RequiredArgsConstructor
 public class CustomSecurityExpression {
-
-    private final IVacancyService vacancyService;
 
     private final IJobRequestService jobRequestService;
 
