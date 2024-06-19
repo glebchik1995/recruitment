@@ -3,7 +3,6 @@ package com.java.recruitment.web.dto.jobRequest;
 import com.java.recruitment.service.model.jobRequest.Status;
 import com.java.recruitment.web.dto.candidate.RequestCandidateDTO;
 import com.java.recruitment.web.dto.user.UserDTO;
-import com.java.recruitment.web.dto.vacancy.ResponseVacancyDTO;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -23,7 +22,7 @@ public class JobResponseDTO {
 
     private RequestCandidateDTO candidate;
 
-    private ResponseVacancyDTO vacancyDTO;
+    private UserDTO recruiter;
 
     private List<String> files;
 

@@ -1,6 +1,6 @@
 databaseChangeLog:
   - changeSet:
-      id: insert_data_into_vacancy_table_1
+      id: insert_data_into_vacancy_table_5
       author: Gleb
       changes:
         - insert:
@@ -8,31 +8,31 @@ databaseChangeLog:
             columns:
               - column:
                   name: requirement
-                  value: "Опыт работы от 3 лет"
+                  value: "Чтение электрических схем"
               - column:
                   name: title
-                  value: "Java Developer"
+                  value: "Engineer"
               - column:
                   name: position
-                  value: "Middle Java Developer"
+                  value: "Engineer constructor"
               - column:
                   name: description
-                  value: "Разработка и поддержка backend системы"
+                  value: "Работа согласно ГОСТ.203"
               - column:
                   name: start_working_day
-                  value: "09:00:00"
+                  value: "07:45:00"
               - column:
                   name: end_working_day
-                  value: "18:00:00"
+                  value: "16:30:00"
               - column:
                   name: salary
-                  valueNumeric: 150000
+                  valueNumeric: 75000
               - column:
                   name: created_date
-                  value: "2024-06-15"
+                  value: "2024-06-16"
               - column:
                   name: created_time
-                  value: "10:00:00"
+                  value: "15:30:00"
               - column:
                   name: active
                   valueBoolean: true

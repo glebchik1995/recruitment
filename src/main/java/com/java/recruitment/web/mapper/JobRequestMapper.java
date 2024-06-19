@@ -7,8 +7,7 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring",
         uses = {
                 CandidateMapper.class,
-                UserMapper.class,
-                VacancyMapper.class
+                UserMapper.class
         })
 public interface JobRequestMapper {
 

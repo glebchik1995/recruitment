@@ -16,8 +16,8 @@ databaseChangeLog:
                   name: candidate_id
                   valueNumeric: 1
               - column:
-                  name: vacancy_id
-                  valueNumeric: 1
+                  name: recruiter_id
+                  valueNumeric: 3
               - column:
                   name: description
                   value: 'Job request description'

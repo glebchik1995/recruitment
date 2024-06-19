@@ -1,12 +1,9 @@
 package com.java.recruitment.service;
 
-import com.java.recruitment.service.filter.CriteriaModel;
 import com.java.recruitment.web.dto.vacancy.RequestVacancyDTO;
 import com.java.recruitment.web.dto.vacancy.ResponseVacancyDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface IVacancyService {
 
@@ -15,14 +12,13 @@ public interface IVacancyService {
 
     ResponseVacancyDTO getVacancyById(Long id);
 
-    Page<ResponseVacancyDTO> getFilteredVacancy(List<CriteriaModel> criteriaModelList, Pageable pageable);
+    Page<ResponseVacancyDTO> getFilteredVacancy(
+            Long userId,
+            String criteriaJson,
+            Pageable pageable
+    );
 
     ResponseVacancyDTO updateVacancy(Long recruiterId, RequestVacancyDTO dto);
 
     void deleteVacancy(Long recruiterId, Long id);
-
-    boolean isVacancyOwner(
-            Long userId,
-            Long vacancy_id
-    );
 }

@@ -51,7 +51,7 @@ class AuthControllerTest extends BaseIntegrationTest {
     @DisplayName("Вход в систему")
     void shouldRegistrationAndLogin() throws Exception {
 
-        User registerUserDTO = User.builder()
+        UserDTO registerUserDTO = UserDTO.builder()
                 .name("testName")
                 .username("test@mail.com")
                 .password("test123")

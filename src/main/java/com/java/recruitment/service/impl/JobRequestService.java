@@ -12,7 +12,6 @@ import com.java.recruitment.service.IJobRequestService;
 import com.java.recruitment.service.INotificationService;
 import com.java.recruitment.service.filter.CriteriaModel;
 import com.java.recruitment.service.filter.GenericSpecification;
-import com.java.recruitment.service.filter.JoinType;
 import com.java.recruitment.service.model.candidate.Candidate;
 import com.java.recruitment.service.model.jobRequest.JobRequest;
 import com.java.recruitment.service.model.user.User;
@@ -24,7 +23,6 @@ import com.java.recruitment.web.dto.jobRequest.JobRequestDTO;
 import com.java.recruitment.web.dto.jobRequest.JobResponseDTO;
 import com.java.recruitment.web.mapper.JobRequestMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -35,7 +33,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Properties;
 
-import static com.java.recruitment.service.filter.Operation.EQUALS;
 import static com.java.recruitment.service.model.chat.NotificationType.NEW_JOB_REQUEST;
 import static com.java.recruitment.service.model.jobRequest.Status.NEW;
 
@@ -89,7 +86,7 @@ public class JobRequestService implements IJobRequestService {
                 .status(NEW)
                 .hr(hr)
                 .candidate(candidate)
-                .vacancy(vacancy)
+                .recruiter(recruiter)
                 .build();
 
         if (files != null) {
@@ -135,7 +132,7 @@ public class JobRequestService implements IJobRequestService {
                     userId
             );
             case HR -> AccessChecker.checkAccess(
-                    jobRequest.getVacancy().getRecruiter().getId(),
+                    jobRequest.getRecruiter().getId(),
                     userId
             );
             default -> {
@@ -177,7 +174,7 @@ public class JobRequestService implements IJobRequestService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
 
-        List<CriteriaModel> criteriaList = buildCriteriaList(
+        List<CriteriaModel> criteriaList = FilterParser.buildCriteriaList(
                 user,
                 criteriaJson
         );
@@ -193,42 +190,6 @@ public class JobRequestService implements IJobRequestService {
         );
 
         return jobRequests.map(jobRequestMapper::toDto);
-    }
-
-    private List<CriteriaModel> buildCriteriaList(
-            final User user,
-            final String criteriaJson
-    ) {
-        List<CriteriaModel> criteriaList = new ArrayList<>();
-
-        switch (user.getRole()) {
-            case RECRUITER -> criteriaList.add(
-                    CriteriaModel.builder()
-                            .field("vacancy.recruiter.id")
-                            .operation(EQUALS)
-                            .value(user.getId())
-                            .joinType(JoinType.AND)
-                            .build()
-            );
-            case HR -> criteriaList.add(
-                    CriteriaModel.builder()
-                            .field("hr.id")
-                            .operation(EQUALS)
-                            .value(user.getId())
-                            .joinType(JoinType.AND)
-                            .build()
-            );
-        }
-
-        if (criteriaJson != null) {
-            try {
-                criteriaList.addAll(FilterParser.parseCriteriaJson(criteriaJson));
-            } catch (BadRequestException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-        return criteriaList;
     }
 
     @Override

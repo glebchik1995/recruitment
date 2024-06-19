@@ -13,7 +13,6 @@ public interface VacancyMapper {
     @Mapping(target = "createdTime", ignore = true)
     @Mapping(target = "recruiter", ignore = true)
     @Mapping(target = "active", ignore = true)
-    @Mapping(target = "jobRequests", ignore = true)
     Vacancy toEntity(RequestVacancyDTO dto);
 
     ResponseVacancyDTO toDTO(Vacancy vacancy);

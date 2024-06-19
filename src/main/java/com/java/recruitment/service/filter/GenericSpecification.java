@@ -8,10 +8,12 @@ import org.springframework.data.jpa.domain.Specification;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
 import java.math.BigDecimal;
+import java.sql.Time;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
-import java.time.ZoneOffset;
+import java.time.ZoneId;
+import java.time.format.DateTimeParseException;
 import java.util.*;
 
 import static com.java.recruitment.service.filter.Operation.IS_NOT_NULL;
@@ -47,19 +49,18 @@ public class GenericSpecification<T> implements Specification<T> {
 
         if (predicates.isEmpty()) {
             return cb.conjunction();
-        } else if (predicates.size() == 1) {
-            return predicates.getFirst();
         } else {
-            JoinType joinType = JoinType.AND;
-            for (CriteriaModel criteria : criteriaModelList) {
-                if (criteria.getJoinType() != null) {
-                    joinType = criteria.getJoinType();
-                    break;
+            Predicate finalPredicate = predicates.getFirst();
+            for (int i = 1; i < predicates.size(); i++) {
+                CriteriaModel criteria = criteriaModelList.get(i);
+                Predicate currentPredicate = predicates.get(i);
+                if (criteria.getJoinType() == JoinType.AND) {
+                    finalPredicate = cb.and(finalPredicate, currentPredicate);
+                } else {
+                    finalPredicate = cb.or(finalPredicate, currentPredicate);
                 }
             }
-
-            Predicate[] predicateArray = predicates.toArray(new Predicate[0]);
-            return joinType == JoinType.AND ? cb.and(predicateArray) : cb.or(predicateArray);
+            return finalPredicate;
         }
     }
 
@@ -93,15 +94,33 @@ public class GenericSpecification<T> implements Specification<T> {
 
         switch (operation) {
             case IS_NULL -> {
-                return cb.isNull(expression);
+                if (isDate(fieldName)) {
+                    return cb.isNull(expression.as(LocalDateTime.class));
+                } else {
+                    return cb.isNull(expression);
+                }
             }
             case IS_NOT_NULL -> {
                 return cb.isNotNull(expression);
             }
             case EQUALS -> {
+                if (isTime(fieldName)) {
+                    return cb.equal(expression.as(LocalTime.class), LocalTime.parse(value.toString()));
+                } else if (isDate(fieldName)) {
+                    return cb.equal(expression.as(LocalDateTime.class), toDate(value));
+                } else if (isBoolean(fieldName)) {
+                    return cb.equal(expression, Boolean.parseBoolean(value.toString()));
+                }
                 return cb.equal(expression, value);
             }
             case NOT_EQUALS -> {
+                if (isTime(fieldName)) {
+                    return cb.notEqual(expression.as(LocalTime.class), LocalTime.parse(value.toString()));
+                } else if (isDate(fieldName)) {
+                    return cb.notEqual(expression.as(LocalDateTime.class), toDate(value));
+                } else if (isBoolean(fieldName)) {
+                    return cb.notEqual(expression, Boolean.parseBoolean(value.toString()));
+                }
                 return cb.notEqual(expression, value);
             }
             case LIKE -> {
@@ -119,6 +138,8 @@ public class GenericSpecification<T> implements Specification<T> {
             case GREATER_THAN -> {
                 if (isNumber(fieldName)) {
                     return cb.gt(expression.as(BigDecimal.class), new BigDecimal(String.valueOf(value)));
+                } else if (isTime(fieldName)) {
+                    return cb.greaterThan(expression.as(LocalTime.class), toTime(value));
                 } else if (isDate(fieldName)) {
                     return cb.greaterThan(expression.as(LocalDateTime.class), toDate(value));
                 }
@@ -126,6 +147,8 @@ public class GenericSpecification<T> implements Specification<T> {
             case GREATER_THAN_OR_EQUALS -> {
                 if (isNumber(fieldName)) {
                     return cb.ge(expression.as(BigDecimal.class), new BigDecimal(String.valueOf(value)));
+                } else if (isTime(fieldName)) {
+                    return cb.greaterThanOrEqualTo(expression.as(LocalTime.class), toTime(value));
                 } else if (isDate(fieldName)) {
                     return cb.greaterThanOrEqualTo(expression.as(LocalDateTime.class), toDate(value));
                 }
@@ -133,6 +156,8 @@ public class GenericSpecification<T> implements Specification<T> {
             case LESS_THAN -> {
                 if (isNumber(fieldName)) {
                     return cb.lt(expression.as(BigDecimal.class), new BigDecimal(String.valueOf(value)));
+                } else if (isTime(fieldName)) {
+                    return cb.lessThan(expression.as(LocalTime.class), toTime(value));
                 } else if (isDate(fieldName)) {
                     return cb.lessThan(expression.as(LocalDateTime.class), toDate(value));
                 }
@@ -140,6 +165,8 @@ public class GenericSpecification<T> implements Specification<T> {
             case LESS_THAN_OR_EQUALS -> {
                 if (isNumber(fieldName)) {
                     return cb.le(expression.as(BigDecimal.class), new BigDecimal(String.valueOf(value)));
+                } else if (isTime(fieldName)) {
+                    return cb.lessThanOrEqualTo(expression.as(LocalTime.class), toTime(value));
                 } else if (isDate(fieldName)) {
                     return cb.lessThanOrEqualTo(expression.as(LocalDateTime.class), toDate(value));
                 }
@@ -167,11 +194,70 @@ public class GenericSpecification<T> implements Specification<T> {
     private LocalDateTime toDate(final Object value) {
         return switch (value) {
             case LocalDateTime localDateTime -> localDateTime;
-            case LocalDate date -> LocalDateTime.of(date, LocalTime.MIN);
-            case Date date -> LocalDateTime.ofEpochSecond(date.getTime(), 0, ZoneOffset.UTC);
-            case String s -> LocalDateTime.parse(s);
+            case LocalDate localDate -> toLocalDateTime(localDate);
+            case Date date -> toLocalDateTime(date);
+            case String s -> parseStringToDate(s);
             case null, default -> throw new RuntimeException("Неподдерживаемое значение даты: " + value);
         };
+    }
+
+    private LocalTime toTime(final Object value) {
+        return switch (value) {
+            case LocalTime localTime -> toLocalTime(localTime);
+            case String s -> parseStringToTime(s);
+            case null, default -> throw new RuntimeException("Неподдерживаемое значение времени: " + value);
+        };
+    }
+
+    private LocalDateTime toLocalDateTime(LocalDate localDate) {
+        return LocalDateTime.of(localDate, LocalTime.MIN);
+    }
+
+    private LocalTime toLocalTime(LocalTime localTime) {
+        int hour = localTime.getHour();
+        int minute = localTime.getMinute();
+        int sec = localTime.getSecond();
+        return LocalTime.of(hour, minute, sec);
+    }
+
+    private LocalDateTime toLocalDateTime(Date date) {
+        return LocalDateTime.ofInstant(date.toInstant(), ZoneId.systemDefault());
+    }
+
+    private LocalTime parseStringToTime(String s) {
+        try {
+            return LocalTime.parse(s);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Неверный формат времени: " + s);
+        }
+    }
+
+        private LocalDateTime parseStringToDate(String s) {
+        try {
+            if (s.contains("T")) {
+                return LocalDateTime.parse(s);
+            } else {
+                return LocalDate.parse(s).atStartOfDay();
+            }
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Неверный формат даты: " + s);
+        }
+    }
+
+    private boolean isDate(final String fieldName) {
+        Class<?> fieldType = getFieldType(fieldName);
+        if (LocalDate.class.equals(fieldType) || LocalDateTime.class.equals(fieldType)) {
+            return true;
+        }
+        return Date.class.isAssignableFrom(fieldType);
+    }
+
+    private boolean isTime(String fieldName) {
+        Class<?> fieldType = getFieldType(fieldName);
+        if (LocalTime.class.equals(fieldType)) {
+            return true;
+        }
+        return Time.class.isAssignableFrom(fieldType);
     }
 
     private boolean isNumber(final String fieldName) {
@@ -187,12 +273,9 @@ public class GenericSpecification<T> implements Specification<T> {
         return fieldType.isEnum() || String.class.equals(fieldType);
     }
 
-    private boolean isDate(final String fieldName) {
+    private boolean isBoolean(final String fieldName) {
         Class<?> fieldType = getFieldType(fieldName);
-        if (LocalDate.class.equals(fieldType) || LocalDateTime.class.equals(fieldType)) {
-            return true;
-        }
-        return Date.class.isAssignableFrom(fieldType);
+        return fieldType.equals(Boolean.class) || fieldType.equals(boolean.class);
     }
 
     private Class<?> getFieldType(final String fieldName) {

@@ -9,6 +9,7 @@ import com.java.recruitment.service.filter.GenericSpecification;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.service.model.vacancy.Vacancy;
 import com.java.recruitment.util.AccessChecker;
+import com.java.recruitment.util.FilterParser;
 import com.java.recruitment.util.NullPropertyCopyHelper;
 import com.java.recruitment.web.dto.vacancy.RequestVacancyDTO;
 import com.java.recruitment.web.dto.vacancy.ResponseVacancyDTO;
@@ -16,7 +17,6 @@ import com.java.recruitment.web.mapper.VacancyMapper;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,18 +62,29 @@ public class VacancyService implements IVacancyService {
 
     @Override
     public Page<ResponseVacancyDTO> getFilteredVacancy(
-            final List<CriteriaModel> criteriaModelList,
+            final Long userId,
+            final String criteriaJson,
             final Pageable pageable
     ) {
-        Specification<Vacancy> sp
-                = new GenericSpecification<>(
-                criteriaModelList, Vacancy.class
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
+
+        List<CriteriaModel> criteriaList = FilterParser.buildCriteriaList(
+                user,
+                criteriaJson
         );
-        Page<Vacancy> rooms = vacancyRepository.findAll(
-                sp,
+
+        Page<Vacancy> vacancies = criteriaList.isEmpty()
+                ? vacancyRepository.findAll(pageable)
+                : vacancyRepository.findAll(
+                new GenericSpecification<>(
+                        criteriaList,
+                        Vacancy.class
+                ),
                 pageable
         );
-        return rooms.map(vacancyMapper::toDTO);
+
+        return vacancies.map(vacancyMapper::toDTO);
     }
 
     @Override
@@ -107,13 +118,5 @@ public class VacancyService implements IVacancyService {
                 recruiterId
         );
         vacancyRepository.delete(vacancy);
-    }
-
-    @Override
-    public boolean isVacancyOwner(
-            final Long userId,
-            final Long vacancy_id
-    ) {
-        return vacancyRepository.isVacancyOwner(userId, vacancy_id);
     }
 }

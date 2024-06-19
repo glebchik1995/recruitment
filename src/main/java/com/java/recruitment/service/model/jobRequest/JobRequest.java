@@ -3,7 +3,6 @@ package com.java.recruitment.service.model.jobRequest;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import com.java.recruitment.service.model.candidate.Candidate;
 import com.java.recruitment.service.model.user.User;
-import com.java.recruitment.service.model.vacancy.Vacancy;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,9 +36,9 @@ public class JobRequest {
     private Candidate candidate;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "vacancy_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "recruiter_id", referencedColumnName = "id", nullable = false)
     @JsonManagedReference
-    private Vacancy vacancy;
+    private User recruiter;
 
     @Column(name = "file")
     @CollectionTable(name = "job_request_files")

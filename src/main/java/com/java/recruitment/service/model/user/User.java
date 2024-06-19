@@ -42,7 +42,11 @@ public class User {
 
     @OneToMany(mappedBy = "hr", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonBackReference
-    private List<JobRequest> jobRequests;
+    private List<JobRequest> jobRequestsByHr;
+
+    @OneToMany(mappedBy = "recruiter", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
+    @JsonBackReference
+    private List<JobRequest> jobRequestsByRecruiter;
 
     @OneToMany(mappedBy = "recruiter", cascade = CascadeType.ALL, fetch = FetchType.LAZY, orphanRemoval = true)
     @JsonBackReference

@@ -35,9 +35,6 @@ public class UserService implements IUserService {
         if (userRepository.findByUsername(user.getUsername()).isPresent()) {
             throw new DataAlreadyExistException("Пользователь уже существует.");
         }
-//        if (!user.getPassword().equals(user.getPasswordConfirmation())) {
-//            throw new IllegalStateException("Пароль и подтверждение пароля не совпадают.");
-//        }
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRole(userDTO.getRole());
         return userMapper.toDto(userRepository.save(user));

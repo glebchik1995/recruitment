@@ -30,17 +30,17 @@ CREATE TABLE IF NOT EXISTS candidate
 CREATE TABLE IF NOT EXISTS vacancy
 (
     id                BIGSERIAL PRIMARY KEY,
-    requirement       TEXT         NOT NULL,
-    title             VARCHAR(255) NOT NULL,
-    position          VARCHAR(255) NOT NULL,
-    description       TEXT         NOT NULL,
-    start_working_day TIME         NOT NULL,
-    end_working_day   TIME         NOT NULL,
-    salary            INT          NOT NULL,
-    created_date      DATE         NOT NULL,
-    created_time      TIME         NOT NULL,
-    active            BOOLEAN      NOT NULL,
-    recruiter_id      BIGINT       NOT NULL,
+    requirement       TEXT                   NOT NULL,
+    title             VARCHAR(255)           NOT NULL,
+    position          VARCHAR(255)           NOT NULL,
+    description       TEXT                   NOT NULL,
+    start_working_day TIME WITH TIME ZONE  NOT NULL,
+    end_working_day   TIME WITHOUT TIME ZONE NOT NULL,
+    salary            INT                    NOT NULL,
+    created_date      DATE                   NOT NULL,
+    created_time      TIME                   NOT NULL,
+    active            BOOLEAN                NOT NULL,
+    recruiter_id      BIGINT                 NOT NULL,
     FOREIGN KEY (recruiter_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
@@ -50,8 +50,8 @@ CREATE TABLE IF NOT EXISTS chat_message
     sender_id    BIGINT,
     recipient_id BIGINT,
     text         TEXT,
-    sent_date    DATE NOT NULL,
-    sent_time    TIME NOT NULL,
+    sent_date    DATE      NOT NULL,
+    sent_time    TIMESTAMP NOT NULL,
     FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (recipient_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
@@ -62,11 +62,11 @@ CREATE TABLE IF NOT EXISTS job_request
     status       VARCHAR NOT NULL,
     hr_id        BIGINT  NOT NULL,
     candidate_id BIGINT  NOT NULL,
-    vacancy_id   BIGINT  NOT NULL,
+    recruiter_id BIGINT  NOT NULL,
     description  TEXT,
     FOREIGN KEY (hr_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (candidate_id) REFERENCES candidate (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (vacancy_id) REFERENCES vacancy (id) ON DELETE CASCADE ON UPDATE CASCADE
+    FOREIGN KEY (recruiter_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS job_request_files

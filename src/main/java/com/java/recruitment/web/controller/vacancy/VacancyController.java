@@ -1,23 +1,19 @@
 package com.java.recruitment.web.controller.vacancy;
 
 import com.java.recruitment.aspect.log.LogInfo;
-import com.java.recruitment.repositoty.VacancyRepository;
 import com.java.recruitment.service.IVacancyService;
-import com.java.recruitment.service.filter.CriteriaModel;
-import com.java.recruitment.util.FilterParser;
+import com.java.recruitment.validation.line.ValidCriteriaJson;
 import com.java.recruitment.web.dto.vacancy.ResponseVacancyDTO;
-import com.java.recruitment.web.mapper.VacancyMapper;
+import com.java.recruitment.web.security.JwtEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @Tag(
         name = "VACANCY Controller",
@@ -31,25 +27,18 @@ public class VacancyController {
 
     private final IVacancyService vacancyService;
 
-    private final VacancyRepository vacancyRepository;
-
-    private final VacancyMapper mapper;
-
     @GetMapping
     @Operation(summary = "Получить всех вакансии")
     public Page<ResponseVacancyDTO> getAllVacancy(
-            @RequestParam(required = false) final String criteriaJson,
-            @ParameterObject final Pageable pageable
-    ) throws BadRequestException {
-
-        List<CriteriaModel> criteriaList;
-
-        if (criteriaJson != null) {
-            criteriaList = FilterParser.parseCriteriaJson(criteriaJson);
-            return vacancyService.getFilteredVacancy(criteriaList, pageable);
-        } else {
-            return vacancyRepository.findAll(pageable).map(mapper::toDTO);
-        }
+            @AuthenticationPrincipal final JwtEntity currentUser,
+            @RequestParam(required = false) @ValidCriteriaJson final String criteriaJson,
+            @ParameterObject Pageable pageable
+    ) {
+        return vacancyService.getFilteredVacancy(
+                currentUser.getId(),
+                criteriaJson,
+                pageable
+        );
     }
 
     @GetMapping("/{id}")

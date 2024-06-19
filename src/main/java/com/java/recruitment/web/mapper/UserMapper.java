@@ -10,7 +10,8 @@ public interface UserMapper {
 
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "passwordConfirmation", ignore = true)
-    @Mapping(target = "jobRequests", ignore = true)
+    @Mapping(target = "jobRequestsByHr", ignore = true)
+    @Mapping(target = "jobRequestsByRecruiter", ignore = true)
     @Mapping(target = "vacancies", ignore = true)
     @Mapping(target = "sentMessages", ignore = true)
     @Mapping(target = "receivedMessages", ignore = true)
