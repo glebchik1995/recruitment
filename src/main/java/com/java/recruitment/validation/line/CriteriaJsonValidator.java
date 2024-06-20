@@ -11,6 +11,6 @@ public class CriteriaJsonValidator implements ConstraintValidator<ValidCriteriaJ
             return true;
         }
 
-        return !criteriaJson.contains("vacancy.recruiter.id") && !criteriaJson.contains("hr.id");
+        return !criteriaJson.contains("recruiter.id") && !criteriaJson.contains("hr.id");
     }
 }

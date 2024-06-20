@@ -142,6 +142,11 @@ public class SecurityConfiguration {
                                         String.valueOf(RECRUITER),
                                         String.valueOf(ADMIN)
                                 )
+                                .requestMatchers("/files/**").hasAnyAuthority(
+                                        String.valueOf(HR),
+                                        String.valueOf(RECRUITER),
+                                        String.valueOf(ADMIN)
+                                )
                                 .anyRequest().authenticated())
                 .anonymous(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JwtTokenFilter(tokenProvider),

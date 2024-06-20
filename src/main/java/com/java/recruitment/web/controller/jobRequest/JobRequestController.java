@@ -2,6 +2,7 @@ package com.java.recruitment.web.controller.jobRequest;
 
 import com.java.recruitment.aspect.log.LogInfo;
 import com.java.recruitment.service.IJobRequestService;
+import com.java.recruitment.service.filter.JoinType;
 import com.java.recruitment.validation.line.ValidCriteriaJson;
 import com.java.recruitment.web.dto.jobRequest.JobResponseDTO;
 import com.java.recruitment.web.security.JwtEntity;
@@ -33,11 +34,13 @@ public class JobRequestController {
     public Page<JobResponseDTO> getAllJobRequest(
             @AuthenticationPrincipal final JwtEntity currentUser,
             @RequestParam(required = false) @ValidCriteriaJson final String criteriaJson,
+            @RequestParam(required = false) final JoinType joinType,
             @ParameterObject Pageable pageable
     ) {
         return jobRequestService.getFilteredJobRequests(
                 currentUser.getId(),
                 criteriaJson,
+                joinType,
                 pageable
         );
     }
@@ -48,6 +51,9 @@ public class JobRequestController {
             @AuthenticationPrincipal final JwtEntity currentUser,
             @PathVariable @Min(1) final Long id
     ) {
-        return jobRequestService.getJobRequestById(currentUser.getId(), id);
+        return jobRequestService.getJobRequestById(
+                currentUser.getId(),
+                id
+        );
     }
 }

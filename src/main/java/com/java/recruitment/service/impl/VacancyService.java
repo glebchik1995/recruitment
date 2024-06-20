@@ -6,6 +6,7 @@ import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.service.IVacancyService;
 import com.java.recruitment.service.filter.CriteriaModel;
 import com.java.recruitment.service.filter.GenericSpecification;
+import com.java.recruitment.service.filter.JoinType;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.service.model.vacancy.Vacancy;
 import com.java.recruitment.util.AccessChecker;
@@ -15,6 +16,7 @@ import com.java.recruitment.web.dto.vacancy.RequestVacancyDTO;
 import com.java.recruitment.web.dto.vacancy.ResponseVacancyDTO;
 import com.java.recruitment.web.mapper.VacancyMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -49,6 +51,7 @@ public class VacancyService implements IVacancyService {
         vacancy.setCreatedDate(LocalDate.now());
         vacancy.setCreatedTime(LocalTime.now());
         vacancy.setRecruiter(user);
+        vacancy.setActive(true);
         vacancyRepository.save(vacancy);
         return vacancyMapper.toDTO(vacancy);
     }
@@ -60,25 +63,23 @@ public class VacancyService implements IVacancyService {
         return vacancyMapper.toDTO(vacancy);
     }
 
+    @SneakyThrows
     @Override
     public Page<ResponseVacancyDTO> getFilteredVacancy(
-            final Long userId,
             final String criteriaJson,
+            final JoinType joinType,
             final Pageable pageable
     ) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
 
-        List<CriteriaModel> criteriaList = FilterParser.buildCriteriaList(
-                user,
-                criteriaJson
-        );
+        List<CriteriaModel> criteriaList = FilterParser.parseCriteriaJson(criteriaJson);
+
 
         Page<Vacancy> vacancies = criteriaList.isEmpty()
                 ? vacancyRepository.findAll(pageable)
                 : vacancyRepository.findAll(
                 new GenericSpecification<>(
                         criteriaList,
+                        joinType,
                         Vacancy.class
                 ),
                 pageable

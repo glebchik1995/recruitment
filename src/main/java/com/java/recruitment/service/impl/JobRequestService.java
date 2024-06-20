@@ -12,19 +12,23 @@ import com.java.recruitment.service.IJobRequestService;
 import com.java.recruitment.service.INotificationService;
 import com.java.recruitment.service.filter.CriteriaModel;
 import com.java.recruitment.service.filter.GenericSpecification;
+import com.java.recruitment.service.filter.JoinType;
 import com.java.recruitment.service.model.candidate.Candidate;
 import com.java.recruitment.service.model.jobRequest.JobRequest;
+import com.java.recruitment.service.model.jobRequest.JobRequest_;
 import com.java.recruitment.service.model.user.User;
+import com.java.recruitment.service.model.user.User_;
 import com.java.recruitment.service.model.vacancy.Vacancy;
-import com.java.recruitment.util.AccessChecker;
 import com.java.recruitment.util.FilterParser;
 import com.java.recruitment.web.dto.jobRequest.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.jobRequest.JobRequestDTO;
 import com.java.recruitment.web.dto.jobRequest.JobResponseDTO;
 import com.java.recruitment.web.mapper.JobRequestMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,6 +39,8 @@ import java.util.Properties;
 
 import static com.java.recruitment.service.model.chat.NotificationType.NEW_JOB_REQUEST;
 import static com.java.recruitment.service.model.jobRequest.Status.NEW;
+import static com.java.recruitment.service.model.user.Role.ADMIN;
+import static com.java.recruitment.service.model.user.Role.HR;
 
 @Service
 @RequiredArgsConstructor
@@ -59,8 +65,9 @@ public class JobRequestService implements IJobRequestService {
     @Override
     @Transactional
     public JobResponseDTO createJobRequest(
-            final JobRequestDTO jobRequestDto,
-            final Long hrId) {
+            final Long hrId,
+            final JobRequestDTO jobRequestDto
+    ) {
 
         Vacancy vacancy = vacancyRepository.findById(jobRequestDto.getVacancyId())
                 .orElseThrow(() -> new DataNotFoundException("Вакансия не найдена"));
@@ -120,90 +127,151 @@ public class JobRequestService implements IJobRequestService {
             final Long userId,
             final Long jobRequestId
     ) {
-        JobRequest jobRequest = jobRequestRepository.findById(jobRequestId)
-                .orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
-
-        switch (user.getRole()) {
-            case RECRUITER -> AccessChecker.checkAccess(
-                    jobRequest.getHr().getId(),
-                    userId
-            );
-            case HR -> AccessChecker.checkAccess(
-                    jobRequest.getRecruiter().getId(),
-                    userId
-            );
-            default -> {
-
-            }
-        }
-
+        JobRequest jobRequest = findJobRequestByUserIdAndJobRequestId(
+                userId,
+                jobRequestId
+        );
         return jobRequestMapper.toDto(jobRequest);
     }
 
     @Override
     @Transactional
-    public JobResponseDTO updateJobRequest(final ChangeJobRequestStatusDTO jobRequestDto) {
-        JobRequest jobRequest = jobRequestRepository.findById(jobRequestDto.getId())
-                .orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
-        jobRequest.setStatus(jobRequestDto.getStatus());
+    public JobResponseDTO updateJobRequest(
+            final Long userId,
+            final ChangeJobRequestStatusDTO dto
+    ) {
+        JobRequest jobRequest = findJobRequestByUserIdAndJobRequestId(
+                userId,
+                dto.getId()
+        );
+        jobRequest.setStatus(dto.getStatus());
         jobRequestRepository.save(jobRequest);
         return jobRequestMapper.toDto(jobRequest);
     }
 
     @Override
     @Transactional
-    public void deleteJobRequest(final Long id) {
+    public void deleteJobRequest(
+            final Long userId,
+            final Long jobRequestId
+    ) {
 
-        JobRequest jobRequest = jobRequestRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
+        JobRequest jobRequest = findJobRequestByUserIdAndJobRequestId(
+                userId,
+                jobRequestId
+        );
 
         fileService.delete(jobRequest.getFiles());
 
         jobRequestRepository.delete(jobRequest);
     }
 
+    @SneakyThrows
     @Override
     public Page<JobResponseDTO> getFilteredJobRequests(
             final Long userId,
             final String criteriaJson,
+            final JoinType joinType,
             final Pageable pageable
     ) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
 
-        List<CriteriaModel> criteriaList = FilterParser.buildCriteriaList(
-                user,
-                criteriaJson
-        );
+        List<CriteriaModel> criteriaList = List.of();
 
-        Page<JobRequest> jobRequests = criteriaList.isEmpty()
-                ? jobRequestRepository.findAll(pageable)
-                : jobRequestRepository.findAll(
-                new GenericSpecification<>(
-                        criteriaList,
-                        JobRequest.class
-                ),
-                pageable
-        );
+        if (criteriaJson != null) {
+            criteriaList = FilterParser.parseCriteriaJson(criteriaJson);
+        }
 
-        return jobRequests.map(jobRequestMapper::toDto);
+        switch (user.getRole()) {
+            case HR:
+
+                Specification<JobRequest> hrSp = (root, query, cb) ->
+                        cb.equal(root.get(JobRequest_.hr).get(User_.id), user.getId());
+
+                if (!criteriaList.isEmpty()) {
+                    return jobRequestRepository.findAll(
+                            new GenericSpecification<>(
+                                    criteriaList,
+                                    joinType,
+                                    JobRequest.class
+                            )
+                                    .and(hrSp),
+                            pageable
+                    ).map(jobRequestMapper::toDto);
+                } else {
+                    return jobRequestRepository.findAll(hrSp, pageable)
+                            .map(jobRequestMapper::toDto);
+                }
+
+            case RECRUITER:
+
+                Specification<JobRequest> recruiterSp = (root, query, cb) ->
+                        cb.equal(root.get(JobRequest_.recruiter).get(User_.ID), user.getId());
+
+                if (!criteriaList.isEmpty()) {
+                    return jobRequestRepository.findAll(
+                            new GenericSpecification<>(
+                                    criteriaList,
+                                    joinType,
+                                    JobRequest.class
+                            )
+                                    .and(recruiterSp),
+                            pageable
+                    ).map(jobRequestMapper::toDto);
+                } else {
+                    return jobRequestRepository.findAll(recruiterSp, pageable)
+                            .map(jobRequestMapper::toDto);
+                }
+
+            case ADMIN:
+
+                if (!criteriaList.isEmpty()) {
+                    return jobRequestRepository.findAll(
+                            new GenericSpecification<>(
+                                    criteriaList,
+                                    joinType,
+                                    JobRequest.class
+                            ),
+                            pageable
+                    ).map(jobRequestMapper::toDto);
+                } else {
+                    return jobRequestRepository.findAll(pageable)
+                            .map(jobRequestMapper::toDto);
+                }
+
+            default:
+                return Page.empty(pageable);
+
+        }
     }
 
-    @Override
-    public boolean isJobRequestOwner(
+    private JobRequest findJobRequestByUserIdAndJobRequestId(
             final Long userId,
-            final Long job_request_id
+            final Long jobRequestId
     ) {
-        return jobRequestRepository.isJobRequestOwner(userId, job_request_id);
-    }
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
 
-    @Override
-    public boolean isJobRequestConsumer(
-            final Long userId,
-            final Long job_request_id) {
-        return jobRequestRepository.isJobRequestConsumer(userId, job_request_id);
+        Specification<JobRequest> jobRequestSp = (root, query, cb) ->
+                cb.equal(root.get(JobRequest_.id), jobRequestId);
+
+        if (user.getRole().equals(ADMIN)) {
+            return jobRequestRepository.findById(jobRequestId)
+                    .orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
+
+        } else if (user.getRole().equals(HR)) {
+            Specification<JobRequest> hrSp = (root, query, cb) ->
+                    cb.equal(root.get(JobRequest_.hr).get(User_.id), userId);
+
+            return jobRequestRepository.findOne(hrSp.and(jobRequestSp))
+                    .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
+        } else {
+            Specification<JobRequest> recruiterSp = (root, query, cb) ->
+                    cb.equal(root.get(JobRequest_.recruiter).get(User_.id), userId);
+
+            return jobRequestRepository.findOne(recruiterSp.and(jobRequestSp))
+                    .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
+        }
     }
 }

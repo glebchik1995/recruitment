@@ -4,10 +4,12 @@ import com.java.recruitment.aspect.log.LogInfo;
 import com.java.recruitment.service.IJobRequestService;
 import com.java.recruitment.web.dto.jobRequest.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.jobRequest.JobResponseDTO;
+import com.java.recruitment.web.security.JwtEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -28,8 +30,12 @@ public class RecruiterJobRequestController {
     @PutMapping
     @Operation(summary = "Изменить статус заявки")
     public JobResponseDTO updateStatusJobRequest(
+            @AuthenticationPrincipal final JwtEntity currentUser,
             @RequestBody @Valid ChangeJobRequestStatusDTO jobRequestDto
     ) {
-        return jobRequestService.updateJobRequest(jobRequestDto);
+        return jobRequestService.updateJobRequest(
+                currentUser.getId(),
+                jobRequestDto
+        );
     }
 }

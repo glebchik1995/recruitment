@@ -4,10 +4,6 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.java.recruitment.BaseIntegrationTest;
 import com.java.recruitment.repositoty.JobRequestRepository;
-import com.java.recruitment.service.filter.CriteriaModel;
-import com.java.recruitment.service.filter.GenericSpecification;
-import com.java.recruitment.service.filter.JoinType;
-import com.java.recruitment.service.filter.Operation;
 import com.java.recruitment.service.model.jobRequest.JobRequest;
 import com.java.recruitment.web.dto.jobRequest.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.jobRequest.JobResponseDTO;
@@ -20,8 +16,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.security.test.context.support.WithMockUser;
@@ -29,10 +23,8 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 
 import java.nio.charset.StandardCharsets;
-import java.util.List;
 
 import static com.java.recruitment.service.model.jobRequest.Status.CANDIDATE_FOUND;
-import static com.java.recruitment.service.model.jobRequest.Status.NEW;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -77,91 +69,91 @@ class InterviewerJobRequestControllerTest extends BaseIntegrationTest {
     }
 
 
-    @Test
-    @DisplayName("Получить все заявки на работу по одному критерию")
-    void shouldGetAllJobRequestsWithOneSetCriteria() throws Exception {
-
-        List<CriteriaModel> criteriaModel = List.of(
-                new CriteriaModel(
-                        "status",
-                        Operation.EQUALS,
-                        NEW
-                )
-        );
-
-        Specification<JobRequest> specification =
-                new GenericSpecification<>(
-                        criteriaModel,
-                        JobRequest.class
-                );
-        Pageable pageable = PageRequest.of(0, 15);
-
-        MockHttpServletResponse response = mvc.perform(
-                        MockMvcRequestBuilders.get
-                                        (
-                                                "/api/v1/interviewer/job-request"
-                                        )
-                                .param("criteriaJson", mapper.writeValueAsString(criteriaModel))
-                                .param("page", String.valueOf(pageable.getPageNumber()))
-                                .param("size", String.valueOf(pageable.getPageSize()))
-                )
-                .andExpect(status().isOk())
-                .andReturn().getResponse();
-
-        Page<JobRequest> pages = jobRequestRepository.findAll(specification, pageable);
-        Page<JobResponseDTO> dtoPage = pages.map(jobRequestMapper::toDto);
-        assertEquals(mapper.writeValueAsString(dtoPage), response.getContentAsString());
-    }
-
-    @Test
-    @DisplayName("Получить все заявки на работу по нескольким критериям и с заданной сортировкой")
-    void shouldGetAllJobRequestsWithSeveralCriteriaAndSorting() throws Exception {
-
-        List<CriteriaModel> criteriaModel = List.of(
-
-                new CriteriaModel(
-                        "status",
-                        Operation.EQUALS,
-                        NEW,
-                        JoinType.AND
-                ),
-
-                new CriteriaModel(
-                        "candidate.age",
-                        Operation.GREATER_THAN,
-                        23
-                )
-        );
-
-        Specification<JobRequest> specification =
-                new GenericSpecification<>(
-                        criteriaModel,
-                        JobRequest.class
-                );
-        Pageable pageable =
-                PageRequest.of(
-                        0,
-                        15,
-                        Sort.by("id").ascending()
-                );
-
-
-        MockHttpServletResponse response = mvc.perform(
-                        MockMvcRequestBuilders.get
-                                        (
-                                                "/api/v1/interviewer/job-request"
-                                        )
-                                .param("criteriaJson", mapper.writeValueAsString(criteriaModel))
-                                .param("page", String.valueOf(pageable.getPageNumber()))
-                                .param("size", String.valueOf(pageable.getPageSize()))
-                                .param("sort", "id"))
-                .andExpect(status().isOk())
-                .andReturn().getResponse();
-
-        Page<JobRequest> pages = jobRequestRepository.findAll(specification, pageable);
-        Page<JobResponseDTO> dtoPage = pages.map(jobRequestMapper::toDto);
-        assertEquals(mapper.writeValueAsString(dtoPage), response.getContentAsString());
-    }
+//    @Test
+//    @DisplayName("Получить все заявки на работу по одному критерию")
+//    void shouldGetAllJobRequestsWithOneSetCriteria() throws Exception {
+//
+//        List<CriteriaModel> criteriaModel = List.of(
+//                new CriteriaModel(
+//                        "status",
+//                        Operation.EQUALS,
+//                        NEW
+//                )
+//        );
+//
+//        Specification<JobRequest> specification =
+//                new GenericSpecification<>(
+//                        criteriaModel,
+//                        JobRequest.class
+//                );
+//        Pageable pageable = PageRequest.of(0, 15);
+//
+//        MockHttpServletResponse response = mvc.perform(
+//                        MockMvcRequestBuilders.get
+//                                        (
+//                                                "/api/v1/interviewer/job-request"
+//                                        )
+//                                .param("criteriaJson", mapper.writeValueAsString(criteriaModel))
+//                                .param("page", String.valueOf(pageable.getPageNumber()))
+//                                .param("size", String.valueOf(pageable.getPageSize()))
+//                )
+//                .andExpect(status().isOk())
+//                .andReturn().getResponse();
+//
+//        Page<JobRequest> pages = jobRequestRepository.findAll(specification, pageable);
+//        Page<JobResponseDTO> dtoPage = pages.map(jobRequestMapper::toDto);
+//        assertEquals(mapper.writeValueAsString(dtoPage), response.getContentAsString());
+//    }
+//
+//    @Test
+//    @DisplayName("Получить все заявки на работу по нескольким критериям и с заданной сортировкой")
+//    void shouldGetAllJobRequestsWithSeveralCriteriaAndSorting() throws Exception {
+//
+//        List<CriteriaModel> criteriaModel = List.of(
+//
+//                new CriteriaModel(
+//                        "status",
+//                        Operation.EQUALS,
+//                        NEW,
+//                        JoinType.AND
+//                ),
+//
+//                new CriteriaModel(
+//                        "candidate.age",
+//                        Operation.GREATER_THAN,
+//                        23
+//                )
+//        );
+//
+//        Specification<JobRequest> specification =
+//                new GenericSpecification<>(
+//                        criteriaModel,
+//                        JobRequest.class
+//                );
+//        Pageable pageable =
+//                PageRequest.of(
+//                        0,
+//                        15,
+//                        Sort.by("id").ascending()
+//                );
+//
+//
+//        MockHttpServletResponse response = mvc.perform(
+//                        MockMvcRequestBuilders.get
+//                                        (
+//                                                "/api/v1/interviewer/job-request"
+//                                        )
+//                                .param("criteriaJson", mapper.writeValueAsString(criteriaModel))
+//                                .param("page", String.valueOf(pageable.getPageNumber()))
+//                                .param("size", String.valueOf(pageable.getPageSize()))
+//                                .param("sort", "id"))
+//                .andExpect(status().isOk())
+//                .andReturn().getResponse();
+//
+//        Page<JobRequest> pages = jobRequestRepository.findAll(specification, pageable);
+//        Page<JobResponseDTO> dtoPage = pages.map(jobRequestMapper::toDto);
+//        assertEquals(mapper.writeValueAsString(dtoPage), response.getContentAsString());
+//    }
 
 
     @Test

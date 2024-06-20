@@ -25,13 +25,16 @@ public class GenericSpecification<T> implements Specification<T> {
     private static final Set<String> PRIMITIVE_NUMBERS = Set.of("byte", "short", "int", "long", "float", "double");
 
     private final List<CriteriaModel> criteriaModelList;
+    private final JoinType joinType;
     private final Class<T> entityClass;
 
     public GenericSpecification(
             final List<CriteriaModel> criteriaModelList,
+            final JoinType joinType,
             final Class<T> entityClass
     ) {
         this.criteriaModelList = criteriaModelList;
+        this.joinType = joinType;
         this.entityClass = entityClass;
         checkCriteria(criteriaModelList);
     }
@@ -43,6 +46,7 @@ public class GenericSpecification<T> implements Specification<T> {
             @NotNull final CriteriaBuilder cb
     ) {
         List<Predicate> predicates = new ArrayList<>();
+
         for (CriteriaModel criteria : criteriaModelList) {
             predicates.add(createPredicate(criteria, root, cb));
         }
@@ -51,18 +55,21 @@ public class GenericSpecification<T> implements Specification<T> {
             return cb.conjunction();
         } else {
             Predicate finalPredicate = predicates.getFirst();
+
             for (int i = 1; i < predicates.size(); i++) {
-                CriteriaModel criteria = criteriaModelList.get(i);
                 Predicate currentPredicate = predicates.get(i);
-                if (criteria.getJoinType() == JoinType.AND) {
+
+                if (joinType == JoinType.AND) {
                     finalPredicate = cb.and(finalPredicate, currentPredicate);
                 } else {
                     finalPredicate = cb.or(finalPredicate, currentPredicate);
                 }
             }
+
             return finalPredicate;
         }
     }
+
 
     private void checkCriteria(final List<CriteriaModel> criteriaModel) {
         for (CriteriaModel model : criteriaModel) {
@@ -232,7 +239,7 @@ public class GenericSpecification<T> implements Specification<T> {
         }
     }
 
-        private LocalDateTime parseStringToDate(String s) {
+    private LocalDateTime parseStringToDate(String s) {
         try {
             if (s.contains("T")) {
                 return LocalDateTime.parse(s);

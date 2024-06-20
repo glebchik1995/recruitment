@@ -1,5 +1,6 @@
 package com.java.recruitment.service;
 
+import com.java.recruitment.service.filter.JoinType;
 import com.java.recruitment.web.dto.vacancy.RequestVacancyDTO;
 import com.java.recruitment.web.dto.vacancy.ResponseVacancyDTO;
 import org.springframework.data.domain.Page;
@@ -13,8 +14,8 @@ public interface IVacancyService {
     ResponseVacancyDTO getVacancyById(Long id);
 
     Page<ResponseVacancyDTO> getFilteredVacancy(
-            Long userId,
             String criteriaJson,
+            JoinType joinType,
             Pageable pageable
     );
 

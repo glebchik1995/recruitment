@@ -4,14 +4,14 @@ import com.java.recruitment.aspect.log.LogInfo;
 import com.java.recruitment.service.IJobRequestService;
 import com.java.recruitment.web.dto.jobRequest.JobRequestDTO;
 import com.java.recruitment.web.dto.jobRequest.JobResponseDTO;
-import com.java.recruitment.web.security.expression.CustomSecurityExpression;
+import com.java.recruitment.web.security.JwtEntity;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.Min;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(
@@ -26,23 +26,29 @@ public class HrJobRequestController {
 
     private final IJobRequestService jobRequestService;
 
-    private final CustomSecurityExpression expression;
-
     @PostMapping
     @Operation(summary = "Создание заявки на работу")
     @ResponseStatus(HttpStatus.CREATED)
     public JobResponseDTO createJobRequest(
+            @AuthenticationPrincipal final JwtEntity currentUser,
             @Valid @ModelAttribute final JobRequestDTO jobRequestDto
     ) {
-        Long hrId = expression.getIdFromContext();
-        return jobRequestService.createJobRequest(jobRequestDto, hrId);
+        return jobRequestService.createJobRequest(
+                currentUser.getId(),
+                jobRequestDto
+        );
     }
 
     @DeleteMapping("/{id}")
     @Operation(summary = "Удалить заявку на работу по ID")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    @PreAuthorize("@cse.isJobRequestOwner(#id)")
-    public void deleteJobRequest(@PathVariable @Min(1) final Long id) {
-        jobRequestService.deleteJobRequest(id);
+    public void deleteJobRequest(
+            @AuthenticationPrincipal final JwtEntity currentUser,
+            @PathVariable @Min(1) final Long id
+    ) {
+        jobRequestService.deleteJobRequest(
+                currentUser.getId(),
+                id
+        );
     }
 }

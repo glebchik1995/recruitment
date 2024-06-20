@@ -9,25 +9,25 @@ import com.java.recruitment.service.filter.CriteriaModel;
 import com.java.recruitment.service.filter.GenericSpecification;
 import com.java.recruitment.service.filter.JoinType;
 import com.java.recruitment.service.model.candidate.Candidate;
+import com.java.recruitment.service.model.candidate.Candidate_;
 import com.java.recruitment.service.model.user.User;
-import com.java.recruitment.util.AccessChecker;
+import com.java.recruitment.service.model.user.User_;
 import com.java.recruitment.util.FilterParser;
 import com.java.recruitment.util.NullPropertyCopyHelper;
 import com.java.recruitment.web.dto.candidate.RequestCandidateDTO;
 import com.java.recruitment.web.dto.candidate.ResponseCandidateDTO;
 import com.java.recruitment.web.mapper.CandidateMapper;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.BadRequestException;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import static com.java.recruitment.service.filter.Operation.EQUALS;
+import static com.java.recruitment.service.model.user.Role.ADMIN;
 
 @Service
 @LogError
@@ -64,55 +64,71 @@ public class CandidateService implements ICandidateService {
             final Long hrId,
             final RequestCandidateDTO candidateDTO
     ) {
-        Candidate candidate = candidateRepository.findById(candidateDTO.getId())
-                .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
-        AccessChecker.checkAccess(
-                candidate.getHr().getId(),
-                hrId
+        Candidate candidate = findCandidateByHrId(
+                hrId,
+                candidateDTO.getId()
         );
+
         NullPropertyCopyHelper.copyNonNullProperties(candidateDTO, candidate);
         Candidate updatedCandidate = candidateRepository.save(candidate);
         return candidateMapper.toDto(updatedCandidate);
-
     }
 
+    @SneakyThrows
     @Override
     public Page<ResponseCandidateDTO> getFilteredCandidates(
             final Long userId,
             final String criteriaJson,
+            final JoinType joinType,
             final Pageable pageable
     ) {
 
-        List<CriteriaModel> criteriaList = new ArrayList<>();
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
 
-        CriteriaModel model = CriteriaModel.builder()
-                .field("hr.id")
-                .operation(EQUALS)
-                .value(userId)
-                .joinType(JoinType.AND)
-                .build();
-
-        criteriaList.add(model);
+        List<CriteriaModel> criteriaList = List.of();
 
         if (criteriaJson != null) {
-            List<CriteriaModel> parsedCriteria;
-            try {
-                parsedCriteria = FilterParser.parseCriteriaJson(criteriaJson);
-            } catch (BadRequestException e) {
-                throw new RuntimeException(e);
-            }
-            criteriaList.addAll(parsedCriteria);
+            criteriaList = FilterParser.parseCriteriaJson(criteriaJson);
         }
-        Specification<Candidate> sp
-                = new GenericSpecification<>(criteriaList, Candidate.class);
 
-        Page<Candidate> candidates = candidateRepository.findAll(
-                sp,
-                pageable
-        );
+        switch (user.getRole()) {
+            case HR:
 
-        return candidates.map(candidateMapper::toDto);
+                Specification<Candidate> hrSp = (root, query, cb) ->
+                        cb.equal(root.get(Candidate_.hr).get(User_.id), user.getId());
 
+                if (!criteriaList.isEmpty()) {
+                    return candidateRepository.findAll(
+                            new GenericSpecification<>(
+                                    criteriaList,
+                                    joinType,
+                                    Candidate.class
+                            ).and(hrSp),
+                            pageable
+                    ).map(candidateMapper::toDto);
+                } else {
+                    return candidateRepository.findAll(hrSp, pageable)
+                            .map(candidateMapper::toDto);
+                }
+
+            case ADMIN:
+                if (!criteriaList.isEmpty()) {
+                    return candidateRepository.findAll(
+                            new GenericSpecification<>(
+                                    criteriaList,
+                                    joinType,
+                                    Candidate.class
+                            ),
+                            pageable
+                    ).map(candidateMapper::toDto);
+                } else {
+                    return candidateRepository.findAll(pageable).map(candidateMapper::toDto);
+                }
+
+            default:
+                return Page.empty(pageable);
+        }
     }
 
     @Override
@@ -120,12 +136,11 @@ public class CandidateService implements ICandidateService {
             final Long hrId,
             final Long candidateId
     ) {
-        Candidate candidate = candidateRepository.findById(candidateId)
-                .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
-        AccessChecker.checkAccess(
-                candidate.getHr().getId(),
-                hrId
+        Candidate candidate = findCandidateByHrId(
+                hrId,
+                candidateId
         );
+
         return candidateMapper.toDto(candidate);
     }
 
@@ -133,14 +148,32 @@ public class CandidateService implements ICandidateService {
     @Transactional
     public void deleteCandidate(
             final Long hrId,
-            final Long id
+            final Long candidateId
     ) {
-        Candidate candidate = candidateRepository.findById(id)
-                .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
-        AccessChecker.checkAccess(
-                candidate.getHr().getId(),
-                hrId
+        Candidate candidate = findCandidateByHrId(
+                hrId,
+                candidateId
         );
+
         candidateRepository.delete(candidate);
+    }
+
+    private Candidate findCandidateByHrId(
+            final Long hrId,
+            final Long candidateId
+    ) {
+        User user = userRepository.findById(hrId)
+                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
+        if (user.getRole().equals(ADMIN)) {
+            return candidateRepository.findById(candidateId)
+                    .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
+        } else {
+            Specification<Candidate> candidateSp = (root, query, cb) ->
+                    cb.equal(root.get(Candidate_.id), candidateId);
+            Specification<Candidate> hrSp = (root, query, cb) ->
+                    cb.equal(root.get(Candidate_.hr).get(User_.id), hrId);
+            return candidateRepository.findOne(hrSp.and(candidateSp))
+                    .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
+        }
     }
 }

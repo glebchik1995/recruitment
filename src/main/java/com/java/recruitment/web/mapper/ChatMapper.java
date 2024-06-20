@@ -7,6 +7,6 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring", uses = {UserMapper.class})
 public interface ChatMapper {
 
-    ChatMessageResponseDTO toDTO(ChatMessage mail);
+    ChatMessageResponseDTO toDTO(ChatMessage chatMessage);
 
 }

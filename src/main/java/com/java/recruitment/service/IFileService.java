@@ -8,7 +8,7 @@ public interface IFileService {
 
     String upload(MultipartFile file);
 
-    String download(Long id);
+    String download(Long currentUserId, Long recruiterId);
 
     void delete(List<String> filesNames);
 }

@@ -1,13 +1,11 @@
 package com.java.recruitment.service;
 
-import com.java.recruitment.service.filter.CriteriaModel;
+import com.java.recruitment.service.filter.JoinType;
 import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.web.dto.chat.ChatMessageRequestDTO;
 import com.java.recruitment.web.dto.chat.ChatMessageResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-
-import java.util.List;
 
 public interface IChatMessageService {
 
@@ -16,9 +14,10 @@ public interface IChatMessageService {
     ChatMessageResponseDTO getChatMessageById(User currentUser, Long chatMessageId);
 
     Page<ChatMessageResponseDTO> getFilteredChatMessages(
-            List<CriteriaModel> criteriaModelList,
             Long currentUserId,
-            Long otherUserId,
+            Long otherId,
+            String criteriaJson,
+            JoinType joinType,
             Pageable pageable
     );
 }

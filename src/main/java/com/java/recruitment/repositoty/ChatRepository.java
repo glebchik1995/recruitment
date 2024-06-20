@@ -1,33 +1,15 @@
 package com.java.recruitment.repositoty;
 
+import com.java.recruitment.service.filter.GenericSpecification;
 import com.java.recruitment.service.model.chat.ChatMessage;
-import com.java.recruitment.service.model.jobRequest.JobRequest;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface ChatRepository extends JpaRepository<ChatMessage, Long>, JpaSpecificationExecutor<JobRequest> {
-
-    Page<ChatMessage> findAllBySenderIdAndRecipientIdOrRecipientIdAndSenderId(
-            Long sender_id,
-            Long recipient_id,
-            Long recipient_id2,
-            Long sender_id2,
-            Pageable pageable
-    );
-
-    Page<ChatMessage> findAllBySenderIdAndRecipientIdOrRecipientIdAndSenderId(
-            Long sender_id,
-            Long recipient_id,
-            Long recipient_id2,
-            Long sender_id2,
-            Pageable pageable,
-            Specification<ChatMessage> specification
-    );
+public interface ChatRepository extends JpaRepository<ChatMessage, Long>, JpaSpecificationExecutor<ChatMessage> {
 
     @Query(value = """
              SELECT cm
@@ -49,6 +31,13 @@ public interface ChatRepository extends JpaRepository<ChatMessage, Long>, JpaSpe
     ChatMessage findChatMessageByIdAndUserRecruiterId(
             @Param("chatMessageId") Long chatMessageId,
             @Param("userRecruiterId") Long userRecruiterId
+    );
+
+    Page<ChatMessage> findAllBySenderIdAndRecipientId(
+            Long senderId,
+            Long recipientId,
+            GenericSpecification<ChatMessage> jobRequestGenericSpecification,
+            Pageable pageable
     );
 
 }

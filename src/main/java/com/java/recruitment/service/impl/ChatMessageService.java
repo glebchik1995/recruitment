@@ -9,16 +9,18 @@ import com.java.recruitment.service.IChatMessageService;
 import com.java.recruitment.service.INotificationService;
 import com.java.recruitment.service.filter.CriteriaModel;
 import com.java.recruitment.service.filter.GenericSpecification;
+import com.java.recruitment.service.filter.JoinType;
 import com.java.recruitment.service.model.chat.ChatMessage;
 import com.java.recruitment.service.model.user.Role;
 import com.java.recruitment.service.model.user.User;
+import com.java.recruitment.util.FilterParser;
 import com.java.recruitment.web.dto.chat.ChatMessageRequestDTO;
 import com.java.recruitment.web.dto.chat.ChatMessageResponseDTO;
 import com.java.recruitment.web.mapper.ChatMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -83,11 +85,11 @@ public class ChatMessageService implements IChatMessageService {
     ) {
         ChatMessage chatMessage =
                 switch (currentUser.getRole()) {
-            case HR -> chatRepository.findChatMessageByIdAndUserHrId(chatMessageId, chatMessageId);
-            case RECRUITER -> chatRepository.findChatMessageByIdAndUserRecruiterId(chatMessageId, chatMessageId);
-            default -> chatRepository.findById(chatMessageId)
-                    .orElseThrow(() -> new DataNotFoundException("Сообщение в чате не найдено"));
-        };
+                    case HR -> chatRepository.findChatMessageByIdAndUserHrId(chatMessageId, chatMessageId);
+                    case RECRUITER -> chatRepository.findChatMessageByIdAndUserRecruiterId(chatMessageId, chatMessageId);
+                    default -> chatRepository.findById(chatMessageId)
+                            .orElseThrow(() -> new DataNotFoundException("Сообщение в чате не найдено"));
+                };
         if (chatMessage != null) {
             return chatMapper.toDTO(chatMessage);
         } else {
@@ -95,25 +97,50 @@ public class ChatMessageService implements IChatMessageService {
         }
     }
 
+    @SneakyThrows
     @Override
     public Page<ChatMessageResponseDTO> getFilteredChatMessages(
-            final List<CriteriaModel> criteriaModelList,
-            final Long currentUserId,
-            final Long otherUserId,
+            final Long userId,
+            final Long otherId,
+            final String criteriaJson,
+            final JoinType joinType,
             final Pageable pageable
     ) {
 
-        Specification<ChatMessage> specification =
-                new GenericSpecification<>(criteriaModelList, ChatMessage.class);
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
 
-        Page<ChatMessage> jobRequests = chatRepository.findAllBySenderIdAndRecipientIdOrRecipientIdAndSenderId(
-                currentUserId,
-                otherUserId,
-                currentUserId,
-                otherUserId,
-                pageable,
-                specification
-        );
-        return jobRequests.map(chatMapper::toDTO);
+        List<CriteriaModel> criteriaList = FilterParser.parseCriteriaJson(criteriaJson);
+
+        switch (user.getRole()) {
+            case RECRUITER:
+            case HR:
+                if (!criteriaList.isEmpty()) {
+                    return chatRepository.findAllBySenderIdAndRecipientId(
+                            user.getId(),
+                            otherId,
+                            new GenericSpecification<>(
+                                    criteriaList,
+                                    joinType,
+                                    ChatMessage.class
+                            ),
+                            pageable
+                    ).map(chatMapper::toDTO);
+                }
+            case ADMIN:
+                if (!criteriaList.isEmpty()) {
+                    return chatRepository.findAll(
+                            new GenericSpecification<>(
+                                    criteriaList,
+                                    joinType,
+                                    ChatMessage.class
+                            ),
+                            pageable
+                    ).map(chatMapper::toDTO);
+                }
+
+            default:
+                return chatRepository.findAll(pageable).map(chatMapper::toDTO);
+        }
     }
 }
