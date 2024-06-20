@@ -24,6 +24,12 @@ import com.java.recruitment.web.dto.jobRequest.ChangeJobRequestStatusDTO;
 import com.java.recruitment.web.dto.jobRequest.JobRequestDTO;
 import com.java.recruitment.web.dto.jobRequest.JobResponseDTO;
 import com.java.recruitment.web.mapper.JobRequestMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
@@ -39,8 +45,6 @@ import java.util.Properties;
 
 import static com.java.recruitment.service.model.chat.NotificationType.NEW_JOB_REQUEST;
 import static com.java.recruitment.service.model.jobRequest.Status.NEW;
-import static com.java.recruitment.service.model.user.Role.ADMIN;
-import static com.java.recruitment.service.model.user.Role.HR;
 
 @Service
 @RequiredArgsConstructor
@@ -48,7 +52,9 @@ import static com.java.recruitment.service.model.user.Role.HR;
 @Transactional(readOnly = true)
 public class JobRequestService implements IJobRequestService {
 
-    private final JobRequestMapper jobRequestMapper;
+    private final IFileService fileService;
+
+    private final INotificationService notificationService;
 
     private final JobRequestRepository jobRequestRepository;
 
@@ -58,14 +64,14 @@ public class JobRequestService implements IJobRequestService {
 
     private final CandidateRepository candidateRepository;
 
-    private final IFileService fileService;
+    private final JobRequestMapper jobRequestMapper;
 
-    private final INotificationService notificationService;
+    private final EntityManager entityManager;
 
     @Override
     @Transactional
     public JobResponseDTO createJobRequest(
-            final Long hrId,
+            final Long userId,
             final JobRequestDTO jobRequestDto
     ) {
 
@@ -79,7 +85,7 @@ public class JobRequestService implements IJobRequestService {
         Candidate candidate = candidateRepository.findById(jobRequestDto.getCandidateId())
                 .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
 
-        User hr = userRepository.findById(hrId)
+        User hr = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException("HR не найден"));
 
         User recruiter = userRepository.findById(vacancy.getRecruiter().getId())
@@ -127,7 +133,7 @@ public class JobRequestService implements IJobRequestService {
             final Long userId,
             final Long jobRequestId
     ) {
-        JobRequest jobRequest = findJobRequestByUserIdAndJobRequestId(
+        JobRequest jobRequest = findJobRequest(
                 userId,
                 jobRequestId
         );
@@ -140,7 +146,7 @@ public class JobRequestService implements IJobRequestService {
             final Long userId,
             final ChangeJobRequestStatusDTO dto
     ) {
-        JobRequest jobRequest = findJobRequestByUserIdAndJobRequestId(
+        JobRequest jobRequest = findJobRequest(
                 userId,
                 dto.getId()
         );
@@ -156,7 +162,7 @@ public class JobRequestService implements IJobRequestService {
             final Long jobRequestId
     ) {
 
-        JobRequest jobRequest = findJobRequestByUserIdAndJobRequestId(
+        JobRequest jobRequest = findJobRequest(
                 userId,
                 jobRequestId
         );
@@ -246,32 +252,65 @@ public class JobRequestService implements IJobRequestService {
         }
     }
 
-    private JobRequest findJobRequestByUserIdAndJobRequestId(
+    @Override
+    @Transactional
+    public String downloadByJobRequestId(
+            final Long userId,
+            final Long jobRequestId
+    ) {
+
+        JobRequest jobRequest = findJobRequest(
+                userId,
+                jobRequestId
+        );
+
+        return fileService.download(jobRequest);
+    }
+
+    private JobRequest findJobRequest(
             final Long userId,
             final Long jobRequestId
     ) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
-
-        Specification<JobRequest> jobRequestSp = (root, query, cb) ->
+        CriteriaBuilder cb =
+                entityManager.getCriteriaBuilder();
+        CriteriaQuery<JobRequest> query =
+                cb.createQuery(JobRequest.class);
+        Root<JobRequest> root =
+                query.from(JobRequest.class);
+        Predicate jobRequestPredicate =
                 cb.equal(root.get(JobRequest_.id), jobRequestId);
 
-        if (user.getRole().equals(ADMIN)) {
-            return jobRequestRepository.findById(jobRequestId)
-                    .orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
-
-        } else if (user.getRole().equals(HR)) {
-            Specification<JobRequest> hrSp = (root, query, cb) ->
-                    cb.equal(root.get(JobRequest_.hr).get(User_.id), userId);
-
-            return jobRequestRepository.findOne(hrSp.and(jobRequestSp))
-                    .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
-        } else {
-            Specification<JobRequest> recruiterSp = (root, query, cb) ->
-                    cb.equal(root.get(JobRequest_.recruiter).get(User_.id), userId);
-
-            return jobRequestRepository.findOne(recruiterSp.and(jobRequestSp))
-                    .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
+        switch (user.getRole()) {
+            case ADMIN:
+                query.where(jobRequestPredicate);
+                try {
+                    return entityManager.createQuery(query).getSingleResult();
+                } catch (NoResultException e) {
+                    throw new DataNotFoundException("Заявка не найдена");
+                }
+            case HR:
+                Predicate hrPredicate = cb.equal(root.get(JobRequest_.hr).get(User_.id), userId);
+                Predicate finalHrPredicate = cb.and(hrPredicate, jobRequestPredicate);
+                query.where(finalHrPredicate);
+                try {
+                    return entityManager.createQuery(query).getSingleResult();
+                } catch (NoResultException e) {
+                    throw new DataNotFoundException("Заявка не найдена");
+                }
+            case RECRUITER:
+                Predicate recruiterPredicate = cb.equal(root.get(JobRequest_.recruiter).get(User_.id), userId);
+                Predicate finalRecruiterPredicate = cb.and(recruiterPredicate, jobRequestPredicate);
+                query.where(finalRecruiterPredicate);
+                try {
+                    return entityManager.createQuery(query).getSingleResult();
+                } catch (NoResultException e) {
+                    throw new DataNotFoundException("Заявка не найдена");
+                }
+            default:
+                throw new DataNotFoundException("Роль пользователя не поддерживается");
         }
     }
+
 }

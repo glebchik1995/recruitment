@@ -8,9 +8,9 @@ import org.springframework.data.domain.Pageable;
 
 public interface ICandidateService {
 
-    ResponseCandidateDTO createCandidate(Long hrId, RequestCandidateDTO candidate);
+    ResponseCandidateDTO createCandidate(Long userId, RequestCandidateDTO candidate);
 
-    ResponseCandidateDTO updateCandidate(Long hrId, RequestCandidateDTO candidateDTO);
+    ResponseCandidateDTO updateCandidate(Long userId, RequestCandidateDTO candidateDTO);
 
     Page<ResponseCandidateDTO> getFilteredCandidates(
             Long userId,
@@ -19,7 +19,7 @@ public interface ICandidateService {
             Pageable pageable
     );
 
-    ResponseCandidateDTO getCandidateById(Long hrId, Long id);
+    ResponseCandidateDTO getCandidateById(Long userId, Long id);
 
-    void deleteCandidate(Long hrId, Long id);
+    void deleteCandidate(Long userId, Long id);
 }

@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 public interface IVacancyService {
 
 
-    ResponseVacancyDTO postVacancy(RequestVacancyDTO dto, Long recruiterId);
+    ResponseVacancyDTO postVacancy(RequestVacancyDTO dto, Long userId);
 
     ResponseVacancyDTO getVacancyById(Long id);
 
@@ -19,7 +19,7 @@ public interface IVacancyService {
             Pageable pageable
     );
 
-    ResponseVacancyDTO updateVacancy(Long recruiterId, RequestVacancyDTO dto);
+    ResponseVacancyDTO updateVacancy(Long userId, RequestVacancyDTO dto);
 
-    void deleteVacancy(Long recruiterId, Long id);
+    void deleteVacancy(Long userId, Long id);
 }

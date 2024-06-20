@@ -36,6 +36,7 @@ public class SecurityConfiguration {
 //переданные в качестве аргументов конструктора, должны быть созданы только при первом обращении к ним.
 //Таким образом, аннотация @Lazy используется здесь для того, чтобы отложить создание зависимостей до момента,
 //когда они действительно понадобятся. Это может ускорить запуск приложения и уменьшить потребление ресурсов.
+
     /**
      * Создает и возвращает экземпляр кодировщика паролей BCrypt.
      *
@@ -101,11 +102,14 @@ public class SecurityConfiguration {
                                                     .write("FORBIDDEN.");
                                         }))
                 .authorizeHttpRequests(configurer ->
-                        configurer.requestMatchers("/api/v1/auth/**")
+                        configurer
+                                .requestMatchers("/api/v1/auth/**")
                                 .permitAll()
-                                .requestMatchers("/swagger-ui/**")
-                                .permitAll()
-                                .requestMatchers("/v3/api-docs/**")
+                                .requestMatchers(
+                                        "/swagger-ui/**",
+                                        "/swagger-resources/*",
+                                        "/v3/api-docs/**"
+                                )
                                 .permitAll()
                                 .requestMatchers("/recruiter/**").hasAnyAuthority(
                                         String.valueOf(RECRUITER),
@@ -147,10 +151,12 @@ public class SecurityConfiguration {
                                         String.valueOf(RECRUITER),
                                         String.valueOf(ADMIN)
                                 )
-                                .anyRequest().authenticated())
+                                .anyRequest().authenticated()
+                )
                 .anonymous(AbstractHttpConfigurer::disable)
                 .addFilterBefore(new JwtTokenFilter(tokenProvider),
-                        UsernamePasswordAuthenticationFilter.class);
+                        UsernamePasswordAuthenticationFilter.class)
+        ;
 
         return httpSecurity.build();
     }

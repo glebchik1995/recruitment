@@ -3,7 +3,6 @@ package com.java.recruitment.web.controller.vacancy;
 import com.java.recruitment.aspect.log.LogInfo;
 import com.java.recruitment.service.IVacancyService;
 import com.java.recruitment.service.filter.JoinType;
-import com.java.recruitment.validation.line.ValidCriteriaJson;
 import com.java.recruitment.web.dto.vacancy.ResponseVacancyDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -29,7 +28,7 @@ public class VacancyController {
     @GetMapping
     @Operation(summary = "Получить всех вакансии")
     public Page<ResponseVacancyDTO> getAllVacancy(
-            @RequestParam(required = false) @ValidCriteriaJson final String criteriaJson,
+            @RequestParam(required = false) final String criteriaJson,
             @RequestParam(required = false) final JoinType joinType,
             @ParameterObject Pageable pageable
     ) {

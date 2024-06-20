@@ -38,11 +38,11 @@ public class ChatController {
     @Operation(summary = "Отправить сообщение")
     @ResponseStatus(HttpStatus.CREATED)
     public ChatMessageResponseDTO sendMessage(
-            @AuthenticationPrincipal User currentUser,
+            @AuthenticationPrincipal final JwtEntity sender,
             @RequestBody @Valid final ChatMessageRequestDTO dto
     ) {
 
-        return emailService.sendMessage(dto, currentUser);
+        return emailService.sendMessage(dto, sender.getId());
     }
 
     @GetMapping("/{otherId}")

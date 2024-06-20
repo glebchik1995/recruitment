@@ -13,7 +13,7 @@ public interface IJobRequestService {
 
     JobResponseDTO getJobRequestById(Long userId, Long jobRequestId);
 
-    JobResponseDTO updateJobRequest(Long id, ChangeJobRequestStatusDTO dto);
+    JobResponseDTO updateJobRequest(Long userId, ChangeJobRequestStatusDTO dto);
 
     void deleteJobRequest(Long userId, Long jobRequestId);
 
@@ -23,4 +23,6 @@ public interface IJobRequestService {
             JoinType joinType,
             Pageable pageable
     );
+
+    String downloadByJobRequestId(Long userId, Long jobRequestId);
 }

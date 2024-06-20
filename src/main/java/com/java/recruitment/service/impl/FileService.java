@@ -1,23 +1,15 @@
 package com.java.recruitment.service.impl;
 
 import com.java.recruitment.aspect.log.LogError;
-import com.java.recruitment.repositoty.JobRequestRepository;
-import com.java.recruitment.repositoty.UserRepository;
-import com.java.recruitment.repositoty.exception.DataNotFoundException;
 import com.java.recruitment.repositoty.exception.DataUploadException;
 import com.java.recruitment.service.IFileService;
 import com.java.recruitment.service.model.jobRequest.JobRequest;
-import com.java.recruitment.service.model.jobRequest.JobRequest_;
-import com.java.recruitment.service.model.user.User;
-import com.java.recruitment.service.model.user.User_;
 import com.java.recruitment.service.properties.MinioProperties;
 import io.minio.*;
 import io.minio.http.Method;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStream;
@@ -25,9 +17,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-
-import static com.java.recruitment.service.model.user.Role.ADMIN;
-import static com.java.recruitment.service.model.user.Role.HR;
 
 @LogError
 @RequiredArgsConstructor
@@ -37,10 +26,6 @@ public class FileService implements IFileService {
     private final MinioClient minioClient;
 
     private final MinioProperties minioProperties;
-
-    private final JobRequestRepository jobRequestRepository;
-
-    private final UserRepository userRepository;
 
     @Override
     public String upload(final MultipartFile file) {
@@ -66,14 +51,8 @@ public class FileService implements IFileService {
     }
 
     @SneakyThrows
-    @Transactional
     @Override
-    public String download(
-            final Long userId,
-            final Long recruiterId
-    ) {
-
-        JobRequest jobRequest = findJobRequestByUserIdAndJobRequestId(userId, recruiterId);
+    public String download(final JobRequest jobRequest) {
 
         List<String> fileNames = jobRequest.getFiles();
         List<String> downloadLinks = new ArrayList<>();
@@ -161,34 +140,5 @@ public class FileService implements IFileService {
                     .append("\n");
         }
         return formattedLinks.toString();
-    }
-
-    private JobRequest findJobRequestByUserIdAndJobRequestId(
-            final Long userId,
-            final Long jobRequestId
-    ) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
-
-        Specification<JobRequest> jobRequestSp = (root, query, cb) ->
-                cb.equal(root.get(JobRequest_.id), jobRequestId);
-
-        if (user.getRole().equals(ADMIN)) {
-            return jobRequestRepository.findById(jobRequestId)
-                    .orElseThrow(() -> new DataNotFoundException("Заявка не найдена"));
-
-        } else if (user.getRole().equals(HR)) {
-            Specification<JobRequest> hrSp = (root, query, cb) ->
-                    cb.equal(root.get(JobRequest_.hr).get(User_.id), userId);
-
-            return jobRequestRepository.findOne(hrSp.and(jobRequestSp))
-                    .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
-        } else {
-            Specification<JobRequest> recruiterSp = (root, query, cb) ->
-                    cb.equal(root.get(JobRequest_.recruiter).get(User_.id), userId);
-
-            return jobRequestRepository.findOne(recruiterSp.and(jobRequestSp))
-                    .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
-        }
     }
 }

@@ -33,11 +33,11 @@
 <body>
 <div id="body">
     <div id="div">
-        <h1 style="text-align: center">Message</h1>
+        <h1 style="text-align: center">Notification</h1>
         <p>Привет, ${name}!</p>
         <p>Вам поступило сообщение.</p>
         <p>С наилучшими пожеланиями, Команда Gmail!</p>
-        <p>Ссылка на просмотр сообщения: <a id="a" href="http://localhost:8080/api/v1/emails">Просмотреть сообщение</a>
+        <p>Ссылка на просмотр сообщения: <a id="a" href="http://localhost:8080/messages">Просмотреть сообщение</a>
         </p>
     </div>
 </div>

@@ -17,6 +17,12 @@ import com.java.recruitment.util.NullPropertyCopyHelper;
 import com.java.recruitment.web.dto.candidate.RequestCandidateDTO;
 import com.java.recruitment.web.dto.candidate.ResponseCandidateDTO;
 import com.java.recruitment.web.mapper.CandidateMapper;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.data.domain.Page;
@@ -41,15 +47,17 @@ public class CandidateService implements ICandidateService {
 
     private final CandidateRepository candidateRepository;
 
+    private final EntityManager entityManager;
+
     @Override
     @Transactional
     public ResponseCandidateDTO createCandidate(
-            final Long hrId,
+            final Long userId,
             final RequestCandidateDTO candidateDTO
     ) {
         Candidate candidate
                 = candidateMapper.toEntity(candidateDTO);
-        User user = userRepository.findById(hrId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException(
                                 "Пользователь не найден"
                         )
@@ -61,16 +69,20 @@ public class CandidateService implements ICandidateService {
     @Override
     @Transactional
     public ResponseCandidateDTO updateCandidate(
-            final Long hrId,
+            final Long userId,
             final RequestCandidateDTO candidateDTO
     ) {
-        Candidate candidate = findCandidateByHrId(
-                hrId,
+        Candidate candidate = findCandidate(
+                userId,
                 candidateDTO.getId()
         );
+        NullPropertyCopyHelper.copyNonNullProperties(
+                        candidateDTO,
+                        candidate
+                );
 
-        NullPropertyCopyHelper.copyNonNullProperties(candidateDTO, candidate);
-        Candidate updatedCandidate = candidateRepository.save(candidate);
+        Candidate updatedCandidate =
+                candidateRepository.save(candidate);
         return candidateMapper.toDto(updatedCandidate);
     }
 
@@ -133,11 +145,11 @@ public class CandidateService implements ICandidateService {
 
     @Override
     public ResponseCandidateDTO getCandidateById(
-            final Long hrId,
+            final Long userId,
             final Long candidateId
     ) {
-        Candidate candidate = findCandidateByHrId(
-                hrId,
+        Candidate candidate = findCandidate(
+                userId,
                 candidateId
         );
 
@@ -147,33 +159,52 @@ public class CandidateService implements ICandidateService {
     @Override
     @Transactional
     public void deleteCandidate(
-            final Long hrId,
+            final Long userId,
             final Long candidateId
     ) {
-        Candidate candidate = findCandidateByHrId(
-                hrId,
+        Candidate candidate = findCandidate(
+                userId,
                 candidateId
         );
 
         candidateRepository.delete(candidate);
     }
 
-    private Candidate findCandidateByHrId(
-            final Long hrId,
+    private Candidate findCandidate(
+            final Long userId,
             final Long candidateId
     ) {
-        User user = userRepository.findById(hrId)
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
+
         if (user.getRole().equals(ADMIN)) {
             return candidateRepository.findById(candidateId)
                     .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
         } else {
-            Specification<Candidate> candidateSp = (root, query, cb) ->
+            CriteriaBuilder cb =
+                    entityManager.getCriteriaBuilder();
+            CriteriaQuery<Candidate> query =
+                    cb.createQuery(Candidate.class);
+            Root<Candidate> root =
+                    query.from(Candidate.class);
+
+            Predicate candidatePredicate =
                     cb.equal(root.get(Candidate_.id), candidateId);
-            Specification<Candidate> hrSp = (root, query, cb) ->
-                    cb.equal(root.get(Candidate_.hr).get(User_.id), hrId);
-            return candidateRepository.findOne(hrSp.and(candidateSp))
-                    .orElseThrow(() -> new DataNotFoundException("Кандидат не найден"));
+            Predicate hrPredicate =
+                    cb.equal(root.get(Candidate_.hr).get(User_.id), userId);
+            Predicate finalPredicate =
+                    cb.and(candidatePredicate, hrPredicate);
+
+            query.select(root).where(finalPredicate);
+
+            Candidate candidate;
+            try {
+                candidate =
+                        entityManager.createQuery(query).getSingleResult();
+            } catch (NoResultException e) {
+                throw new DataNotFoundException("Кандидат не найден");
+            }
+            return candidate;
         }
     }
 }

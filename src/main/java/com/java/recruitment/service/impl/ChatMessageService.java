@@ -49,17 +49,18 @@ public class ChatMessageService implements IChatMessageService {
     @Transactional
     public ChatMessageResponseDTO sendMessage(
             final ChatMessageRequestDTO request,
-            final User sender
+            final Long senderId
     ) {
 
         User recipient = userRepository.findById(request.getRecipientId())
-                .orElseThrow(() -> new DataNotFoundException("Пользователь не найден"));
+                .orElseThrow(() -> new DataNotFoundException("Получатель не найден"));
+
+        User sender = userRepository.findById(senderId)
+                .orElseThrow(() -> new DataNotFoundException("Отправитель не найден"));
 
         if (recipient.getRole().equals(sender.getRole()) || recipient.getRole().equals(Role.ADMIN)) {
             throw new DataAccessException("Вы не можете отправить сообщение этому пользователю");
         }
-
-        Properties properties = new Properties();
 
         ChatMessage message = ChatMessage.builder()
                 .sender(sender)
@@ -70,7 +71,7 @@ public class ChatMessageService implements IChatMessageService {
         notificationService.sendNotification(
                 message.getRecipient(),
                 NEW_MESSAGE,
-                properties
+                new Properties()
         );
         message.setSentDate(LocalDate.now());
         message.setSentTime(LocalTime.now());

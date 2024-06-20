@@ -14,6 +14,7 @@ import org.simpleframework.xml.core.Validate;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -55,5 +56,18 @@ public class JobRequestController {
                 currentUser.getId(),
                 id
         );
+    }
+
+    @GetMapping("/{id}")
+    @Operation(summary = "Получить ссылку на скачивание файлов по ID заявки на работу")
+    public ResponseEntity<String> downloadFiles(
+            @AuthenticationPrincipal final JwtEntity currentUser,
+            @PathVariable @Min(1) final Long id) {
+
+        String downloadLinks = jobRequestService.downloadByJobRequestId(
+                currentUser.getId(),
+                id
+        );
+        return ResponseEntity.ok(downloadLinks);
     }
 }

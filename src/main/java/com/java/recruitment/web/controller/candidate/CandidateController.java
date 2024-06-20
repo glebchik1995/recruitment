@@ -3,6 +3,7 @@ package com.java.recruitment.web.controller.candidate;
 import com.java.recruitment.aspect.log.LogInfo;
 import com.java.recruitment.service.ICandidateService;
 import com.java.recruitment.service.filter.JoinType;
+import com.java.recruitment.validation.line.ValidCriteriaJson;
 import com.java.recruitment.validation.marker.OnCreate;
 import com.java.recruitment.validation.marker.OnUpdate;
 import com.java.recruitment.web.dto.candidate.RequestCandidateDTO;
@@ -49,7 +50,7 @@ public class CandidateController {
     @Operation(summary = "Получить всех кандидатов")
     public Page<ResponseCandidateDTO> getAllCandidates(
             @AuthenticationPrincipal final JwtEntity currentUser,
-            @RequestParam(required = false) final String criteriaJson,
+            @RequestParam(required = false) @ValidCriteriaJson final String criteriaJson,
             @RequestParam(required = false) final JoinType joinType,
             @ParameterObject Pageable pageable
     ) {

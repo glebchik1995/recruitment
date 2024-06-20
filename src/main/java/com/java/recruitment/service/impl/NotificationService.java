@@ -47,7 +47,7 @@ public class NotificationService implements INotificationService {
 
     @SneakyThrows
     private void sendNotificationAboutNewMessage(
-            final User receiver,
+            final User user,
             final Properties params
     ) {
         MimeMessage mimeMessage = mailSender.createMimeMessage();
@@ -58,9 +58,12 @@ public class NotificationService implements INotificationService {
                 "UTF-8"
         );
 
-        helper.setSubject("Уведомление о новом сообщении, " + receiver.getName());
-        helper.setTo(receiver.getUsername());
-        String emailContent = getContentWithNotificationAboutNewMessage(receiver, params);
+        helper.setSubject("Уведомление о новом сообщении, " + user.getName());
+        helper.setTo(user.getUsername());
+        String emailContent = getContentWithNotificationAboutNewMessage(
+                user,
+                params
+        );
         helper.setText(emailContent, true);
         mailSender.send(mimeMessage);
     }
@@ -80,7 +83,10 @@ public class NotificationService implements INotificationService {
 
         helper.setSubject("Уведомление о новой заявки на найм, " + receiver.getName());
         helper.setTo(receiver.getUsername());
-        String emailContent = getContentWithNotificationAboutNewJobRequest(receiver, params);
+        String emailContent = getContentWithNotificationAboutNewJobRequest(
+                receiver,
+                params
+        );
         helper.setText(emailContent, true);
         mailSender.send(mimeMessage);
     }
@@ -88,12 +94,12 @@ public class NotificationService implements INotificationService {
 
     @SneakyThrows
     private String getContentWithNotificationAboutNewMessage(
-            final User receiver,
+            final User user,
             final Properties properties
     ) {
         StringWriter writer = new StringWriter();
         Map<String, Object> model = new HashMap<>();
-        model.put("name", receiver.getName());
+        model.put("name", user.getName());
         configuration.getTemplate("message.ftlh")
                 .process(model, writer);
         return writer.getBuffer().toString();

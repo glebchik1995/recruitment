@@ -9,7 +9,7 @@ import org.springframework.data.domain.Pageable;
 
 public interface IChatMessageService {
 
-    ChatMessageResponseDTO sendMessage(ChatMessageRequestDTO request, User sender);
+    ChatMessageResponseDTO sendMessage(ChatMessageRequestDTO request, Long senderId);
 
     ChatMessageResponseDTO getChatMessageById(User currentUser, Long chatMessageId);
 
