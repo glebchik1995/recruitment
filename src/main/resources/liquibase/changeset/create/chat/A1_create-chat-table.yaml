@@ -14,13 +14,18 @@ databaseChangeLog:
                     primaryKey: true
                     nullable: false
               - column:
-                  name: sender_id
+                  name: hr_id
                   type: BIGINT
                   constraints:
                     nullable: false
               - column:
-                  name: recipient_id
+                  name: recruiter_id
                   type: BIGINT
+                  constraints:
+                    nullable: false
+              - column:
+                  name: sender
+                  type: VARCHAR(255)
                   constraints:
                     nullable: false
               - column:
@@ -40,16 +45,16 @@ databaseChangeLog:
                     nullable: false
             constraints:
               - foreignKeyConstraint:
-                  foreignKeyName: fk_chat_message_sender_id
+                  foreignKeyName: fk_chat_message_hr_id
                   referencedTableName: users
                   referencedColumnNames: id
-                  baseColumnNames: sender_id
+                  baseColumnNames: hr_id
                   onDelete: CASCADE
                   onUpdate: CASCADE
               - foreignKeyConstraint:
-                  foreignKeyName: fk_chat_message_receiver_id
+                  foreignKeyName: fk_chat_message_recruiter_id
                   referencedTableName: users
                   referencedColumnNames: id
-                  baseColumnNames: receiver_id
+                  baseColumnNames: recruiter_id
                   onDelete: CASCADE
                   onUpdate: CASCADE

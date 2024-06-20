@@ -1,5 +1,6 @@
 package com.java.recruitment.web.dto.chat;
 
+import com.java.recruitment.service.model.chat.Sender;
 import com.java.recruitment.web.dto.user.UserDTO;
 import lombok.*;
 
@@ -15,9 +16,11 @@ public class ChatMessageResponseDTO {
 
     private Long id;
 
-    private UserDTO sender;
+    private UserDTO hr;
 
-    private UserDTO recipient;
+    private UserDTO recruiter;
+
+    private Sender sender;
 
     private String text;
 

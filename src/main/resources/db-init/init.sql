@@ -34,7 +34,7 @@ CREATE TABLE IF NOT EXISTS vacancy
     title             VARCHAR(255)           NOT NULL,
     position          VARCHAR(255)           NOT NULL,
     description       TEXT                   NOT NULL,
-    start_working_day TIME WITH TIME ZONE  NOT NULL,
+    start_working_day TIME WITH TIME ZONE    NOT NULL,
     end_working_day   TIME WITHOUT TIME ZONE NOT NULL,
     salary            INT                    NOT NULL,
     created_date      DATE                   NOT NULL,
@@ -47,13 +47,14 @@ CREATE TABLE IF NOT EXISTS vacancy
 CREATE TABLE IF NOT EXISTS chat_message
 (
     id           BIGSERIAL PRIMARY KEY,
-    sender_id    BIGINT,
-    recipient_id BIGINT,
+    hr_id        BIGINT,
+    recruiter_id BIGINT,
+    sender       VARCHAR(255) NOT NULL,
     text         TEXT,
-    sent_date    DATE      NOT NULL,
-    sent_time    TIMESTAMP NOT NULL,
-    FOREIGN KEY (sender_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
-    FOREIGN KEY (recipient_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
+    sent_date    DATE         NOT NULL,
+    sent_time    TIMESTAMP    NOT NULL,
+    FOREIGN KEY (hr_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE,
+    FOREIGN KEY (recruiter_id) REFERENCES users (id) ON DELETE CASCADE ON UPDATE CASCADE
 );
 
 CREATE TABLE IF NOT EXISTS job_request

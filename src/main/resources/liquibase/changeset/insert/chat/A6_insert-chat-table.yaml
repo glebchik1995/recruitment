@@ -7,11 +7,14 @@ databaseChangeLog:
             tableName: chat_message
             columns:
               - column:
-                  name: sender_id
+                  name: hr_id
                   valueNumeric: 1
               - column:
-                  name: recipient_id
-                  valueNumeric: 2
+                  name: recruiter_id
+                  valueNumeric: 3
+              - column:
+                  name: sender
+                  value: "HR"
               - column:
                   name: text
                   value: 'Хорошо, я дам знать!'

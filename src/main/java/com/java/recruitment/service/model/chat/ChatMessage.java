@@ -23,14 +23,18 @@ public class ChatMessage {
     private Long id;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "sender_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "hr_id", referencedColumnName = "id", nullable = false)
     @JsonManagedReference
-    private User sender;
+    private User hr;
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "recipient_id", referencedColumnName = "id", nullable = false)
+    @JoinColumn(name = "recruiter_id", referencedColumnName = "id", nullable = false)
     @JsonManagedReference
-    private User recipient;
+    private User recruiter;
+
+    @Column(name = "sender", nullable = false)
+    @Enumerated(EnumType.STRING)
+    private Sender sender;
 
     @Column(name = "text")
     private String text;

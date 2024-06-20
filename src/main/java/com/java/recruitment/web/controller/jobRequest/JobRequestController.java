@@ -58,15 +58,15 @@ public class JobRequestController {
         );
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/{jobRequestId}")
     @Operation(summary = "Получить ссылку на скачивание файлов по ID заявки на работу")
     public ResponseEntity<String> downloadFiles(
             @AuthenticationPrincipal final JwtEntity currentUser,
-            @PathVariable @Min(1) final Long id) {
+            @PathVariable @Min(1) final Long jobRequestId) {
 
         String downloadLinks = jobRequestService.downloadByJobRequestId(
                 currentUser.getId(),
-                id
+                jobRequestId
         );
         return ResponseEntity.ok(downloadLinks);
     }

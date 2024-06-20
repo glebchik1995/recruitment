@@ -3,7 +3,6 @@ package com.java.recruitment.web.controller.chat;
 import com.java.recruitment.aspect.log.LogInfo;
 import com.java.recruitment.service.IChatMessageService;
 import com.java.recruitment.service.filter.JoinType;
-import com.java.recruitment.service.model.user.User;
 import com.java.recruitment.validation.line.ValidCriteriaJson;
 import com.java.recruitment.web.dto.chat.ChatMessageRequestDTO;
 import com.java.recruitment.web.dto.chat.ChatMessageResponseDTO;
@@ -45,18 +44,16 @@ public class ChatController {
         return emailService.sendMessage(dto, sender.getId());
     }
 
-    @GetMapping("/{otherId}")
+    @GetMapping
     @Operation(summary = "Получить все заявки")
     public Page<ChatMessageResponseDTO> getChatMessages(
             @AuthenticationPrincipal final JwtEntity currentUser,
-            @PathVariable final Long otherId,
             @RequestParam(required = false) @ValidCriteriaJson final String criteriaJson,
             @RequestParam(required = false) final JoinType joinType,
             @ParameterObject Pageable pageable
     ) {
         return emailService.getFilteredChatMessages(
                 currentUser.getId(),
-                otherId,
                 criteriaJson,
                 joinType,
                 pageable
@@ -66,8 +63,11 @@ public class ChatController {
     @GetMapping("/{id}")
     @Operation(summary = "Получить заявку по ID")
     public ChatMessageResponseDTO getChatMessageById(
-            @AuthenticationPrincipal User currentUser,
+            @AuthenticationPrincipal final JwtEntity currentUser,
             @PathVariable @Min(1) final Long id) {
-        return emailService.getChatMessageById(currentUser, id);
+        return emailService.getChatMessageById(
+                currentUser.getId(),
+                id
+        );
     }
 }

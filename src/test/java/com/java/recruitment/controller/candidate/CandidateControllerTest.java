@@ -43,6 +43,7 @@ class CandidateControllerTest extends BaseIntegrationTest {
 
     @Test
     @DisplayName("Редактирование всех полей у одного кандидата")
+    @WithMockUser(username = "testUser", authorities = {"HR"})
     void shouldEditingAllDataOneCandidate() throws Exception {
 
         RequestCandidateDTO updatedCandidateDTO = RequestCandidateDTO.builder()
@@ -57,7 +58,7 @@ class CandidateControllerTest extends BaseIntegrationTest {
 
         MockHttpServletResponse response = mvc.perform(
                         MockMvcRequestBuilders.put(
-                                        "/api/v1/hr/candidate"
+                                        "/candidate"
                                 )
                                 .contentType(MediaType.APPLICATION_JSON)
                                 .content(mapper.writeValueAsString(updatedCandidateDTO))
