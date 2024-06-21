@@ -1,4 +1,4 @@
-package com.java.recruitment.validation.match;
+package com.java.recruitment.validator.match;
 
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;

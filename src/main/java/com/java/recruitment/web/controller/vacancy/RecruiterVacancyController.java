@@ -2,8 +2,8 @@ package com.java.recruitment.web.controller.vacancy;
 
 import com.java.recruitment.aspect.log.LogInfo;
 import com.java.recruitment.service.IVacancyService;
-import com.java.recruitment.validation.marker.OnCreate;
-import com.java.recruitment.validation.marker.OnUpdate;
+import com.java.recruitment.validator.marker.OnCreate;
+import com.java.recruitment.validator.marker.OnUpdate;
 import com.java.recruitment.web.dto.vacancy.RequestVacancyDTO;
 import com.java.recruitment.web.dto.vacancy.ResponseVacancyDTO;
 import com.java.recruitment.web.security.JwtEntity;

@@ -1,7 +1,7 @@
 package com.java.recruitment.web.dto.jobRequest;
 
 import com.java.recruitment.service.model.jobRequest.Status;
-import com.java.recruitment.validation.enums.EnumAllowedConstraint;
+import com.java.recruitment.validator.enums.EnumAllowedConstraint;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;

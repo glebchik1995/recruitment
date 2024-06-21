@@ -39,6 +39,7 @@ databaseChangeLog:
                   type: VARCHAR(20)
                   constraints:
                     nullable: false
+                    unique: true
               - column:
                   name: position
                   type: VARCHAR(255)

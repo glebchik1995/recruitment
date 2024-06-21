@@ -1,4 +1,4 @@
-package com.java.recruitment.validation.line;
+package com.java.recruitment.validator.json;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

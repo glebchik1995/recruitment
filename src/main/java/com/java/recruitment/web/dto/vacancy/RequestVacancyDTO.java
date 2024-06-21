@@ -1,8 +1,8 @@
 package com.java.recruitment.web.dto.vacancy;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
-import com.java.recruitment.validation.marker.OnCreate;
-import com.java.recruitment.validation.marker.OnUpdate;
+import com.java.recruitment.validator.marker.OnCreate;
+import com.java.recruitment.validator.marker.OnUpdate;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

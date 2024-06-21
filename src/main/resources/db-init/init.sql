@@ -16,7 +16,7 @@ CREATE TABLE IF NOT EXISTS candidate
     surname         VARCHAR(255)  NOT NULL,
     age             INT           NOT NULL,
     email           VARCHAR(255)  NOT NULL UNIQUE,
-    phone           VARCHAR(20)   NOT NULL,
+    phone           VARCHAR(20)   NOT NULL UNIQUE,
     position        VARCHAR(255)  NOT NULL,
     exp             VARCHAR(1000) NOT NULL,
     tech_skill      VARCHAR(255)  NOT NULL,

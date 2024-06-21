@@ -3,7 +3,7 @@ package com.java.recruitment.web.controller.chat;
 import com.java.recruitment.aspect.log.LogInfo;
 import com.java.recruitment.service.IChatMessageService;
 import com.java.recruitment.service.filter.JoinType;
-import com.java.recruitment.validation.line.ValidCriteriaJson;
+import com.java.recruitment.validator.json.ValidCriteriaJson;
 import com.java.recruitment.web.dto.chat.ChatMessageRequestDTO;
 import com.java.recruitment.web.dto.chat.ChatMessageResponseDTO;
 import com.java.recruitment.web.security.JwtEntity;

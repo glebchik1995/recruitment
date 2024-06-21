@@ -2,8 +2,8 @@ package com.java.recruitment.web.dto.user;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.java.recruitment.service.model.user.Role;
-import com.java.recruitment.validation.enums.EnumAllowedConstraint;
-import com.java.recruitment.validation.match.FieldMatch;
+import com.java.recruitment.validator.enums.EnumAllowedConstraint;
+import com.java.recruitment.validator.match.FieldMatch;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;

@@ -3,7 +3,7 @@ package com.java.recruitment.web.controller.jobRequest;
 import com.java.recruitment.aspect.log.LogInfo;
 import com.java.recruitment.service.IJobRequestService;
 import com.java.recruitment.service.filter.JoinType;
-import com.java.recruitment.validation.line.ValidCriteriaJson;
+import com.java.recruitment.validator.json.ValidCriteriaJson;
 import com.java.recruitment.web.dto.jobRequest.JobResponseDTO;
 import com.java.recruitment.web.security.JwtEntity;
 import io.swagger.v3.oas.annotations.Operation;
