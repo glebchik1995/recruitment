@@ -11,7 +11,7 @@ databaseChangeLog:
                   value: 'John'
               - column:
                   name: username
-                  value: 'gleb.verbickiy@yandex.ru'
+                  value: 'john@yandex.ru'
               - column:
                   name: password
                   value: '$2a$12$x9Rhx2BKVeNd/iV0tpm1AOwFVhm835KvYILXSu5UHT19qMkbG3MSS'
